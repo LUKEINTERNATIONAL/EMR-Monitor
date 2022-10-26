@@ -141,19 +141,19 @@ class Bars extends HTMLElement{
                   </a>
                   <ul class="nav nav-treeview">
                     <li class="nav-item">
-                      <a href="/pages/forms/manage_facilities.html" class="nav-link">
+                      <a href="/pages/manage_facilities.html" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Manage Facilities</p>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="/pages/forms/manage_users.html" class="nav-link">
+                      <a href="/pages/manage_users.html" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Manage Users</p>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="/pages/forms/editors.html" class="nav-link">
+                      <a href="/pages/manage_users.html" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Reports</p>
                       </a>
@@ -186,3 +186,5 @@ class Footer extends HTMLElement{
 }
 customElements.define('app-footer',Footer)
 customElements.define('app-bars',Bars)
+
+var base_url = "http://localhost:8000/"

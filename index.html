@@ -325,7 +325,7 @@
     var o = Math.round, r = Math.random, s = 255;
     return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
 }
-  getData('http://localhost:8000/encounters/list/','process_data')
+  getData(base_url+'encounters/list/','process_data')
   labels = []
   datasets = []
   currenProgram = ""
@@ -361,28 +361,8 @@
           data                : encounter_data
         }
         datasets.push(graphic)
-        console.log(random_rgba())
-
-        // var f = data.facilities.filter((el) => el.program_name == data.facilities[facility].program_name)
-       
-    //     console.log("hhhhh")
-        
-        // currenProgram = data.facilities[facility].program_name
-        // try {
-        //   if(data.facilities[facility].program_name != data.facilities[parseInt(facility+1)].program_name)
-        //   {
-        //     datasets.push(graphic)
-        //     programData = []
-        //   }
-          
-        // } catch (error) {
-        //   datasets.push(graphic)
-        //   console.log(error)
-        // }
-       
           
     }
-    // console.log(labels.filter((v, i, a) => a.indexOf(v) === i))
     
     
     graphs(datasets,unique_labels)
