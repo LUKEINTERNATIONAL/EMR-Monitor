@@ -39,7 +39,6 @@ function submitParameters(parameters, url, returnToFunction) {
 
 function submitFormData(url){
   $("form").on( "submit", function(e) {
-    loader();
   var dataString = $(this).serialize();
   $.ajax({
     type: "POST",
@@ -48,27 +47,13 @@ function submitFormData(url){
     dataType:'JSON',
     success: function (data) {
       console.log(data)
-      dismissLoader();
-      if(data == "login successfully")
-       window.location = "/php_api/views/dashboard.php";
-      Toast.fire({
-        icon: 'success',
-        title: 'Successfully submitted'
-      })
-      setTimeout(() => { window.location.reload().delay; }, 1000);
+      window.location.reload().delay;
+      // setTimeout(() => { window.location.reload().delay; }, 1000);
       
     },
     error: function (error) {
       
-      if(error.statusText)
-       var title = error.statusText;
-      else
-       var title = 'Failing to submit';
-      Toast.fire({
-      icon: 'error',
-      title: title
-    })
-    dismissLoader();
+      console.log(error)
     }
   });
 
