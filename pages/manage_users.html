@@ -8,13 +8,13 @@
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
   <!-- DataTables -->
-  <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-  <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="../dist/css/adminlte.min.css">
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -28,7 +28,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle">
               Add User
             </button>
           </div>
@@ -60,38 +60,15 @@
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
                     <th>Username</th>
                     <th>Email</th>
-                    <th>Role</th>
+                    <th>Is Admin</th>
+                    <th>Is Staff</th>
                   </tr>
                   </thead>
                   <tbody>
-                  <tr>
-                    <td>Misc</td>
-                    <td>PSP browser</td>
-                    <td>PSP</td>
-                    <td>-</td>
-                    <td>C</td>
-                  </tr>
-                  <tr>
-                    <td>Other browsers</td>
-                    <td>All others</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>U</td>
-                  </tr>
+
                   </tbody>
-                  <tfoot>
-                  <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                  </tr>
-                  </tfoot>
                 </table>
               </div>
               <!-- /.card-body -->
@@ -112,7 +89,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Default Modal</h4>
+          <h4 class="modal-title">Add User</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -120,48 +97,30 @@
          <!-- Horizontal Form -->
        
           <!-- form start -->
-          <form class="form-horizontal">
+          <form class="form-horizontal" id="create_user_form">
             <div class="card-body">
-              <div class="form-group row">
-                <label for="inputEmail3" class="col-sm-2 col-form-label">Firstname</label>
-                <div class="col-sm-10">
-                  <input type="email" class="form-control" id="inputEmail3" placeholder="First Name">
-                </div>
-              </div>
-              <div class="form-group row">
-                <label for="inputEmail3" class="col-sm-2 col-form-label">Surname</label>
-                <div class="col-sm-10">
-                  <input type="email" class="form-control" id="inputEmail3" placeholder="Last Name">
-                </div>
-              </div>
-              <div class="form-group row">
-                <label for="inputEmail3" class="col-sm-2 col-form-label">Phone</label>
-                <div class="col-sm-10">
-                  <input type="email" class="form-control" id="inputEmail3" placeholder="Phone">
-                </div>
-              </div>
               <div class="form-group row">
                 <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
                 <div class="col-sm-10">
-                  <input type="email" class="form-control" id="inputEmail3" placeholder="Username">
-                </div>
-              </div>
-              <div class="form-group row">
-                <label for="inputEmail3" class="col-sm-2 col-form-label">Role</label>
-                <div class="col-sm-10">
-                  <input type="email" class="form-control" id="inputEmail3" placeholder="Role">
+                  <input type="email" class="form-control" id="inputEmail3" placeholder="Email" name="email">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="inputEmail3" class="col-sm-2 col-form-label">Username</label>
                 <div class="col-sm-10">
-                  <input type="email" class="form-control" id="inputEmail3" placeholder="Username">
+                  <input type="email" class="form-control" id="inputEmail3" placeholder="Username" name="username">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
                 <div class="col-sm-10">
-                  <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+                  <input type="password" class="form-control" id="inputPassword3" placeholder="Password" name="password">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">Confirm Password</label>
+                <div class="col-sm-10">
+                  <input type="password" class="form-control" id="inputPassword3" placeholder="Confirm Password" name="validate_password">
                 </div>
               </div>
              
@@ -170,7 +129,7 @@
         <!-- /.card -->
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-primary" id="create_user_btn">Save changes</button>
         </div>
       </div>
       <!-- /.modal-content -->
@@ -188,32 +147,32 @@
   <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
-<script src="/componets/bars.js"></script>
+<script src="/components/bars.js"></script>
 
 <!-- jQuery -->
-<script src="../../plugins/jquery/jquery.min.js"></script>
+<script src="../plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- bs-custom-file-input -->
-<script src="../../plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<script src="../plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
 <!-- DataTables  & Plugins -->
-<script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="../../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="../../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="../../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="../../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-<script src="../../plugins/jszip/jszip.min.js"></script>
-<script src="../../plugins/pdfmake/pdfmake.min.js"></script>
-<script src="../../plugins/pdfmake/vfs_fonts.js"></script>
-<script src="../../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-<script src="../../plugins/datatables-buttons/js/buttons.print.min.js"></script>
-<script src="../../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="../plugins/jszip/jszip.min.js"></script>
+<script src="../plugins/pdfmake/pdfmake.min.js"></script>
+<script src="../plugins/pdfmake/vfs_fonts.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 <!-- AdminLTE App -->
-<script src="../../dist/js/adminlte.min.js"></script>
+<script src="../dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="../../dist/js/demo.js"></script>
+<script src="../dist/js/demo.js"></script>
 <!-- Page specific script -->
 <script>
 $(function () {
@@ -223,9 +182,57 @@ $(function () {
 <!-- Page specific script -->
 <script>
   $(function () {
+    $("#create_user_btn").on("click",function(event) {
+      event.preventDefault();
+      form = $("#create_user_form").serializeArray()
+      data = {}
+      for(const e of form) {
+        data[e.name] = e.value
+      }
+
+      $.ajax({
+        type: "POST",
+        data: data,
+        url: base_url + "/user/register",
+        success: function(data) {
+          alert("success");
+          $("#toggle").click();
+        },
+        error: function(jqXHR, status, error) {
+          alert(jqXHR.responseJSON.status)
+        }
+      });
+    });
+
+    function process_user_list(data){
+      console.log(data)
+        data = data.map((value) =>{
+        return [
+          value['username'],
+          value['email'],
+          value['is_staff'],
+          value['is_superuser']
+          ]
+      })
+      display_data(data) 
+    }
+    $.ajax({
+      type: "GET",
+      url: base_url + "/user/list",
+      success: process_user_list,
+      error: function(jqXHR, status, error) {
+        window.location = "/pages/login.html"
+      }
+    });
+  });
+</script>
+
+<script>
+  function display_data(data) {
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+      data:data
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     $('#example2').DataTable({
       "paging": true,
@@ -236,7 +243,7 @@ $(function () {
       "autoWidth": false,
       "responsive": true,
     });
-  });
+  };
 </script>
 </body>
 </html>

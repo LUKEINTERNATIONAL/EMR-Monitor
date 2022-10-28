@@ -1,43 +1,42 @@
 function submitParameters(parameters, url, returnToFunction) {
  loader();
-    var parametersPassed = JSON.stringify(parameters);
+  var parametersPassed = JSON.stringify(parameters);
+  
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      dismissLoader()
+      var obj = JSON.parse(this.responseText);
+      eval(returnToFunction)(obj);
     
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-        dismissLoader()
-        var obj = JSON.parse(this.responseText);
-        eval(returnToFunction)(obj);
-      
-      }
-      dismissLoader()
-    };
-    xhttp.open("POST", url, true);
-    xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
-    xhttp.setRequestHeader('Content-type', "application/json");
-    xhttp.send(parametersPassed);
-  }
+    }
+    dismissLoader()
+  };
+  xhttp.open("POST", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send(parametersPassed);
+}
   
   
-  function getData(url,returnToFunction) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      console.log(this.status)
-      if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-        dismissLoader()
-        var obj = JSON.parse(this.responseText);
-        eval(returnToFunction)(obj);
-      }
+function getData(url,returnToFunction) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    console.log(this.status)
+    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       dismissLoader()
-    };
-    xhttp.open("GET", url, true);
-    xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
-    xhttp.setRequestHeader('Content-type', "application/json");
-    xhttp.send();
-  }
-            
+      var obj = JSON.parse(this.responseText);
+      eval(returnToFunction)(obj);
+    }
+    dismissLoader()
+  };
+  xhttp.open("GET", url, true);
+  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
+  xhttp.setRequestHeader('Content-type', "application/json");
+  xhttp.send();
+}
 
-function submitFormData(url){
+function submitFormData(url) {
   $("form").on( "submit", function(e) {
   var dataString = $(this).serialize();
   $.ajax({
@@ -60,7 +59,8 @@ function submitFormData(url){
   e.preventDefault();
   });
 }
-function submitLogin(url){
+
+function submitLogin(url) {
   $("form").on( "submit", function(e) {
     loader();
   var dataString = $(this).serialize();
@@ -94,7 +94,8 @@ function submitLogin(url){
   e.preventDefault();
   });
 }
-function deleteData(url){
+
+function deleteData(url) {
   loader();
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -123,6 +124,7 @@ function setCookie(name,value,days) {
   }
   document.cookie = name + "=" + (value || "")  + expires + "; path=/";
 }
+
 function getCookie(name) {
   var nameEQ = name + "=";
   var ca = document.cookie.split(';');
@@ -133,11 +135,12 @@ function getCookie(name) {
   }
   return null;
 }
+
 function eraseCookie(name) {   
   document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-function loader(){
+function loader() {
   console.log("lodderrr")
   try {
     $('body').append(
@@ -153,7 +156,7 @@ function loader(){
  
 }
 
-function dismissLoader(){
+function dismissLoader() {
   console.log("disssimmm")
   // $('.cover_page').attr('style','display:none')
 }
