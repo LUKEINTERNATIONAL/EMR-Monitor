@@ -19,6 +19,9 @@ class Bars extends HTMLElement{
             <li class="nav-item d-none d-sm-inline-block">
               <a href="#" class="nav-link">Contact</a>
             </li>
+            <li class="nav-item d-none d-sm-inline-block">
+              <a href="/user/logout" class="nav-link">Logout</a>
+            </li>
           </ul>
       
           <!-- Right navbar links -->
@@ -187,4 +190,4 @@ class Footer extends HTMLElement{
 customElements.define('app-footer',Footer)
 customElements.define('app-bars',Bars)
 
-var base_url = "http://localhost:8000/"
+var base_url = ""
