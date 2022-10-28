@@ -180,25 +180,9 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <ul class="todo-list" data-widget="todo-list">
-                  <li>
-                    <!-- drag handle -->
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                    <!-- checkbox -->
-                    <div  class="icheck-primary d-inline ml-2">
-                      <input type="text" value="" name="todo1" id="todoCheck1">
-                      <label class="checkbox-green"  for="todoCheck1"></label>
-                    </div>
-                    <!-- todo text -->
-                    <span class="text">Chitipa</span>
-                    <!-- Emphasis label -->
-                    <small class="badge badge-info"><i class="far fa-clock"></i> 2 mins</small>
-                    <!-- General tools such as edit or delete-->
-                  </li>
-                  <li>
+                <ul class="todo-list" data-widget="todo-list" id="vpn_list">
+                  
+                  <!-- <li>
                     <span class="handle">
                       <i class="fas fa-ellipsis-v"></i>
                       <i class="fas fa-ellipsis-v"></i>
@@ -210,18 +194,7 @@
                     <span class="text">Karonga</span>
                     <small class="badge badge-info"><i class="far fa-clock"></i> 4 hours</small>
                   </li>
-                  <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                    <div  class="icheck-primary d-inline ml-2">
-                      <input type="checkbox" value="" name="todo3" id="todoCheck3">
-                      <label class="checkbox-green"  for="todoCheck3"></label>
-                    </div>
-                    <span class="text">Rumphi</span>
-                    <small class="badge badge-info"><i class="far fa-clock"></i> 1 day</small>
-                  </li>
+                 
                   <li>
                     <span class="handle">
                       <i class="fas fa-ellipsis-v"></i>
@@ -233,31 +206,7 @@
                     </div>
                     <span class="text">Mzimba North</span>
                     <small class="badge badge-info"><i class="far fa-clock"></i> 3 days</small>
-                  </li>
-                  <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                    <div  class="icheck-primary d-inline ml-2">
-                      <input type="checkbox" value="" name="todo5" id="todoCheck5">
-                      <label class="checkbox-green"  for="todoCheck5"></label>
-                    </div>
-                    <span class="text">Mzimba South</span>
-                    <small class="badge badge-info"><i class="far fa-clock"></i> 1 week</small>
-                  </li>
-                  <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                    <div  class="icheck-primary d-inline ml-2">
-                      <input type="checkbox" value="" name="todo6" id="todoCheck6">
-                      <label class="checkbox-green"  for="todoCheck6"></label>
-                    </div>
-                    <span class="text">Nkhatabay</span>
-                    <small class="badge badge-info"><i class="far fa-clock"></i> 1 month</small>
-                  </li>
+                  </li> -->
                 </ul>
               </div>
             
@@ -319,8 +268,55 @@
 <script src="dist/js/pages/dashboard.js"></script>
 <script src="dist/js/backend.js"></script>
 
-
 <script>
+  submitFormData(base_url+'encounters/create_site')
+  getData(base_url+'vpn/list/','process_')
+  function process_(data){
+    for(item in data.vpn){
+      console.log(data.vpn[item].vpn_status)
+      console.log(data.vpn[item].facility_name)
+      if(data.vpn[item].vpn_status == 'active')
+          color = "checkbox-green"
+      else
+        color = "checkbox-red"
+
+      li = `<li>
+              <span class="handle">
+                <i class="fas fa-ellipsis-v"></i>
+                <i class="fas fa-ellipsis-v"></i>
+              </span>
+              <div  class="icheck-primary d-inline ml-2">
+                <input type="text" value="" name="todo2" id="todoCheck2" checked>
+                <label class="${color}"  for="todoCheck2"></label>
+              </div>
+              <span class="text">${data.vpn[item].facility_name}</span>
+            </li>`
+
+        $("#vpn_list").append(li)
+    }
+    
+    //   data = data.map((value) =>{
+    //   return [
+    //             value['facility_name'],
+    //             value['vpn_status'],
+    //             `
+    //             <span class="badge bg-warning" onclick="updateData('${value['id']}',
+    //               '${value['facility_name']}',
+    //               '${value['user_name']}',
+    //               '${value['ip_address']}',
+    //               '${value['password']}',
+    //               )" data-toggle="modal" data-target="#modal-default">
+    //               <button type="button" class="btn btn-block bg-gradient-warning btn-xs">Edit</button>
+    //             </span>
+                               
+    //             <span class="badge bg-danger" onclick="deleteData()">
+    //               <button type="button" class="btn btn-block bg-gradient-danger btn-xs">Delete</button> 
+    //             </span>`,
+    //         ]
+    // })
+    // display_data(data) 
+  }
+
   function random_rgba() {
     var o = Math.round, r = Math.random, s = 255;
     return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
