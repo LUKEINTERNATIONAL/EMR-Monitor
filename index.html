@@ -284,6 +284,7 @@
     if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
     vpn_setting.data = data.vpn;
     // console.log(vpn_setting.pageNum)
+    $("#inactive_vpn_count").text(data.vpn.length);
     setpage_vpn(vpn_setting.currentPage);
   }
 
@@ -462,7 +463,7 @@
       type: "GET",
       url: base_url + "/facilities/list/",
       success: function(data) {
-        $("#facilities_count").text(data.length)
+        $("#facilities_count").text(data.facilities.length)
       },
       error: function(jqXHR, status, error) {
         window.location = "/pages/login.html"
