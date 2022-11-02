@@ -22,7 +22,6 @@ function submitParameters(parameters, url, returnToFunction) {
 function getData(url,returnToFunction) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    console.log(this.status)
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       dismissLoader()
       var obj = JSON.parse(this.responseText);
@@ -141,7 +140,7 @@ function eraseCookie(name) {
 }
 
 function loader() {
-  console.log("lodderrr")
+  // console.log("lodderrr")
   try {
     $('body').append(
       `
@@ -157,6 +156,6 @@ function loader() {
 }
 
 function dismissLoader() {
-  console.log("disssimmm")
-  // $('.cover_page').attr('style','display:none')
+  // console.log("disssimmm")
+  $('.cover_page').attr('style','display:none')
 }

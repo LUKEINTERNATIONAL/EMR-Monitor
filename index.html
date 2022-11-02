@@ -120,18 +120,16 @@
                 <h3 class="card-title">Encounters</h3>
 
                 <div class="card-tools">
-                  <ul class="pagination pagination-sm">
-                    <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
-                    <li class="page-item"><a href="#" class="page-link">1</a></li>
-                    <li class="page-item"><a href="#" class="page-link">2</a></li>
-                    <li class="page-item"><a href="#" class="page-link">3</a></li>
-                    <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
+                  <ul class="pagination pagination-sm" id="pages_btn_set">
+                    <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage-1)">&laquo;</a></li>
+                    <li class="page-item"><a class="page-link" onclick="setpage_chart(1)">1</a></li>
+                    <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage+1)">&raquo;</a></li>
                   </ul>
                 </div>
               </div>
               <div class="card-body">
-                <div class="chart">
-                  <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                <div class="chart" id="chart_set">
+                  <canvas id="barChart1" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                 </div>
               </div>
               <!-- /.card-body -->
@@ -152,12 +150,10 @@
                 </h3>
 
                 <div class="card-tools">
-                  <ul class="pagination pagination-sm">
-                    <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
-                    <li class="page-item"><a href="#" class="page-link">1</a></li>
-                    <li class="page-item"><a href="#" class="page-link">2</a></li>
-                    <li class="page-item"><a href="#" class="page-link">3</a></li>
-                    <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
+                  <ul class="pagination pagination-sm" id="vpn_pages_btn_set">
+                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage-1)">&laquo;</a></li>
+                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(1)">1</a></li>
+                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage+1)">&raquo;</a></li>
                   </ul>
                 </div>
               </div>
@@ -226,7 +222,7 @@
 <!-- Bootstrap 4 -->
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- ChartJS -->
-<script src="plugins/chart.js/Chart.min.js"></script>
+<script src="plugins/chart.js/Chart.js"></script>
 <!-- Sparkline -->
 <script src="plugins/sparklines/sparkline.js"></script>
 <!-- JQVMap -->
@@ -253,17 +249,130 @@
 
 <script>
   submitFormData(base_url+'encounters/create_site')
-  getData(base_url+'vpn/list/','process_')
-  function process_(data){
-    for(item in data.vpn){
-      console.log(data.vpn[item].vpn_status)
-      console.log(data.vpn[item].facility_name)
-      if(data.vpn[item].vpn_status == 'active')
+  getData(base_url+'vpn/list/','process_vpn_data')
+
+  var chart_setting = {
+    cur_dataset: undefined,
+    cur_datawrapper: undefined,
+    cur_label: undefined,
+    pageNum: 1,
+    currentPage: 1
+  };
+  const paginationLimit = 5;
+  var vpn_setting = {
+    data: undefined,
+    pageNum: 1,
+    currentPage: 1
+  };
+
+  function process_vpn_data(data){
+    vpn_setting.pageNum = Math.ceil(data.vpn.length / paginationLimit);
+    if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
+    vpn_setting.data = data.vpn;
+    // console.log(vpn_setting.pageNum)
+    setpage_vpn(vpn_setting.currentPage);
+  }
+
+  function random_rgba() {
+    var o = Math.round, r = Math.random, s = 255;
+    return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+  }
+
+  function process_encounter_data(data){
+    datasets = []
+
+    $("#encounters_count").text(data.facilities.length === undefined? 0: data.facilities.length)
+
+    const unique_programs = [...new Set(data.facilities.map(item => item.program_name))];
+    const unique_labels = [...new Set(data.facilities.map(item => item.facility_name))];
+
+    encounter_data = []
+    for(const [i, program] of unique_programs.entries()){
+      encounter_data.push([])
+      for(facility_name in unique_labels){
+          var encounter_value = data.facilities.filter((el) => el.program_name == program && el.facility_name == unique_labels[facility_name] )
+          if(encounter_value.length > 0)
+            encounter_data[i].push(parseInt(encounter_value[0].total_encounters))
+          else
+          encounter_data[i].push(0)
+      }
+      
+      graphic= {
+          label               : program,
+          backgroundColor     : random_rgba(),
+          borderColor         : random_rgba(),
+          pointRadius          : false,
+          pointColor          : '#3b8bba',
+          pointStrokeColor    : 'rgba(60,141,188,1)',
+          pointHighlightFill  : '#fff',
+          pointHighlightStroke: 'rgba(60,141,188,1)',
+          data                : []
+        }
+        datasets.push(graphic)
+    }
+    
+    chart_setting.cur_datawrapper = datasets;
+    chart_setting.cur_dataset = encounter_data;
+    chart_setting.cur_label = unique_labels;
+    chart_setting.pageNum = Math.ceil(unique_labels.length / paginationLimit);
+    if(chart_setting.currentPage > chart_setting.pageNum) chart_setting.currentPage = 1;
+
+    setpage_chart(chart_setting.currentPage);
+    graphs();
+  }
+
+  function setpage_chart(num) {
+    $("#barChart" + chart_setting.currentPage).attr("hidden", true)
+    chart_setting.currentPage = num;
+    if(chart_setting.currentPage == 0) chart_setting.currentPage = chart_setting.pageNum;
+    if(chart_setting.currentPage > chart_setting.pageNum) chart_setting.currentPage = 1;
+    $("#barChart" + chart_setting.currentPage).removeAttr("hidden")
+
+    var from = chart_setting.currentPage-3 > 1 ? chart_setting.currentPage-3 : 1;
+    var to = chart_setting.currentPage+3 < chart_setting.pageNum ?
+             chart_setting.currentPage+3 : chart_setting.pageNum;
+    
+    var html_str = '<li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage-1)">&laquo;</a></li>'
+    for(let i = from; i <= to; i++) {
+      html_str += '<li class="page-item"><a class="page-link"' + 
+                  ' onclick="setpage_chart(' + i + ')">' + i + '</a></li>';
+    }
+    html_str += '<li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage+1)" id="next_btn">&raquo;</a></li>'
+    $("#pages_btn_set").html(html_str);
+  }
+
+  function min(a, b) {
+    return a>b ? b : a;
+  }
+
+  function setpage_vpn(num) {
+    vpn_setting.currentPage = num;
+    if(vpn_setting.currentPage == 0) vpn_setting.currentPage = vpn_setting.pageNum;
+    if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
+
+    var from = vpn_setting.currentPage-3 > 1 ? vpn_setting.currentPage-3 : 1;
+    var to = vpn_setting.currentPage+3 < vpn_setting.pageNum ?
+             vpn_setting.currentPage+3 : vpn_setting.pageNum;
+    // console.log(from, to)
+    var html_str = '<li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage-1)">&laquo;</a></li>'
+    for(let i = from; i <= to; i++) {
+      html_str += '<li class="page-item"><a class="page-link"' + 
+                  ' onclick="setpage_vpn(' + i + ')">' + i + '</a></li>';
+    }
+    html_str += '<li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage+1)" id="next_btn_vpn">&raquo;</a></li>'
+    $("#vpn_pages_btn_set").html(html_str);
+
+    var li = ""
+    // console.log(vpn_setting.data)
+    for(let item = (vpn_setting.currentPage-1) * 5; item < min(vpn_setting.currentPage * 5, vpn_setting.data.length); item++){
+      // console.log(data.vpn[item].vpn_status)
+      // console.log(data.vpn[item].facility_name)
+      if(vpn_setting.data[item].vpn_status == 'active')
           color = "checkbox-green"
       else
         color = "checkbox-red"
 
-      li = `<li>
+      li += `<li>
               <span class="handle">
                 <i class="fas fa-ellipsis-v"></i>
                 <i class="fas fa-ellipsis-v"></i>
@@ -272,124 +381,54 @@
                 <input type="text" value="" name="todo2" id="todoCheck2" checked>
                 <label class="${color}"  for="todoCheck2"></label>
               </div>
-              <span class="text">${data.vpn[item].facility_name}</span>
+              <span class="text">${vpn_setting.data[item].facility_name}</span>
             </li>`
-
-        $("#vpn_list").append(li)
     }
-    
-    //   data = data.map((value) =>{
-    //   return [
-    //             value['facility_name'],
-    //             value['vpn_status'],
-    //             `
-    //             <span class="badge bg-warning" onclick="updateData('${value['id']}',
-    //               '${value['facility_name']}',
-    //               '${value['user_name']}',
-    //               '${value['ip_address']}',
-    //               '${value['password']}',
-    //               )" data-toggle="modal" data-target="#modal-default">
-    //               <button type="button" class="btn btn-block bg-gradient-warning btn-xs">Edit</button>
-    //             </span>
-                               
-    //             <span class="badge bg-danger" onclick="deleteData()">
-    //               <button type="button" class="btn btn-block bg-gradient-danger btn-xs">Delete</button> 
-    //             </span>`,
-    //         ]
-    // })
-    // display_data(data) 
+    $("#vpn_list").html(li)
   }
 
-  function random_rgba() {
-    var o = Math.round, r = Math.random, s = 255;
-    return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
-  }
-
-  function process_data(data){
-    datasets = []
-
-    console.log(data.length)
-    $("#encounters_count").text(data.length === undefined? 0: data.length)
-
-    const unique_programs = [...new Set(data.facilities.map(item => item.program_name))];
-    const unique_labels = [...new Set(data.facilities.map(item => item.facility_name))];
-
-    for(program in unique_programs){
-      encounter_data = []
-      for(facility_name in unique_labels){
-          var encounter_value = data.facilities.filter((el) => el.program_name == unique_programs[program] && el.facility_name == unique_labels[facility_name] )
-          if(encounter_value.length > 0)
-            encounter_data.push(parseInt(encounter_value[0].total_encounters))
-          else
-          encounter_data.push(0)
-      }
-      console.log(encounter_data)
-      
-      graphic= {
-          label               : unique_programs[program],
-          backgroundColor     : random_rgba(),
-          borderColor         : random_rgba(),
-          pointRadius          : false,
-          pointColor          : '#3b8bba',
-          pointStrokeColor    : 'rgba(60,141,188,1)',
-          pointHighlightFill  : '#fff',
-          pointHighlightStroke: 'rgba(60,141,188,1)',
-          data                : encounter_data
-        }
-        datasets.push(graphic)
-          
-    }
-
-    graphs(datasets,unique_labels)
-  }
-
-  function graphs(datasets,unique_labels) {
+  function graphs() {
     /* ChartJS
      * -------
      * Here we will create a few charts using ChartJS
      */
+    for(var cur = 1; cur <= chart_setting.pageNum; cur++) {
+      var wrapper = structuredClone(chart_setting.cur_datawrapper)
+      for(let i = 0; i < wrapper.length; i++) {
+        wrapper[i].data = chart_setting.cur_dataset[i].slice((cur-1)*5, cur*5)
+      }
+      var areaChartData = {
+        labels  : chart_setting.cur_label.slice((cur-1)*5, cur*5),
+        datasets: wrapper
+      }
 
-    //--------------
-    //- AREA CHART -
-    //--------------
-    
-    // Get context with jQuery - using jQuery's .get() method.
+      if(cur != 1) {
+        $('#chart_set').append('<canvas id="barChart' + cur + '" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;" hidden></canvas>')
+      }
+      //-------------
+      //- BAR CHART -
+      //-------------
+      var barChartCanvas = $('#barChart' + cur).get(0).getContext('2d')
 
-    var areaChartData = {
-      labels  : unique_labels,
-      datasets: datasets
+      var barChartOptions = {
+        responsive              : true,
+        maintainAspectRatio     : false,
+        datasetFill             : false
+      }
+
+      new Chart(barChartCanvas, {
+        type: 'bar',
+        data: areaChartData,
+        options: barChartOptions
+      })
     }
-
-    //-------------
-    //- BAR CHART -
-    //-------------
-    var barChartCanvas = $('#barChart').get(0).getContext('2d')
-    var barChartData = $.extend(true, {}, areaChartData)
-    var temp0 = areaChartData.datasets[0]
-    var temp1 = areaChartData.datasets[1]
-    barChartData.datasets[0] = temp1
-    barChartData.datasets[1] = temp0
-
-    var barChartOptions = {
-      responsive              : true,
-      maintainAspectRatio     : false,
-      datasetFill             : false
-    }
-
-    console.log(barChartCanvas)
-    console.log(barChartData)
-    new Chart(barChartCanvas, {
-      type: 'bar',
-      data: barChartData,
-      options: barChartOptions
-    })
   }
 
   $(function () {
-    getData(base_url+'encounters/list/','process_data')
+    getData(base_url+'encounters/list/','process_encounter_data')
     $.ajax({
       type: "GET",
-      url: base_url + "/user/list",
+      url: base_url + "/user/",
       success: function(data) {
         $("#user_count").text(data.length)
       },
@@ -407,6 +446,11 @@
         window.location = "/pages/login.html"
       }
     });
+
+    setInterval(function() {
+      $("#next_btn").click();
+      $("#next_btn_vpn").click();
+    }, 5000);
   });
 </script>
 </body>
