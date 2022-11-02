@@ -283,8 +283,8 @@
     vpn_setting.pageNum = Math.ceil(data.vpn.length / paginationLimit);
     if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
     vpn_setting.data = data.vpn;
-    // console.log(vpn_setting.pageNum)
-    $("#inactive_vpn_count").text(data.vpn.length);
+    var vpn = data.vpn.filter((el) => el.vpn_status == "inactive")
+    $("#inactive_vpn_count").text(vpn.length)
     setpage_vpn(vpn_setting.currentPage);
   }
 
