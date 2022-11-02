@@ -264,7 +264,6 @@
 
 <script>
   submitFormData(base_url+'encounters/create_site')
-  getData(base_url+'vpn/list/','process_vpn_data')
 
   var chart_setting = {
     cur_dataset: undefined,
@@ -303,8 +302,7 @@
 
   function process_encounter_data(data){
     datasets = []
-    if(data.facilities.length > 0)
-      $("#encounters_count").text(data.facilities.length === undefined? 0: data.facilities.length)
+    $("#encounters_count").text(data.facilities.length === undefined? 0: data.facilities.length)
 
     const unique_programs = [...new Set(data.facilities.map(item => item.program_name))];
     const unique_labels = [...new Set(data.facilities.map(item => item.facility_name))];
@@ -447,8 +445,9 @@
     }
   }
 
-  $(function () {
+  function refresh() {
     getData(base_url+'encounters/list/','process_encounter_data')
+    getData(base_url+'vpn/list/','process_vpn_data')
     $.ajax({
       type: "GET",
       url: base_url + "/user/",
@@ -469,15 +468,18 @@
         window.location = "/pages/login.html"
       }
     });
+  }
 
+  $(function () {
+    refresh();
     setInterval(function() {
       $("#next_btn").click();
       $("#next_btn_vpn").click();
     }, 5000);
 
     setInterval(function() {
-      window.location = "/";
-    }, 600000);
+      refresh();
+    }, 60000);
   });
 </script>
 </body>
