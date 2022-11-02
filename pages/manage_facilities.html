@@ -182,19 +182,22 @@
 <!-- AdminLTE for demo purposes -->
 <script src="../dist/js/demo.js"></script>
 <!-- Page specific script -->
-<script src="../../dist/js/backend.js"></script>
+<script src="../dist/js/backend.js"></script>
 <script>
-  submitFormData(base_url+'encounters/create_site')
-  getData(base_url+'/facilities/list','process_data')
+  submitFormData(base_url+'/encounters/create_site')
+  getData(base_url+'/facilities/list/','process_data')
+
   function process_data(data){
     console.log(data)
-      data = data.map((value) =>{
+      data = data.facilities.map((value) =>{
       return [
                 value['facility_name'],
                 value['user_name'],
                 value['ip_address'],
                 value['password'],
-                value['id'],
+                value['vpn_status']=='active' ? `<span class=" bg-gradient-success btn-xs">${value['vpn_status']}</span>` :  
+                `<span class=" bg-gradient-danger btn-xs">${value['vpn_status']}</span>
+                `,
                 `
                 <span class="badge bg-warning" onclick="updateData('${value['id']}',
                   '${value['facility_name']}',

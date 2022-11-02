@@ -96,6 +96,21 @@
           <!-- ./col -->
           <div class="col-lg-3 col-6">
             <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3 id="inactive_vpn_count">...</h3>
+
+                <p>Total Inactive VPN</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+              <a href="/pages/manage_facilities.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
             <div class="small-box bg-warning">
               <div class="inner">
                 <h3 id="encounters_count">...</h3>
@@ -103,7 +118,7 @@
                 <p>Total Encounters</p>
               </div>
               <div class="icon">
-                <i class="ion ion-person-add"></i>
+                <i class="ion  ion-stats-bars"></i>
               </div>
               <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
@@ -244,7 +259,7 @@
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="dist/js/pages/dashboard.js"></script>
+<!-- <script src="dist/js/pages/dashboard.js"></script> -->
 <script src="dist/js/backend.js"></script>
 
 <script>
@@ -275,13 +290,21 @@
 
   function random_rgba() {
     var o = Math.round, r = Math.random, s = 255;
-    return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+    var R = 256, G = 256, B = 256;
+    while(R+G+B > 600){
+      R = o(r()*s)
+      G = o(r()*s)
+      B = o(r()*s)
+    }
+    var opacity = r().toFixed(1)
+    if (opacity < 0.5) opacity += 0.5
+    return 'rgba(' + R + ',' + G + ',' + B + ',' + opacity + ')';
   }
 
   function process_encounter_data(data){
     datasets = []
-
-    $("#encounters_count").text(data.facilities.length === undefined? 0: data.facilities.length)
+    if(data.facilities.length > 0)
+      $("#encounters_count").text(data.facilities.length === undefined? 0: data.facilities.length)
 
     const unique_programs = [...new Set(data.facilities.map(item => item.program_name))];
     const unique_labels = [...new Set(data.facilities.map(item => item.facility_name))];
@@ -438,7 +461,7 @@
     });
     $.ajax({
       type: "GET",
-      url: base_url + "/facilities/list",
+      url: base_url + "/facilities/list/",
       success: function(data) {
         $("#facilities_count").text(data.length)
       },

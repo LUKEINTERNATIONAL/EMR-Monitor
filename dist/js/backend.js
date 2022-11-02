@@ -5,12 +5,10 @@ function submitParameters(parameters, url, returnToFunction) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-      dismissLoader()
       var obj = JSON.parse(this.responseText);
       eval(returnToFunction)(obj);
     
     }
-    dismissLoader()
   };
   xhttp.open("POST", url, true);
   xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
@@ -23,11 +21,9 @@ function getData(url,returnToFunction) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-      dismissLoader()
       var obj = JSON.parse(this.responseText);
       eval(returnToFunction)(obj);
     }
-    dismissLoader()
   };
   xhttp.open("GET", url, true);
   xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
@@ -70,7 +66,6 @@ function submitLogin(url) {
     dataType:'JSON',
     success: function (data) {
       console.log(data)
-      dismissLoader();
       Toast.fire({
         icon: 'success',
         title: 'Successfully submitted'
@@ -86,7 +81,6 @@ function submitLogin(url) {
       icon: 'error',
       title: title
     })
-    dismissLoader();
     }
   });
 
@@ -99,14 +93,12 @@ function deleteData(url) {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-      dismissLoader()
       Toast.fire({
         icon: 'success',
         title: 'Successfully Deleted'
       })
       setTimeout(() => { window.location.reload().delay; }, 1000);
     }
-    dismissLoader()
   };
   xhttp.open("GET", url, true);
   xhttp.setRequestHeader('Authorization', sessionStorage.getItem("authorization"));
@@ -155,7 +147,3 @@ function loader() {
  
 }
 
-function dismissLoader() {
-  // console.log("disssimmm")
-  $('.cover_page').attr('style','display:none')
-}
