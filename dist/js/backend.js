@@ -55,39 +55,6 @@ function submitFormData(url) {
   });
 }
 
-function submitLogin(url) {
-  $("form").on( "submit", function(e) {
-    loader();
-  var dataString = $(this).serialize();
-  $.ajax({
-    type: "POST",
-    url: url,
-    data: dataString,
-    dataType:'JSON',
-    success: function (data) {
-      console.log(data)
-      Toast.fire({
-        icon: 'success',
-        title: 'Successfully submitted'
-      })
-      window.location = "/php_api/index.php";
-    },
-    error: function (error) {
-      if(error.statusText)
-       var title = error.statusText;
-      else
-       var title = 'Failing to submit';
-      Toast.fire({
-      icon: 'error',
-      title: title
-    })
-    }
-  });
-
-  e.preventDefault();
-  });
-}
-
 function deleteData(url) {
   loader();
   var xhttp = new XMLHttpRequest();
@@ -144,6 +111,5 @@ function loader() {
   } catch (error) {
     console.log(error)
   }
- 
 }
 
