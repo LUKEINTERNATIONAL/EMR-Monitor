@@ -251,17 +251,19 @@ $(function () {
 
   function deleteUser(username) {
     event.preventDefault();
-    $.ajax({
-      type: "DELETE",
-      url: base_url + "/user/" + username,
-      success: function(data) {
-        alert("success");
-        refresh_user_list();
-      },
-      error: function(jqXHR, status, error) {
-        alert(jqXHR.responseJSON.status)
-      }
-    });
+    if(confirm("do you really want to delete?")) {
+      $.ajax({
+        type: "DELETE",
+        url: base_url + "/user/" + username,
+        success: function(data) {
+          alert("success");
+          refresh_user_list();
+        },
+        error: function(jqXHR, status, error) {
+          alert(jqXHR.responseJSON.status)
+        }
+      });
+    }
   }
 
   function refresh_user_list() {
