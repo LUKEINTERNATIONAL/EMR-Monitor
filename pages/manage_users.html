@@ -90,7 +90,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Add User</h4>
+          <h4 class="modal-title" id="form_title">Add User</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -193,11 +193,13 @@ $(function () {
       $("#modify_user_btn").attr("hidden", true)
       $("#create_user_btn").removeAttr("hidden")
       $("#username").removeAttr("readonly")
+      $("#form_title").text("Add User")
     }
     else {
       $("#create_user_btn").attr("hidden", true)
       $("#modify_user_btn").removeAttr("hidden")
       $("#username").attr("readonly", true)
+      $("#form_title").text("Modify User")
     }
   }
 
