@@ -28,7 +28,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" onclick="setForm('','','',true)">
               Add Facility
             </button>
           </div>
@@ -102,7 +102,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Default Modal</h4>
+          <h4 class="modal-title" id="form_title">Add Facility</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -136,7 +136,8 @@
         <!-- /.card -->
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <input type="submit" value="Save changes" class="btn btn-primary">
+          <input type="submit" value="Save Changes" class="btn btn-primary" id="create_facility_btn">
+          <button type="button" class="btn btn-primary" id="modify_facility_btn" hidden>Save Changes</button>
         </div>
       </form>
       </div>
@@ -184,48 +185,113 @@
 <!-- Page specific script -->
 <script src="../dist/js/backend.js"></script>
 <script>
-  submitFormData(base_url+'/encounters/create_site')
-  getData(base_url+'/facilities/list/','process_data')
-
-  function process_data(data){
-    console.log(data)
-      data = data.facilities.map((value) =>{
-      return [
-                value['facility_name'],
-                value['user_name'],
-                value['ip_address'],
-                value['password'],
-                value['vpn_status']=='active' ? `<span class=" bg-gradient-success btn-xs">${value['vpn_status']}</span>` :  
-                `<span class=" bg-gradient-danger btn-xs">${value['vpn_status']}</span>
-                `,
-                `
-                <span class="badge bg-warning" onclick="updateData('${value['id']}',
-                  '${value['facility_name']}',
-                  '${value['user_name']}',
-                  '${value['ip_address']}',
-                  '${value['password']}',
-                  )" data-toggle="modal" data-target="#modal-default">
-                  <button type="button" class="btn btn-block bg-gradient-warning btn-xs">Edit</button>
-                </span>
-                               
-                <span class="badge bg-danger" onclick="deleteData()">
-                  <button type="button" class="btn btn-block bg-gradient-danger btn-xs">Delete</button> 
-                </span>`,
-            ]
-    })
-    display_data(data) 
-  }
 $(function () {
   bsCustomFileInput.init();
 });
 </script>
 <!-- Page specific script -->
 <script>
+  function setForm(ip, username, password, is_add, id) {
+    $('input[name="ip_address"]').attr("value", ip)
+    $('input[name="user_name"]').attr("value", username)
+    $('input[name="password"]').attr("value", password)
+
+    if(is_add) {
+      $("#modify_facility_btn").attr("hidden", true)
+      $("#create_facility_btn").removeAttr("hidden")
+      $("#form_title").text("Add Facility")
+    }
+    else {
+      $("#create_facility_btn").attr("hidden", true)
+      $("#modify_facility_btn").removeAttr("hidden")
+      $("#modify_facility_btn").attr("onclick", 'modifyFacility(' + id + ')')
+      $("#form_title").text("Modify Facility")
+    }
+  }
+
+  function modifyFacility(id) {
+    event.preventDefault();
+    form = $("form").serializeArray()
+    data = {}
+    for(const e of form) {
+      data[e.name] = e.value
+    }
+    
+    $.ajax({
+      type: "PUT",
+      data: data,
+      url: base_url + "/facilities/" + id,
+      success: function(data) {
+        alert("success");
+        $("#toggle").click();
+        refresh_facilities_list();
+      },
+      error: function(jqXHR, status, error) {
+        alert(jqXHR.responseJSON.status)
+      }
+    });
+  }
+
+  function deleteFacility(id) {
+    event.preventDefault();
+    if(confirm("do you really want to delete?")) {
+      $.ajax({
+        type: "DELETE",
+        url: base_url + "/facilities/" + id,
+        success: function(data) {
+          alert("success");
+          $("#toggle").click();
+          refresh_facilities_list();
+        },
+        error: function(jqXHR, status, error) {
+          alert(jqXHR.responseJSON.status)
+        }
+      });
+    }
+  }
+
+  submitFormData(base_url+'/encounters/create_site')
+  
+  function refresh_facilities_list() {
+    getData(base_url+'/facilities/list/','display_data')
+  }
+
   function display_data(data) {
+    console.log(data)
+    data = data.facilities.map((value) =>{
+      return [
+        value['facility_name'],
+        value['user_name'],
+        value['ip_address'],
+        value['password'],
+        value['vpn_status']=='active' ? `<span class=" bg-gradient-success btn-xs">${value['vpn_status']}</span>` :  
+        `<span class=" bg-gradient-danger btn-xs">${value['vpn_status']}</span>`,
+        `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
+            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['ip_address']}',
+              '${value['user_name']}',
+              '${value['password']}',
+              false,
+              '${value['id']}'
+              )">Edit</button>
+          </span>
+          <span class="badge bg-danger">
+            <button type="button" class="btn btn-block bg-gradient-danger btn-xs" onclick="deleteFacility('${value['id']}')">Delete</button> 
+          </span>`
+        ]
+    })
+
+    var datatable = $("#example1").dataTable().api();
+    datatable.clear();
+    datatable.rows.add(data);
+    datatable.draw();
+  };
+
+
+  $(function() {
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
-      data:data
+      data:{}
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     $('#example2').DataTable({
       "paging": true,
@@ -236,7 +302,9 @@ $(function () {
       "autoWidth": false,
       "responsive": true,
     });
-  };
+
+    refresh_facilities_list();
+  });
 </script>
 </body>
 </html>
