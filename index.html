@@ -303,7 +303,10 @@
 
   function process_encounter_data(data){
     datasets = []
-    $("#encounters_count").text(data.facilities.length === undefined? 0: data.facilities.length)
+    // $("#encounters_count").text(data.facilities.length === undefined? 0: data.facilities.length)
+    var total_encounters = 0;
+    data.facilities.forEach(x => {n = parseInt(x.total_encounters); total_encounters += isNaN(n) ? 0 : n;})
+    $("#encounters_count").text(total_encounters);
 
     const unique_programs = [...new Set(data.facilities.map(item => item.program_name))];
     const unique_labels = [...new Set(data.facilities.map(item => item.facility_name))];
