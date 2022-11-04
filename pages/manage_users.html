@@ -62,8 +62,8 @@
                   <tr>
                     <th>Username</th>
                     <th>Email</th>
-                    <th>Is Admin</th>
                     <th>Is Staff</th>
+                    <th>Is Admin</th>
                     <th>Action</th>
                   </tr>
                   </thead>
@@ -124,7 +124,15 @@
                   <input type="password" class="form-control" id="validate_password" placeholder="Confirm Password" name="validate_password">
                 </div>
               </div>
-             
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="is_staff" name="is_staff">
+                <label class="form-check-label" for="exampleCheck1" onclick="$('#is_staff').click()">staff</label>
+              </div>
+              <br>
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="is_superuser" name="is_superuser">
+                <label class="form-check-label" for="exampleCheck1" onclick="$('#is_superuser').click()">admin</label>
+              </div>
           </form>
         </div>
         <!-- /.card -->
@@ -183,23 +191,58 @@ $(function () {
 </script>
 <!-- Page specific script -->
 <script>
-  function setForm(username, email, is_add) {
-    $("#email").attr("value", email)
-    $("#username").attr("value", username)
-    $("#password").removeAttr("value")
-    $("#validate_password").removeAttr("value")
+  var user = {
+    "username": undefined,
+    "is_staff": undefined,
+    "is_superuser": undefined
+  };
+
+  function setForm(username, email, is_add, is_staff, is_superuser) {
+    $("#email").prop("value", email)
+    $("#username").prop("value", username)
+    $("#password").prop("value", "")
+    $("#validate_password").prop("value", "")
 
     if(is_add) {
-      $("#modify_user_btn").attr("hidden", true)
-      $("#create_user_btn").removeAttr("hidden")
-      $("#username").removeAttr("readonly")
+      $("#modify_user_btn").prop("hidden", true)
+      $("#create_user_btn").prop("hidden", false)
+      $("#username").prop("readonly", false)
       $("#form_title").text("Add User")
+
+      $("#is_staff").prop("checked", false)
+      $("#is_superuser").prop("checked", false)
     }
     else {
-      $("#create_user_btn").attr("hidden", true)
-      $("#modify_user_btn").removeAttr("hidden")
-      $("#username").attr("readonly", true)
+      $("#create_user_btn").prop("hidden", true)
+      $("#modify_user_btn").prop("hidden", false)
+      $("#username").prop("readonly", true)
       $("#form_title").text("Modify User")
+
+      if(is_staff === false) {
+        $("#is_staff").prop("checked", false)
+      }
+      else {
+        $("#is_staff").prop("checked", true)
+      }
+      if(is_superuser === false) {
+        $("#is_superuser").prop("checked", false)
+      }
+      else {
+        $("#is_superuser").prop("checked", true)
+      }
+    }
+
+    if(user.is_superuser) {
+      $("#is_staff").prop("disabled", false)
+      $("#is_superuser").prop("disabled", false)
+    }
+    else if(user.is_staff) {
+      $("#is_staff").prop("disabled", false)
+      $("#is_superuser").prop("disabled", true)
+    }
+    else {
+      $("#is_staff").prop("disabled", true)
+      $("#is_superuser").prop("disabled", true)
     }
   }
 
@@ -277,6 +320,28 @@ $(function () {
     });
   }
 
+  function display_data(data) {
+    data = data.map((value) =>{
+      return [
+        value['username'],
+        value['email'],
+        value['is_staff'],
+        value['is_superuser'],
+        `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
+            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['username']}','${value['email']}', false, ${value['is_staff']}, ${value['is_superuser']})">Edit</button>
+          </span>
+          <span class="badge bg-danger">
+            <button type="button" class="btn btn-block bg-gradient-danger btn-xs" onclick="deleteUser('${value['username']}')">Delete</button> 
+          </span>`
+        ]
+    })
+
+    var datatable = $("#example1").dataTable().api();
+    datatable.clear();
+    datatable.rows.add(data);
+    datatable.draw();
+  };
+
   $(function () {
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
@@ -294,29 +359,24 @@ $(function () {
     });
 
     refresh_user_list();
+
+    $.ajax({
+      type: "GET",
+      url: base_url + "/user/test",
+      success: function(data) {
+        if(data.logged_in === false) {
+          window.location = "/pages/login.html";
+        }
+        else {
+          user.is_staff = data.is_staff;
+          user.is_superuser = data.is_superuser;
+        }
+      },
+      error: function(jqXHR, status, error) {
+        window.location = "/pages/login.html";
+      }
+    });
   });
-
-  function display_data(data) {
-    data = data.map((value) =>{
-      return [
-        value['username'],
-        value['email'],
-        value['is_staff'],
-        value['is_superuser'],
-        `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
-            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['username']}','${value['email']}', false)">Edit</button>
-          </span>
-          <span class="badge bg-danger">
-            <button type="button" class="btn btn-block bg-gradient-danger btn-xs" onclick="deleteUser('${value['username']}')">Delete</button> 
-          </span>`
-        ]
-    })
-
-    var datatable = $("#example1").dataTable().api();
-    datatable.clear();
-    datatable.rows.add(data);
-    datatable.draw();
-  };
 </script>
 </body>
 </html>

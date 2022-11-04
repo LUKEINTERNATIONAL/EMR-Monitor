@@ -104,7 +104,7 @@ function loader() {
     $('body').append(
       `
       <div class="cover_page" style="width:100%; height:100%; background:#000;position: absolute; top: 0;opacity: 0.5;">
-        <img src="${base_url}views/dist/img/formloader.gif" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" 
+        <img src="${base_url}/views/dist/img/formloader.gif" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" 
         style="opacity: .8;position: absolute; margin: auto; top: 0; left: 0; right: 0; bottom: 0;">
       </div>
       `);
