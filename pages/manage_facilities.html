@@ -28,7 +28,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" onclick="setForm('','','',true)">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setForm('','','',true)">
               Add Facility
             </button>
           </div>
@@ -136,7 +136,7 @@
         <!-- /.card -->
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <input type="submit" value="Save Changes" class="btn btn-primary" id="create_facility_btn">
+          <input type="submit" value="Save Changes" class="btn btn-primary" id="create_facility_btn" onclick="addFacility()">
           <button type="button" class="btn btn-primary" id="modify_facility_btn" hidden>Save Changes</button>
         </div>
       </form>
@@ -192,21 +192,43 @@ $(function () {
 <!-- Page specific script -->
 <script>
   function setForm(ip, username, password, is_add, id) {
-    $('input[name="ip_address"]').attr("value", ip)
-    $('input[name="user_name"]').attr("value", username)
-    $('input[name="password"]').attr("value", password)
+    $('input[name="ip_address"]').prop("value", ip)
+    $('input[name="user_name"]').prop("value", username)
+    $('input[name="password"]').prop("value", password)
 
     if(is_add) {
-      $("#modify_facility_btn").attr("hidden", true)
-      $("#create_facility_btn").removeAttr("hidden")
+      $("#modify_facility_btn").prop("hidden", true)
+      $("#create_facility_btn").prop("hidden", false)
       $("#form_title").text("Add Facility")
     }
     else {
-      $("#create_facility_btn").attr("hidden", true)
-      $("#modify_facility_btn").removeAttr("hidden")
-      $("#modify_facility_btn").attr("onclick", 'modifyFacility(' + id + ')')
+      $("#create_facility_btn").prop("hidden", true)
+      $("#modify_facility_btn").prop("hidden", false)
+      $("#modify_facility_btn").prop("onclick", 'modifyFacility(' + id + ')')
       $("#form_title").text("Modify Facility")
     }
+  }
+
+  function addFacility() {
+    event.preventDefault();
+    form = $("form").serializeArray()
+    data = {}
+    for(const e of form) {
+      data[e.name] = e.value
+    }
+    $.ajax({
+      type: "POST",
+      data: data,
+      url: base_url+'/encounters/create_site',
+      success: function(data) {
+        alert("success");
+        $("#toggle").click();
+        refresh_facilities_list();
+      },
+      error: function(jqXHR, status, error) {
+        alert(jqXHR.responseJSON.status)
+      }
+    });
   }
 
   function modifyFacility(id) {
@@ -249,8 +271,6 @@ $(function () {
       });
     }
   }
-
-  submitFormData(base_url+'/encounters/create_site')
   
   function refresh_facilities_list() {
     getData(base_url+'/facilities/list/','display_data')
