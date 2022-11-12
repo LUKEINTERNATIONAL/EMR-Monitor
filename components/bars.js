@@ -20,7 +20,7 @@ class Bars extends HTMLElement{
               <a href="#" class="nav-link">Contact</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-              <a href="/user/logout" class="nav-link">Logout</a>
+              <a href="#" onclick="logout()" class="nav-link">Logout</a>
             </li>
           </ul>
       
@@ -155,10 +155,27 @@ class Bars extends HTMLElement{
                         <p>Manage Users</p>
                       </a>
                     </li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-edit"></i>
+                    <p>
+                      Reports
+                      <i class="fas fa-angle-left right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
                     <li class="nav-item">
-                      <a href="/pages/manage_users.html" class="nav-link">
+                      <a href="/pages/encounter_report.html" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Reports</p>
+                        <p>Encounters Report</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="/pages/vpn_report.html" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>VPN report</p>
                       </a>
                     </li>
                   </ul>
@@ -190,4 +207,8 @@ class Footer extends HTMLElement{
 customElements.define('app-footer',Footer)
 customElements.define('app-bars',Bars)
 
-var base_url = ""
+var base_url = "http://localhost:8000/"
+function logout(){
+  sessionStorage.setItem("Authorization","")
+  window.location = "/pages/login.html"
+}

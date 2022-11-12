@@ -32,6 +32,16 @@
     .checkbox-red::before {
       background: #e74c3c;
     }
+    .small-box p {
+    font-size: 1.2rem;
+    }
+    .inner_vpn{
+        position:relative;
+        top:0px;
+    }
+    .outer_vpn{
+        overflow:hidden;
+    }
   </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -128,7 +138,7 @@
         <!-- Main row -->
         <div class="row">
           <!-- Left col -->
-          <section class="col-lg-7 connectedSortable">
+          <section class="col-lg-9 connectedSortable">
              <!-- BAR CHART -->
              <div class="card">
               <div class="card-header">
@@ -144,7 +154,7 @@
               </div>
               <div class="card-body">
                 <div class="chart" id="chart_set">
-                  <canvas id="barChart1" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                  <canvas id="barChart1" style="min-height: 59vh; height: 59vh; max-height: 59vh; max-width: 100%;"></canvas>
                 </div>
               </div>
               <!-- /.card-body -->
@@ -154,7 +164,7 @@
           </section>
           <!-- /.Left col -->
           <!-- right col (We are only adding the ID to make the widgets sortable)-->
-          <section class="col-lg-5 connectedSortable">
+          <section class="col-lg-3 connectedSortable">
 
              <!-- TO DO List -->
              <div class="card">
@@ -173,34 +183,9 @@
                 </div>
               </div>
               <!-- /.card-header -->
-              <div class="card-body">
-                <ul class="todo-list" data-widget="todo-list" id="vpn_list">
+              <div class="outer_vpn" id="outer_vpn" style="height: 63vh;">
+                <ul class="todo-list inner_vpn" data-widget="todo-list" id="vpn_list" style="overflow:unset; min-height: 63.5vh; height: 63.5vh; max-height: 63.5vh; max-width: 100%;">
                   
-                  <!-- <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                    <div  class="icheck-primary d-inline ml-2">
-                      <input type="text" value="" name="todo2" id="todoCheck2" checked>
-                      <label class="checkbox-green"  for="todoCheck2"></label>
-                    </div>
-                    <span class="text">Karonga</span>
-                    <small class="badge badge-info"><i class="far fa-clock"></i> 4 hours</small>
-                  </li>
-                 
-                  <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                    <div  class="icheck-primary d-inline ml-2">
-                      <input type="checkbox" value="" name="todo4" id="todoCheck4">
-                      <label class="checkbox-red"  for="todoCheck4"></label>
-                    </div>
-                    <span class="text">Mzimba North</span>
-                    <small class="badge badge-info"><i class="far fa-clock"></i> 3 days</small>
-                  </li> -->
                 </ul>
               </div>
             
@@ -263,7 +248,6 @@
 <script src="dist/js/backend.js"></script>
 
 <script>
-  submitFormData(base_url+'encounters/create_site')
 
   var chart_setting = {
     cur_dataset: undefined,
@@ -279,16 +263,16 @@
     currentPage: 1
   };
 
-  function process_vpn_data(data){
-    vpn_setting.pageNum = Math.ceil(data.vpn.length / paginationLimit);
-    if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
-    vpn_setting.data = data.vpn;
-    var vpn = data.vpn.filter((el) => el.vpn_status == "inactive")
-    $("#inactive_vpn_count").text(vpn.length)
-    setpage_vpn(vpn_setting.currentPage);
-  }
+  // function process_vpn_data(data){
+    // vpn_setting.pageNum = Math.ceil(data.vpn.length / paginationLimit);
+    // if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
+    // vpn_setting.data = data.vpn;
+    // var vpn = data.vpn.filter((el) => el.vpn_status == "inactive")
+    // $("#inactive_vpn_count").text(vpn.length)
+    // setpage_vpn(vpn_setting.currentPage);
+  // }
 
-  function random_rgba() {
+  function random_rgba(program_name) {
     var o = Math.round, r = Math.random, s = 255;
     var R = 256, G = 256, B = 256;
     while(R+G+B > 600){
@@ -297,6 +281,15 @@
       B = o(r()*s)
     }
     var opacity = r().toFixed(1)
+    if(program_name == "HIV PROGRAM")
+      return "rgba( 47, 79, 79, 0.7)"
+    if(program_name == "OPD Program")
+      return "rgba(72, 61, 139, 0.7)"
+    if(program_name == "ANC PROGRAM")
+      return "rgba(255, 20, 147, 0.7)"
+    if(program_name == "CxCa program")
+      return "rgba(0, 191, 255, 0.7)"
+    else
     if (opacity < 0.5) opacity += 0.5
     return 'rgba(' + R + ',' + G + ',' + B + ',' + opacity + ')';
   }
@@ -324,14 +317,14 @@
       
       graphic= {
           label               : program,
-          backgroundColor     : random_rgba(),
-          borderColor         : random_rgba(),
+          backgroundColor     : random_rgba(program),
+          borderColor         : random_rgba(program),
           pointRadius          : false,
           pointColor          : '#3b8bba',
           pointStrokeColor    : 'rgba(60,141,188,1)',
           pointHighlightFill  : '#fff',
           pointHighlightStroke: 'rgba(60,141,188,1)',
-          data                : []
+          data                : [],
         }
         datasets.push(graphic)
     }
@@ -341,7 +334,7 @@
     chart_setting.cur_label = unique_labels;
     chart_setting.pageNum = Math.ceil(unique_labels.length / paginationLimit);
     if(chart_setting.currentPage > chart_setting.pageNum) chart_setting.currentPage = 1;
-
+    console.log(datasets)
     setpage_chart(chart_setting.currentPage);
     graphs();
   }
@@ -370,29 +363,15 @@
     return a>b ? b : a;
   }
 
-  function setpage_vpn(num) {
-    vpn_setting.currentPage = num;
-    if(vpn_setting.currentPage == 0) vpn_setting.currentPage = vpn_setting.pageNum;
-    if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
-
-    var from = vpn_setting.currentPage-3 > 1 ? vpn_setting.currentPage-3 : 1;
-    var to = vpn_setting.currentPage+3 < vpn_setting.pageNum ?
-             vpn_setting.currentPage+3 : vpn_setting.pageNum;
-    // console.log(from, to)
-    var html_str = '<li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage-1)">&laquo;</a></li>'
-    for(let i = from; i <= to; i++) {
-      html_str += '<li class="page-item"><a class="page-link"' + 
-                  ' onclick="setpage_vpn(' + i + ')">' + i + '</a></li>';
-    }
-    html_str += '<li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage+1)" id="next_btn_vpn">&raquo;</a></li>'
-    $("#vpn_pages_btn_set").html(html_str);
-
+  function process_vpn_data(data) {
     var li = ""
-    // console.log(vpn_setting.data)
-    for(let item = (vpn_setting.currentPage-1) * 5; item < min(vpn_setting.currentPage * 5, vpn_setting.data.length); item++){
-      // console.log(data.vpn[item].vpn_status)
+    data = data.vpn
+    var vpn = data.filter((el) => el.vpn_status == "inactive")
+    $("#inactive_vpn_count").text(vpn.length)
+    for(item in data ){
+      console.log(data[item].vpn_status)
       // console.log(data.vpn[item].facility_name)
-      if(vpn_setting.data[item].vpn_status == 'active')
+      if(data[item].vpn_status == 'active')
           color = "checkbox-green"
       else
         color = "checkbox-red"
@@ -406,10 +385,11 @@
                 <input type="text" value="" name="todo2" id="todoCheck2" checked>
                 <label class="${color}"  for="todoCheck2"></label>
               </div>
-              <span class="text">${vpn_setting.data[item].facility_name}</span>
+              <span class="text">${data[item].facility_name}</span>
             </li>`
     }
     $("#vpn_list").html(li)
+    
   }
 
   function graphs() {
@@ -428,7 +408,7 @@
       }
 
       if(cur != 1) {
-        $('#chart_set').append('<canvas id="barChart' + cur + '" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;" hidden></canvas>')
+        $('#chart_set').append('<canvas id="barChart' + cur + '" style="min-height:59vh; height:59vh; max-height:59vh; max-width: 100%;" hidden></canvas>')
       }
       //-------------
       //- BAR CHART -
@@ -441,49 +421,101 @@
         datasetFill             : false
       }
 
-      new Chart(barChartCanvas, {
+      // new Chart(barChartCanvas, {
+      //   type: 'bar',
+      //   data: areaChartData,
+      //   options: barChartOptions
+      // })
+
+      var UserVsMyApps = new Chart(barChartCanvas, {
         type: 'bar',
         data: areaChartData,
-        options: barChartOptions
-      })
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+                display: true,
+                labels: {
+                  fontSize: 14
+                }
+ 
+            },
+            "hover": {
+              "animationDuration": 0
+            },
+             "animation": {
+                "duration": 1,
+              "onComplete": function() {
+                var chartInstance = this.chart,
+                  ctx = chartInstance.ctx;
+ 
+                ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+ 
+                this.data.datasets.forEach(function(dataset, i) {
+                  var meta = chartInstance.controller.getDatasetMeta(i);
+                  meta.data.forEach(function(bar, index) {
+                    var data = dataset.data[index];
+                    ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                  });
+                });
+              }
+            },
+            title: {
+                display: false,
+                text: 'Daily EMR Encounters',
+            },
+            scales: {
+              xAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                  fontSize: 15,  
+                }
+              }],
+              yAxes: [{
+                display: true
+              }]
+            }
+        }
+    });
+
     }
   }
+  function total_users_data(data){$("#user_count").text(data.length)}
+  function total_facilities_data(data){$("#facilities_count").text(data.facilities.length)}
 
   function refresh() {
     getData(base_url+'encounters/list/','process_encounter_data')
     getData(base_url+'vpn/list/','process_vpn_data')
-    $.ajax({
-      type: "GET",
-      url: base_url + "/user/",
-      success: function(data) {
-        $("#user_count").text(data.length)
-      },
-      error: function(jqXHR, status, error) {
-        window.location = "/pages/login.html"
-      }
-    });
-    $.ajax({
-      type: "GET",
-      url: base_url + "/facilities/list/",
-      success: function(data) {
-        $("#facilities_count").text(data.facilities.length)
-      },
-      error: function(jqXHR, status, error) {
-        window.location = "/pages/login.html"
-      }
-    });
+    getData(base_url+'users/','total_users_data')
+    getData(base_url+'facilities/list/','total_facilities_data')
+    $('.inner_vpn').html("")
   }
 
   $(function () {
     refresh();
+
+    function autoScrollDown(){
+    $(".inner_vpn").css({top:-$(".outer_vpn").outerHeight()}) // jump back
+                  .animate({top:0},50000,"linear", autoScrollDown); // and animate
+    }
+    // fix hight of outer_vpn:
+    $('.outer_vpn').css({maxHeight: $('.inner_vpn').height()});
+    // duplicate content of inner_vpn:
+    $('.inner_vpn').html($('.inner_vpn').html() + $('.inner_vpn').html());
+    
+    autoScrollDown();
+
+    $('#outer_vpn').attr('style','height: 63vh;')
     setInterval(function() {
+      // $('#vpn_list').animate({scrollTop: 8}, 4000);
       $("#next_btn").click();
-      $("#next_btn_vpn").click();
-    }, 10000);
+    }, 60000);
 
     setInterval(function() {
       refresh();
-    }, 60000);
+    }, 200000);
   });
 </script>
 </body>

@@ -184,6 +184,7 @@
 <!-- AdminLTE for demo purposes -->
 <script src="../dist/js/demo.js"></script>
 <!-- Page specific script -->
+<script src="/dist/js/backend.js"></script>
 <script>
 $(function () {
   bsCustomFileInput.init();
@@ -254,19 +255,20 @@ $(function () {
       data[e.name] = e.value
     }
 
-    $.ajax({
-      type: "PATCH",
-      data: data,
-      url: base_url + "/user/" + data.username,
-      success: function(data) {
-        alert("success");
-        $("#toggle").click();
-        refresh_user_list();
-      },
-      error: function(jqXHR, status, error) {
-        alert(jqXHR.responseJSON.status)
-      }
-    });
+    // $.ajax({
+    //   type: "PATCH",
+    //   data: data,
+    //   url: base_url + "/users/" + data.username,
+    //   success: function(data) {
+    //     alert("success");
+    //     $("#toggle").click();
+    //     refresh_user_list();
+    //   },
+    //   error: function(jqXHR, status, error) {
+    //     alert(jqXHR.responseJSON.status)
+    //   }
+    // });
+    updateData(data,base_url+'users/'+data.username,'')
   }
 
   function addUser() {
@@ -277,19 +279,20 @@ $(function () {
       data[e.name] = e.value
     }
 
-    $.ajax({
-      type: "POST",
-      data: data,
-      url: base_url + "/user/",
-      success: function(data) {
-        alert("success");
-        $("#toggle").click();
-        refresh_user_list();
-      },
-      error: function(jqXHR, status, error) {
-        alert(jqXHR.responseJSON.status)
-      }
-    });
+    // $.ajax({
+    //   type: "POST",
+    //   data: data,
+    //   url: base_url + "/users/",
+    //   success: function(data) {
+    //     alert("success");
+    //     $("#toggle").click();
+    //     refresh_user_list();
+    //   },
+    //   error: function(jqXHR, status, error) {
+    //     alert(jqXHR.responseJSON.status)
+    //   }
+    // });
+    submitParameters(data,base_url+'users/','')
   }
 
   function deleteUser(username) {
@@ -297,7 +300,7 @@ $(function () {
     if(confirm("do you really want to delete?")) {
       $.ajax({
         type: "DELETE",
-        url: base_url + "/user/" + username,
+        url: base_url + "users/" + username,
         success: function(data) {
           alert("success");
           refresh_user_list();
@@ -310,14 +313,7 @@ $(function () {
   }
 
   function refresh_user_list() {
-    $.ajax({
-      type: "GET",
-      url: base_url + "/user/",
-      success: display_data,
-      error: function(jqXHR, status, error) {
-        window.location = "/pages/login.html"
-      }
-    });
+    getData(base_url+'users/','display_data')
   }
 
   function display_data(data) {
@@ -360,22 +356,6 @@ $(function () {
 
     refresh_user_list();
 
-    $.ajax({
-      type: "GET",
-      url: base_url + "/user/test",
-      success: function(data) {
-        if(data.logged_in === false) {
-          window.location = "/pages/login.html";
-        }
-        else {
-          user.is_staff = data.is_staff;
-          user.is_superuser = data.is_superuser;
-        }
-      },
-      error: function(jqXHR, status, error) {
-        window.location = "/pages/login.html";
-      }
-    });
   });
 </script>
 </body>
