@@ -155,6 +155,12 @@ class Bars extends HTMLElement{
                         <p>Manage Users</p>
                       </a>
                     </li>
+                    <li class="nav-item">
+                      <a href="/pages/manage_databases.html" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Manage Databases</p>
+                      </a>
+                    </li>
                   </ul>
                 </li>
                 <li class="nav-item">
