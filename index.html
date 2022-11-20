@@ -125,7 +125,7 @@
               <div class="inner">
                 <h3 id="encounters_count">...</h3>
 
-                <p>Total Encounters</p>
+                <p id="bargraph_card">Total Encounters</p>
               </div>
               <div class="icon">
                 <i class="ion  ion-stats-bars"></i>
@@ -142,7 +142,7 @@
              <!-- BAR CHART -->
              <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Encounters</h3>
+                <h3 class="card-title" id="bargraph_title">Encounters</h3>
 
                 <div class="card-tools">
                   <ul class="pagination pagination-sm" id="pages_btn_set">
@@ -294,12 +294,34 @@
     return 'rgba(' + R + ',' + G + ',' + B + ',' + opacity + ')';
   }
 
+  function bargraph_switcher(){
+    if(sessionStorage.getItem('bargraph_status') !== null)
+      if(sessionStorage.getItem('bargraph_status') == 'false')
+      status = 'true'
+      else
+      status = 'false'
+    else
+      status = 'true'
+
+    sessionStorage.setItem('bargraph_status',status);
+  }
   function process_encounter_data(data){
+    bargraph_switcher()
     datasets = []
     // $("#encounters_count").text(data.facilities.length === undefined? 0: data.facilities.length)
-    var total_encounters = 0;
-    data.facilities.forEach(x => {n = parseInt(x.total_encounters); total_encounters += isNaN(n) ? 0 : n;})
-    $("#encounters_count").text(total_encounters);
+    if(sessionStorage.getItem('bargraph_status') == 'false'){
+      var total_encounters = 0;
+      data.facilities.forEach(x => {n = parseInt(x.total_encounters); total_encounters += isNaN(n) ? 0 : n;})
+      $("#encounters_count").text(total_encounters);
+      $("#bargraph_title").text("Encounters")
+      $("#bargraph_card").text("Total Encounters")
+    }else{
+      var total_patients = 0;
+      data.facilities.forEach(x => {n = parseInt(x.total_patients); total_patients += isNaN(n) ? 0 : n;})
+      $("#encounters_count").text(total_patients);
+      $("#bargraph_title").text("Patients")
+      $("#bargraph_card").text("Total Patients")
+    }
 
     const unique_programs = [...new Set(data.facilities.map(item => item.program_name))];
     const unique_labels = [...new Set(data.facilities.map(item => item.facility_name))];
@@ -310,7 +332,10 @@
       for(facility_name in unique_labels){
           var encounter_value = data.facilities.filter((el) => el.program_name == program && el.facility_name == unique_labels[facility_name] )
           if(encounter_value.length > 0)
-            encounter_data[i].push(parseInt(encounter_value[0].total_encounters))
+            if(sessionStorage.getItem('bargraph_status') == 'false')
+              encounter_data[i].push(parseInt(encounter_value[0].total_encounters))
+            else
+              encounter_data[i].push(parseInt(encounter_value[0].total_patients))
           else
           encounter_data[i].push(0)
       }
@@ -492,10 +517,20 @@
     getData(base_url+'facilities/list/','total_facilities_data')
     $('.inner_vpn').html("")
   }
-
+  function openFullscreen() {
+    var elem =$('body').attr('class','sidebar-collapse')
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) { /* Safari */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE11 */
+      elem.msRequestFullscreen();
+    }
+  }
   $(function () {
+    document.documentElement.requestFullscreen();
+    openFullscreen()
     refresh();
-
     function autoScrollDown(){
     $(".inner_vpn").css({top:-$(".outer_vpn").outerHeight()}) // jump back
                   .animate({top:0},50000,"linear", autoScrollDown); // and animate
@@ -516,6 +551,12 @@
     setInterval(function() {
       refresh();
     }, 200000);
+  });
+  
+</script>
+<script>
+  document.documentElement.requestFullscreen().catch((e) => {
+     console.log(e);
   });
 </script>
 </body>
