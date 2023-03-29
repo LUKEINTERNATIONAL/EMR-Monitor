@@ -300,10 +300,10 @@
     datasets = []
     var total_viral_load = 0;
     data.viral_load.forEach(x => {n = parseInt(x.total_viral_load); total_viral_load += isNaN(n) ? 0 : n;})
-    var orders_with_results = data.viral_load.filter((el) => el.acknowledgement_type == 'test_results_delivered_to_site_electronically')
-    var orders_without_results = data.viral_load.filter((el) => el.acknowledgement_type != 'test_results_delivered_to_site_electronically')
+    var orders_with_results = data.viral_load.filter((el) => el.results != "" && el.acknowledgement_type == 'test_results_delivered_to_site_electronically')
+    var orders_without_results = data.viral_load.filter((el) => el.results != "" && el.acknowledgement_type != 'test_results_delivered_to_site_electronically')
     $("#viral_load_count").text(total_viral_load);
-    $("#total_orders").text(data['viral_load'].length)
+    $("#total_orders").text(orders_without_results.length + orders_with_results.length)
     $("#orders_without_results").text(orders_without_results.length)
     $("#orders_with_results").text(orders_with_results.length)
 
@@ -316,11 +316,11 @@
       viral_load_data.push([])
       for(facility_name in unique_labels){
         if(i==0){
-          var encounter_value = data.viral_load.filter((el) => el.results == "" && el.facility_name == unique_labels[facility_name] && el.acknowledgement_type == 'test_results_delivered_to_site_electronically' )
+          var encounter_value = data.viral_load.filter((el) => el.results != "" && el.facility_name == unique_labels[facility_name] && el.acknowledgement_type == 'test_results_delivered_to_site_electronically' )
           viral_load_data[i].push(parseInt(encounter_value.length))
         }
         if(i==1){
-          var encounter_value = data.viral_load.filter((el) => el.results == "" && el.facility_name == unique_labels[facility_name] && el.acknowledgement_type != 'test_results_delivered_to_site_electronically' )
+          var encounter_value = data.viral_load.filter((el) => el.results != "" && el.facility_name == unique_labels[facility_name] && el.acknowledgement_type != 'test_results_delivered_to_site_electronically' )
           viral_load_data[i].push(parseInt(encounter_value.length))
         }
          
