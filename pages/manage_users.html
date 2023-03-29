@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EMR-Monitor</title>
+    <title>EMR-Monitor</title>
+  <link rel="shortcut icon" href="/dist/img/emr_monitor.png" type="image/x-icon">
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -13,8 +14,12 @@
   <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <script> var active_menu = "general"; var active_link = "manage_users"; </script>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -60,10 +65,12 @@
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>Username</th>
+                    <th>Name</th>
                     <th>Email</th>
-                    <th>Is Staff</th>
-                    <th>Is Admin</th>
+                    <th>Username</th>
+                    <th>Phone</th>
+                    <th>District</th>
+                    <th>Superuser</th>
                     <th>Action</th>
                   </tr>
                   </thead>
@@ -101,15 +108,41 @@
           <form class="form-horizontal" id="create_user_form">
             <div class="card-body">
               <div class="form-group row">
+                <label for="name" class="col-sm-2 col-form-label">Name</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="name" placeholder="name" name="name">
+                </div>
+              </div>
+              <div class="form-group row">
                 <label for="email" class="col-sm-2 col-form-label">Email</label>
                 <div class="col-sm-10">
                   <input type="email" class="form-control" id="email" placeholder="Email" name="email">
                 </div>
               </div>
               <div class="form-group row">
+                <label for="phone" class="col-sm-2 col-form-label">Phone</label>
+                <div class="col-sm-10">
+                  <input type="phone" class="form-control" id="phone" placeholder="phone" name="phone">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="district" class="col-sm-2 col-form-label">District</label>
+                <div class="col-sm-10">
+                  <select class="form-control select2" name="district_id" style="width: 100%;" id="district" onchange="click_district(this)">
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="zone" class="col-sm-2 col-form-label">Zone</label>
+                <div class="col-sm-10">
+                  <select class="form-control select2" name="zone_id" style="width: 100%;" id="zone" onchange="click_zone(this)">
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
                 <label for="username" class="col-sm-2 col-form-label">Username</label>
                 <div class="col-sm-10">
-                  <input type="email" class="form-control" id="username" placeholder="Username" name="username">
+                  <input type="text" class="form-control" id="username" placeholder="Username" name="username">
                 </div>
               </div>
               <div class="form-group row">
@@ -124,15 +157,21 @@
                   <input type="password" class="form-control" id="validate_password" placeholder="Confirm Password" name="validate_password">
                 </div>
               </div>
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="is_staff" name="is_staff">
-                <label class="form-check-label" for="exampleCheck1" onclick="$('#is_staff').click()">staff</label>
-              </div>
-              <br>
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="is_superuser" name="is_superuser">
-                <label class="form-check-label" for="exampleCheck1" onclick="$('#is_superuser').click()">admin</label>
-              </div>
+
+                <!-- radio -->
+                <div class="form-group row">
+                  <label for="superuser" class="col-sm-2 col-form-label">Role</label>
+                  <div class="col-sm-6">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" value="False" name="is_superuser" checked>
+                      <label class="form-check-label">Staff</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" value="True"name="is_superuser" >
+                      <label class="form-check-label">Admin</label>
+                    </div>
+                  </div>
+                </div>
           </form>
         </div>
         <!-- /.card -->
@@ -163,6 +202,8 @@
 <script src="../plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 -->
+<script src="../plugins/select2/js/select2.full.min.js"></script>
 <!-- bs-custom-file-input -->
 <script src="../plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
@@ -187,11 +228,58 @@
 <script src="/dist/js/backend.js"></script>
 <script>
 $(function () {
+  //Initialize Select2 Elements
+  $('.select2').select2()
+
+  //Initialize Select2 Elements
+  $('.select2bs4').select2({
+    theme: 'bootstrap4'
+  })
   bsCustomFileInput.init();
 });
 </script>
 <!-- Page specific script -->
+
 <script>
+function click_zone(obj){
+  if(obj.value)
+    $('#district').attr("disabled",true)
+  else
+    $('#district').attr("disabled",false)
+}
+
+function click_district(obj){
+  if(obj.value)
+    $('#zone').attr("disabled",true)
+  else
+    $('#zone').attr("disabled",false)
+}
+
+  getData(base_url+'zones/list/','display_zones')
+  function display_zones(data) {
+    data = data.zones.map((value) =>{
+      return [
+        `<option value='${value['id']}'>${value['zone']}</option>`,
+        ]
+    })
+    console.log(data)
+    data.unshift('<option></option>')
+    $("#zone").html(data)
+  };
+  getData(base_url+'districts/list/','display_districts')
+
+  function display_districts(data) {
+  
+    data = data.districts.map((value) =>{
+      return [
+        `<option value='${value['id']}'>${value['district']}</option>`,
+        ]
+    })
+    console.log(data)
+    data.unshift('<option></option>')
+    $("#district").html(data)
+    
+  };
   var user = {
     "username": undefined,
     "is_staff": undefined,
@@ -276,7 +364,8 @@ $(function () {
     form = $("#create_user_form").serializeArray()
     data = {}
     for(const e of form) {
-      data[e.name] = e.value
+      if(e.value !="")
+        data[e.name] = e.value
     }
 
     // $.ajax({
@@ -317,11 +406,13 @@ $(function () {
   }
 
   function display_data(data) {
-    data = data.map((value) =>{
+    data = data.users.map((value) =>{
       return [
-        value['username'],
+        value['name'],
         value['email'],
-        value['is_staff'],
+        value['username'],
+        value['phone'],
+        value['district'],
         value['is_superuser'],
         `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
             <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['username']}','${value['email']}', false, ${value['is_staff']}, ${value['is_superuser']})">Edit</button>

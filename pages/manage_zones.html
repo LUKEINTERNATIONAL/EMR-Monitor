@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
-  <script> var active_menu = "databases"; var active_link = "view_databases"; </script>
+  <script> var active_menu = "general"; var active_link = "manage_zones"; </script>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -30,7 +30,14 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setForm('','','',true)">
+              Add Zone
+            </button>
+          </div>
+          <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Create Zone</li>
             </ol>
           </div>
         </div>
@@ -48,22 +55,27 @@
            
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Database Details</h3>
+                <h3 class="card-title">Zone Details</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>Facility Name</th>
-                    <th>Total Dumps Size</th>
-                    <th>Last Modified Date</th>
-                    <th>Dumps Status</th>
-                    <th>View Dumps</th>
+                    <th>Zone</th>
+                    <th>Action</th>
                   </tr>
                   </thead>
                   <tbody id="table_body">
+                 
+                  
                   </tbody>
+                  <tfoot>
+                  <tr>
+                    <th>Zone</th>
+                    <th>Action</th>
+                  </tr>
+                  </tfoot>
                 </table>
               </div>
               <!-- /.card-body -->
@@ -81,46 +93,36 @@
   <!-- /.content-wrapper -->
 
   <div class="modal fade" id="modal-default">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="form_title">View Dumps Details</h4>
+          <h4 class="modal-title" id="form_title">Add Zone</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
          <!-- Horizontal Form -->
-          <div class="col-md-12">
-           
-            <!-- /.card -->
-           
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">Dumps Details</h3>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <table id="facility_dump" class="table table-bordered table-striped">
-                  <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Size</th>
-                    <th>Modify Date</th>
-                    <th>Status</th> 
-                    <th>Download</th>
-                  </tr>
-                  </thead>
-                  <tbody id="table_body">
-                  </tbody>
-                </table>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-          </div>
-          <!--/.col (left) -->
        
-      
+          <!-- form start -->
+          <form class="form-horizontal">
+            <div class="card-body">
+
+              <div class="form-group row">
+                <label for="zone" class="col-sm-2 col-form-label">Zone</label>
+                <div class="col-sm-10">
+                  <input type="text" name="zone" class="form-control" placeholder="Enter zone">
+                </div>
+              </div>
+              
+          
+        </div>
+        <!-- /.card -->
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <input type="submit" value="Save Changes" class="btn btn-primary" id="create_zone_btn" onclick="addZone()">
+          <button type="button" class="btn btn-primary" id="modify_zone_btn" hidden>Save Changes</button>
+        </div>
+      </form>
       </div>
       <!-- /.modal-content -->
     </div>
@@ -178,33 +180,30 @@ $(function () {
     $('input[name="password"]').prop("value", password)
 
     if(is_add) {
-      $("#modify_facility_btn").prop("hidden", true)
-      $("#create_facility_btn").prop("hidden", false)
-      $("#form_title").text("Add Facility")
+      $("#modify_zone_btn").prop("hidden", true)
+      $("#create_zone_btn").prop("hidden", false)
+      $("#form_title").text("Add Zone")
     }
     else {
-      $("#create_facility_btn").prop("hidden", true)
-      $("#modify_facility_btn").prop("hidden", false)
-      $("#modify_facility_btn").prop("onclick", 'modifyFacility(' + id + ')')
-      $("#form_title").text("Modify Facility")
+      $("#create_zone_btn").prop("hidden", true)
+      $("#modify_zone_btn").prop("hidden", false)
+      $("#modify_zone_btn").prop("onclick", 'modifyZone(' + id + ')')
+      $("#form_title").text("Modify Zone")
     }
   }
-  function view_dumps(dump_name){
 
-  }
-  function addDatabase() {
+  function addZone() {
     event.preventDefault();
     form = $("form").serializeArray()
     data = {}
     for(const e of form) {
       data[e.name] = e.value
     }
-    console.log(data)
-    submitParameters(data,base_url+'databases/','')
+    submitParameters(data,base_url+'zones/create_zone','')
   }
   
 
-  function modifyFacility(id) {
+  function modifyZone(id) {
     // event.preventDefault();
     // form = $("form").serializeArray()
     // data = {}
@@ -215,30 +214,30 @@ $(function () {
     // $.ajax({
     //   type: "PUT",
     //   data: data,
-    //   url: base_url + "/databases/" + id,
+    //   url: base_url + "/facilities/" + id,
     //   success: function(data) {
     //     alert("success");
     //     $("#toggle").click();
-    //     refresh_facilities_list();
+    //     get_zones_list();
     //   },
     //   error: function(jqXHR, status, error) {
     //     alert(jqXHR.responseJSON.status)
     //   }
     // });
-    updateData(base_url + "databases/" + id)
+    updateData(base_url + "Zones/" + id)
   }
 
-  function deleteFacility(id) {
-    deleteData(base_url + "databases/" + id) 
+  function deleteZone(id) {
+    deleteData(base_url + "Zones/" + id) 
     // event.preventDefault();
     // if(confirm("do you really want to delete?")) {
     //   $.ajax({
     //     type: "DELETE",
-    //     url: base_url + "/databases/" + id,
+    //     url: base_url + "/facilities/" + id,
     //     success: function(data) {
     //       alert("success");
     //       $("#toggle").click();
-    //       refresh_facilities_list();
+    //       get_zones_list();
     //     },
     //     error: function(jqXHR, status, error) {
     //       alert(jqXHR.responseJSON.status)
@@ -247,42 +246,24 @@ $(function () {
     // }
   }
   
-  function refresh_facilities_list() {
-    getData(base_url+'databases/list_dumps/','display_overview_dumps')
-  }
-  function get_facility_dump(facility_name){
-    getData(base_url+'databases/list_facility_dumps/'+facility_name,'display_facility_dumps')
+  function get_zones_list() {
+    getData(base_url+'zones/list/','display_data')
   }
 
- function view_facility_dumps(facility_name){
-  $("#facility_dump").dataTable().fnDestroy();
-  $(function() {
-    $('#facility_dump').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
-
-    get_facility_dump(facility_name);
-  });
-  }
-  function display_overview_dumps(data) {
-    console.log(data.facilities)
-    data = data.facilities.map((value) =>{
+  function display_data(data) {
+    console.log(data)
+    data = data.zones.map((value) =>{
       return [
-        value['facility_name'],
-        value['total_dump_size'],
-        value['last_modified_date'],
-        value['overall_dump_status'],
-        ` <button type="button" style="width: fit-content; font-size: 15px;" 
-        data-toggle="modal" data-target="#modal-default" class="btn btn-block bg-gradient-primary btn-xs" 
-        onclick="view_facility_dumps('${value['facility_name']}')">
-        View Dumps</button>
-        `
+        value['zone'],
+     
+        `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
+            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['zone']}',
+              '${value['id']}'
+              )">Edit</button>
+          </span>
+          <span class="badge bg-danger">
+            <button type="button" class="btn btn-block bg-gradient-danger btn-xs" onclick="deleteZone('${value['id']}')">Delete</button> 
+          </span>`
         ]
     })
 
@@ -292,27 +273,6 @@ $(function () {
     datatable.draw();
   };
 
-function display_facility_dumps(data) {
-
-      data = data.facility_dumps.map((value) =>{
-        return [
-          value['dump_name'],
-          value['dump_size'],
-          value['modified_date'],
-          value['dump_status'],
-          ` <button type="button" style="width: fit-content; font-size: 15px;" 
-          data-toggle="modal" data-target="#modal-default" class="btn btn-block bg-gradient-primary btn-xs" 
-          onclick="download(${value['dump_name']})">
-          Download</button>
-          `
-          ]
-      })
-
-      var datatable = $("#facility_dump").dataTable().api();
-      datatable.clear();
-      datatable.rows.add(data);
-      datatable.draw();
-  };
 
   $(function() {
     $("#example1").DataTable({
@@ -330,9 +290,8 @@ function display_facility_dumps(data) {
       "responsive": true,
     });
 
-    refresh_facilities_list();
+    get_zones_list();
   });
- 
 </script>
 </body>
 </html>

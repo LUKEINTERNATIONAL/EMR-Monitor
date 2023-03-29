@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EMR-Monitor</title>
+    <title>EMR-Monitor</title>
+  <link rel="shortcut icon" href="/dist/img/emr_monitor.png" type="image/x-icon">
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -13,8 +14,12 @@
   <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <script> var active_menu = "general"; var active_link = "manage_facilities"; </script>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -60,10 +65,11 @@
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
+                    <th>Zone</th>
+                    <th>District</th>
                     <th>Facility Name</th>
                     <th>Server Username</th>
                     <th>IP address</th>
-                    <th>Server Password</th>
                     <th>VPN Status</th>
                     <th>Action</th>
                   </tr>
@@ -74,10 +80,11 @@
                   </tbody>
                   <tfoot>
                   <tr>
+                    <th>Zone</th>
+                    <th>District</th>
                     <th>Facility Name</th>
                     <th>Server Username</th>
                     <th>IP address</th>
-                    <th>Server Password</th>
                     <th>VPN Status</th>
                     <th>Action</th>
                   </tr>
@@ -131,6 +138,13 @@
                   <input type="text" name="password" class="form-control" placeholder="Server Password">
                 </div>
               </div>
+              <div class="form-group row">
+                <label for="district" class="col-sm-2 col-form-label">District</label>
+                <div class="col-sm-10">
+                  <select class="form-control select2" name="district_id" style="width: 100%;" id="district">
+                  </select>
+                </div>
+              </div>
           
         </div>
         <!-- /.card -->
@@ -162,6 +176,8 @@
 <script src="../plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 -->
+<script src="../plugins/select2/js/select2.full.min.js"></script>
 <!-- bs-custom-file-input -->
 <script src="../plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
@@ -186,11 +202,36 @@
 <script src="../dist/js/backend.js"></script>
 <script>
 $(function () {
+   //Initialize Select2 Elements
+   $('.select2').select2()
+
+   //Initialize Select2 Elements
+   $('.select2bs4').select2({
+     theme: 'bootstrap4'
+   })
   bsCustomFileInput.init();
 });
 </script>
 <!-- Page specific script -->
 <script>
+  getData(base_url+'districts/list/','display_districts')
+
+  function display_districts(data) {
+    console.log('district')
+    for(district of data.districts){
+      console.log(district.district)
+    }
+
+    data = data.districts.map((value) =>{
+      return [
+        `<option value='${value['id']}'>${value['district']}</option>`,
+        ]
+    })
+    console.log(data)
+    data.unshift('<option></option>')
+    $("#district").html(data)
+    
+  };
   function setForm(ip, username, password, is_add, id) {
     $('input[name="ip_address"]').prop("value", ip)
     $('input[name="user_name"]').prop("value", username)
@@ -271,10 +312,11 @@ $(function () {
     console.log(data)
     data = data.facilities.map((value) =>{
       return [
+        value['zone'],
+        value['district'],
         value['facility_name'],
         value['user_name'],
         value['ip_address'],
-        value['password'],
         value['vpn_status']=='active' ? `<span class=" bg-gradient-success btn-xs">${value['vpn_status']}</span>` :  
         `<span class=" bg-gradient-danger btn-xs">${value['vpn_status']}</span>`,
         `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">

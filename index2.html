@@ -10,10 +10,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-  <!-- DataTables -->
-  <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-  <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Tempusdominus Bootstrap 4 -->
@@ -30,7 +26,7 @@
   <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
-  <script> var active_menu = "dashboard"; var active_link = "dashboard_v1"; </script>
+  <script> var active_menu = "dashboard"; var active_link = "dashboard_v2"; </script>
   <style>
     .checkbox-green::before {
       background: #20c997;
@@ -50,6 +46,7 @@
     }
   </style>
 </head>
+
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
 
@@ -68,7 +65,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Dashboard v1</li>
+              <li class="breadcrumb-item active">Dashboard v2</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -81,27 +78,41 @@
       <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
         <div class="row">
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-info">
-              <div class="inner">
-                <h3 id="user_count">...</h3>
-                <p>Total Users</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>
-              <a href="/pages/manage_users.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
+         <!-- ./col -->
           <div class="col-lg-3 col-6">
             <!-- small box -->
             <div class="small-box bg-success">
               <div class="inner">
                 <h3 id="facilities_count">...</h3>
-
                 <p>Total Facilities</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+              <a href="/pages/manage_facilities.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3 id="orders_with_results">...</h3>
+                <p>Total Manual Results</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+              <a href="/pages/manage_users.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+         
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3 id="orders_without_results">...</h3>
+                <p>Total Electronic Results</p>
               </div>
               <div class="icon">
                 <i class="ion ion-stats-bars"></i>
@@ -112,26 +123,11 @@
           <!-- ./col -->
           <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3 id="inactive_vpn_count">...</h3>
-
-                <p>Total Inactive VPN</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a href="#" onclick="view_inactive_facilities()" data-toggle="modal" data-target="#modal-default" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
             <div class="small-box bg-warning">
               <div class="inner">
-                <h3 id="encounters_count">...</h3>
+                <h3 id="total_orders">...</h3>
 
-                <p id="bargraph_card">Total Encounters</p>
+                <p id="bargraph_card">Total Available Results</p>
               </div>
               <div class="icon">
                 <i class="ion  ion-stats-bars"></i>
@@ -144,11 +140,12 @@
         <!-- Main row -->
         <div class="row">
           <!-- Left col -->
-          <section class="col-lg-9 connectedSortable">
+          <section class="col-lg-12 connectedSortable">
              <!-- BAR CHART -->
              <div class="card">
               <div class="card-header">
-                <h3 class="card-title" id="bargraph_title">Encounters</h3>
+                <h3 class="card-title" id="bargraph_title">Viral Load <span id="_date"> </span></h3>
+                <a href="#" data-toggle="modal" data-target="#modal-default" id="toggle"> <i class="fas fa-calendar-alt"></i></a>
 
                 <div class="card-tools">
                   <ul class="pagination pagination-sm" id="pages_btn_set">
@@ -169,36 +166,6 @@
 
           </section>
           <!-- /.Left col -->
-          <!-- right col (We are only adding the ID to make the widgets sortable)-->
-          <section class="col-lg-3 connectedSortable">
-
-             <!-- TO DO List -->
-             <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">
-                  <i class="ion ion-clipboard mr-1"></i>
-                  VPN Status
-                </h3>
-
-                <div class="card-tools">
-                  <ul class="pagination pagination-sm" id="vpn_pages_btn_set">
-                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage-1)">&laquo;</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(1)">1</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage+1)">&raquo;</a></li>
-                  </ul>
-                </div>
-              </div>
-              <!-- /.card-header -->
-              <div class="outer_vpn" id="outer_vpn" style="height: 63vh;">
-                <ul class="todo-list inner_vpn" data-widget="todo-list" id="vpn_list" style="overflow:unset; min-height: 63.5vh; height: 63.5vh; max-height: 63.5vh; max-width: 100%;">
-                  
-                </ul>
-              </div>
-            
-            <!-- /.card -->
-
-          </section>
-          <!-- right col -->
         </div>
         <!-- /.row (main row) -->
       </div><!-- /.container-fluid -->
@@ -206,51 +173,48 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
-
-<div class="modal fade" id="modal-default">
-    <div class="modal-dialog modal-xl">
+  <app-footer></app-footer>
+   <div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="form_title">Facilities With Inactive VPN</h4>
+          <h4 class="modal-title" id="form_title">Add Facility</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
          <!-- Horizontal Form -->
-          <div class="col-md-12">
-           
-            <!-- /.card -->
-           
-            <div class="card">
-              <!-- /.card-header -->
-              <div class="card-body">
-                <table id="inactive_facilities" class="table table-bordered table-striped">
-                  <thead>
-                  <tr>
-                    <th>Facility Name</th>
-                  </tr>
-                  </thead>
-                  <tbody id="table_body">
-                  </tbody>
-                </table>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-          </div>
-          <!--/.col (left) -->
        
-      
+          <!-- form start -->
+          <form class="form-horizontal">
+            <div class="card-body">
+                <!-- /.form group -->
+                <!-- Date range -->
+                <div class="form-group">
+                  <label>Date range:</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                      </span>
+                    </div>
+                    <input type="text" class="form-control  float-right" name="daterange" id="date_range" >
+                  </div>
+                  <!-- /.input group -->
+                </div>
+                <!-- /.form group -->
+              </div>
+        <!-- /.card -->
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </form>
       </div>
       <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
   </div>
   <!-- /.modal -->
-
-
-  <app-footer></app-footer>
-
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
     <!-- Control sidebar content goes here -->
@@ -288,19 +252,6 @@
 <script src="plugins/summernote/summernote-bs4.min.js"></script>
 <!-- overlayScrollbars -->
 <script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-<!-- DataTables  & Plugins -->
-<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-<script src="../plugins/jszip/jszip.min.js"></script>
-<script src="../plugins/pdfmake/pdfmake.min.js"></script>
-<script src="../plugins/pdfmake/vfs_fonts.js"></script>
-<script src="../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-<script src="../plugins/datatables-buttons/js/buttons.print.min.js"></script>
-<script src="../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.js"></script>
 <!-- AdminLTE for demo purposes -->
@@ -325,14 +276,6 @@
     currentPage: 1
   };
 
-  // function process_vpn_data(data){
-    // vpn_setting.pageNum = Math.ceil(data.vpn.length / paginationLimit);
-    // if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
-    // vpn_setting.data = data.vpn;
-    // var vpn = data.vpn.filter((el) => el.vpn_status == "inactive")
-    // $("#inactive_vpn_count").text(vpn.length)
-    // setpage_vpn(vpn_setting.currentPage);
-  // }
 
   function random_rgba(program_name) {
     var o = Math.round, r = Math.random, s = 255;
@@ -343,69 +286,50 @@
       B = o(r()*s)
     }
     var opacity = r().toFixed(1)
-    if(program_name == "HIV PROGRAM")
-      return "rgba( 47, 79, 79, 0.7)"
-    if(program_name == "OPD Program")
-      return "rgba(72, 61, 139, 0.7)"
-    if(program_name == "ANC PROGRAM")
-      return "rgba(255, 20, 147, 0.7)"
-    if(program_name == "CxCa program")
-      return "rgba(0, 191, 255, 0.7)"
+    if(program_name == "Electronic Results")
+      return "rgba(56, 175, 210, 0.7)"
+    if(program_name == "Manualy Results")
+      return "rgba(154, 157, 162, 0.8)"
     else
     if (opacity < 0.5) opacity += 0.5
     return 'rgba(' + R + ',' + G + ',' + B + ',' + opacity + ')';
   }
 
-  function bargraph_switcher(){
-    if(sessionStorage.getItem('bargraph_status') !== null)
-      if(sessionStorage.getItem('bargraph_status') == 'false')
-      status = 'true'
-      else
-      status = 'false'
-    else
-      status = 'true'
 
-    sessionStorage.setItem('bargraph_status',status);
-  }
-  function process_encounter_data(data){
-    bargraph_switcher()
+  function process_viral_load_data(data){
     datasets = []
-    // $("#encounters_count").text(data.facilities.length === undefined? 0: data.facilities.length)
-    if(sessionStorage.getItem('bargraph_status') == 'false'){
-      var total_encounters = 0;
-      data.facilities.forEach(x => {n = parseInt(x.total_encounters); total_encounters += isNaN(n) ? 0 : n;})
-      $("#encounters_count").text(total_encounters);
-      $("#bargraph_title").text("Encounters")
-      $("#bargraph_card").text("Total Encounters")
-    }else{
-      var total_patients = 0;
-      data.facilities.forEach(x => {n = parseInt(x.total_patients); total_patients += isNaN(n) ? 0 : n;})
-      $("#encounters_count").text(total_patients);
-      $("#bargraph_title").text("Patients")
-      $("#bargraph_card").text("Total Patients")
-    }
+    var total_viral_load = 0;
+    data.viral_load.forEach(x => {n = parseInt(x.total_viral_load); total_viral_load += isNaN(n) ? 0 : n;})
+    var orders_with_results = data.viral_load.filter((el) => el.acknowledgement_type == 'test_results_delivered_to_site_electronically')
+    var orders_without_results = data.viral_load.filter((el) => el.acknowledgement_type != 'test_results_delivered_to_site_electronically')
+    $("#viral_load_count").text(total_viral_load);
+    $("#total_orders").text(data['viral_load'].length)
+    $("#orders_without_results").text(orders_without_results.length)
+    $("#orders_with_results").text(orders_with_results.length)
 
-    const unique_programs = [...new Set(data.facilities.map(item => item.program_name))];
-    const unique_labels = [...new Set(data.facilities.map(item => item.facility_name))];
+    const order_status = ["Electronic Results","Manualy Results"];
+    const unique_labels = [...new Set(data.viral_load.map(item => item.facility_name))];
 
-    encounter_data = []
-    for(const [i, program] of unique_programs.entries()){
-      encounter_data.push([])
+    viral_load_data = []
+    
+    for(const [i, results_status] of order_status.entries()){
+      viral_load_data.push([])
       for(facility_name in unique_labels){
-          var encounter_value = data.facilities.filter((el) => el.program_name == program && el.facility_name == unique_labels[facility_name] )
-          if(encounter_value.length > 0)
-            if(sessionStorage.getItem('bargraph_status') == 'false')
-              encounter_data[i].push(parseInt(encounter_value[0].total_encounters))
-            else
-              encounter_data[i].push(parseInt(encounter_value[0].total_patients))
-          else
-          encounter_data[i].push(0)
+        if(i==0){
+          var encounter_value = data.viral_load.filter((el) => el.results == "" && el.facility_name == unique_labels[facility_name] && el.acknowledgement_type == 'test_results_delivered_to_site_electronically' )
+          viral_load_data[i].push(parseInt(encounter_value.length))
+        }
+        if(i==1){
+          var encounter_value = data.viral_load.filter((el) => el.results == "" && el.facility_name == unique_labels[facility_name] && el.acknowledgement_type != 'test_results_delivered_to_site_electronically' )
+          viral_load_data[i].push(parseInt(encounter_value.length))
+        }
+         
       }
       
       graphic= {
-          label               : program,
-          backgroundColor     : random_rgba(program),
-          borderColor         : random_rgba(program),
+          label               : results_status,
+          backgroundColor     : random_rgba(results_status),
+          borderColor         : random_rgba(results_status),
           pointRadius          : false,
           pointColor          : '#3b8bba',
           pointStrokeColor    : 'rgba(60,141,188,1)',
@@ -417,7 +341,7 @@
     }
     
     chart_setting.cur_datawrapper = datasets;
-    chart_setting.cur_dataset = encounter_data;
+    chart_setting.cur_dataset = viral_load_data;
     chart_setting.cur_label = unique_labels;
     chart_setting.pageNum = Math.ceil(unique_labels.length / paginationLimit);
     if(chart_setting.currentPage > chart_setting.pageNum) chart_setting.currentPage = 1;
@@ -449,59 +373,8 @@
   function min(a, b) {
     return a>b ? b : a;
   }
-  var vpn_data = [];
-  function process_vpn_data(data) {
-    var li = ""
-    data = data.vpn
-    vpn_data = data.filter((el) => el.vpn_status == "inactive")
-    $("#inactive_vpn_count").text(vpn_data.length)
-    for(item in data ){
-      console.log(data[item].vpn_status)
-      // console.log(data.vpn[item].facility_name)
-      if(data[item].vpn_status == 'active')
-          color = "checkbox-green"
-      else
-        color = "checkbox-red"
 
-      li += `<li>
-              <span class="handle">
-                <i class="fas fa-ellipsis-v"></i>
-                <i class="fas fa-ellipsis-v"></i>
-              </span>
-              <div  class="icheck-primary d-inline ml-2">
-                <input type="text" value="" name="todo2" id="todoCheck2" checked>
-                <label class="${color}"  for="todoCheck2"></label>
-              </div>
-              <span class="text">${data[item].facility_name}</span>
-            </li>`
-    }
-    $("#vpn_list").html(li)
-    
-  }
 
-  function view_inactive_facilities(){
-    $("#inactive_facilities").dataTable().fnDestroy();
-    $(function() {
-      $('#inactive_facilities').DataTable({
-        "paging": true,
-        "lengthChange": false,
-        "searching": false,
-        "ordering": true,
-        "info": true,
-        "autoWidth": false,
-        "responsive": true,
-      });
-
-      data = vpn_data.map((value) =>{
-          return [value['facility_name']]
-        })
-
-        var datatable = $("#inactive_facilities").dataTable().api();
-        datatable.clear();
-        datatable.rows.add(data);
-        datatable.draw();
-    });
-  }
   function graphs() {
     /* ChartJS
      * -------
@@ -574,7 +447,7 @@
             },
             title: {
                 display: false,
-                text: 'Daily EMR Encounters',
+                text: 'Daily EMR Viral Load',
             },
             scales: {
               xAxes: [{
@@ -592,21 +465,37 @@
 
     }
   }
-  function total_users_data(data){
-    $("#user_count").text(data['users'].length)
-    }
   function total_facilities_data(data){$("#facilities_count").text(data.facilities.length)}
+
+  var todayDate = new Date().toISOString().slice(0, 10);
+
+  startDate = todayDate
+  endDate =todayDate
+  var data ={}
  
   function refresh() {
-    getData(base_url+'encounters/list/','process_encounter_data')
-    getData(base_url+'vpn/list/','process_vpn_data')
-    getData(base_url+'users/','total_users_data')
+    if(startDate == endDate)
+      $("#_date").text("("+startDate+")")
+    else
+      $("#_date").text("(From "+startDate+" to "+endDate+")")
+    console.log(todayDate)
+    getData(base_url+`reports/viral_load_report?start_date='${startDate}'&end_date='${endDate}'`,'process_viral_load_data')
     getData(base_url+'facilities/list/','total_facilities_data')
-    
-    $('.inner_vpn').html("")
   }
-  
+ 
   $(function () {
+    data = $('#date_range').daterangepicker(
+        {opens: 'right'}, 
+        function(start, end, label) {
+          // getData(base_url+`reports/viral_load_report?start_date='${start.format('YYYY-MM-DD')}'&end_date='${end.format('YYYY-MM-DD')}'`,'display_data')
+          startDate = start.format('YYYY-MM-DD')
+          endDate = end.format('YYYY-MM-DD')
+          refresh()
+        }
+    )
+  })
+  $(function () {
+    console.log("outside")
     $('body').attr("class","layout-fixed control-sidebar-slide-open sidebar-collapse")
     refresh();
     function autoScrollDown(){
@@ -627,8 +516,7 @@
     }, 60000);
 
     setInterval(function() {
-      window.location.href = "/index2.html"
-      refresh();
+      window.location.href = "/index.html"
     }, 200000);
   });
 </script>

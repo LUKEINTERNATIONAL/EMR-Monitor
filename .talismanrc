@@ -1,0 +1,12 @@
+fileignoreconfig:
+- filename: dist/js/backend.js
+  checksum: 493631f8e2f5770801f71e116686738887a3ed8c8af8bd153dc31759f710fab1
+- filename: pages/manage_districts.html
+  checksum: 5db6143ebf67e18ab255c5b876d74c8ab3cd7464a7e89f965f2162e6e3328300
+- filename: pages/manage_zones.html
+  checksum: 9f8f170d00cb27ad857b579a128c4a03315e82d82d8763d63c1a61f984969070
+- filename: pages/map.html
+  checksum: 956f842f67dfb821e1458390ab2e4dd63e1fc3f918d0b7f02ded53f1332ddcc1
+- filename: pages/map2.html
+  checksum: c2cfa25ad85e3126b6ff564268741c8acc6023361a7b41cfb85ab36fdea259e9
+version: "1.0"

@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EMR-Monitor</title>
+    <title>EMR-Monitor</title>
+  <link rel="shortcut icon" href="/dist/img/emr_monitor.png" type="image/x-icon">
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -17,6 +18,7 @@
   <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <script> var active_menu = "reports"; var active_link = "viral_load_report"; </script>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -54,7 +56,7 @@
                         <i class="far fa-calendar-alt"></i>
                       </span>
                     </div>
-                    <input type="text" class="form-control float-right" id="date_range" onchange="updateReport()">
+                    <input type="text" class="form-control  float-right" name="daterange" id="date_range" >
                   </div>
                   <!-- /.input group -->
                 </div>
@@ -70,7 +72,7 @@
            
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Encounter Report Details</h3>
+                <h3 class="card-title">Viral Load Report Details</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -78,10 +80,13 @@
                   <thead>
                   <tr>
                     <th>Facility</th>
-                    <th>Program</th>
-                    <th>Encounters</th>
-                    <th>Patients</th>
-                    <th>Date</th>
+                    <th>Patient ID</th>
+                    <th>Accession Number</th>
+                    <th>Results</th>
+                    <th>Acknowledgement Type</th>
+                    <th>Acknowledgement Date</th>
+                    <th>Ordered Date</th>
+                    <th>Released Date</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -151,10 +156,7 @@
       console.log('data')
 });
   
-  function process_encounter_data(data){
-    console.log(data)
 
-  }
 $(function () {
   bsCustomFileInput.init();
 });
@@ -163,13 +165,16 @@ $(function () {
 <script>
    function display_data(data) {
     console.log(data)
-    data = data.facilities.map((value) =>{
+    data = data.viral_load.map((value) =>{
       return [
         value['facility_name'],
-        value['program_name'],
-        value['total_encounters'],
-        value['total_patients'],
-        value['encounter_date']
+        value['person_id'],
+        value['accession_number'],
+        value['results'],
+        value['acknowledgement_type'],
+        value['acknowledgement_date'],
+        value['ordered_date'],
+        value['released_date']
     ]
     })
 
@@ -200,19 +205,15 @@ $(function () {
 <script>
   var data ={}
   $(function () {
-    data = $('#date_range').daterangepicker()
-    //Date range picker
-  
+    data = $('#date_range').daterangepicker(
+        {opens: 'right'}, 
+        function(start, end, label) {
+            getData(base_url+`reports/viral_load_report?start_date='${start.format('YYYY-MM-DD')}'&end_date='${end.format('YYYY-MM-DD')}'`,'display_data')
+        }
+    )
   })
-
-  function updateReport(){
-    var startDate =new Date($('#date_range').val().split(" - ")[0]).toISOString().slice(0, 10)
-    var endDate =new Date($('#date_range').val().split(" - ")[1]).toISOString().slice(0, 10)
-    getData(base_url+`reports/encounter_report?start_date='${startDate}'&end_date='${endDate}'`,'display_data')
-    
-  }
-  
-
+  var todayDate = new Date().toISOString().slice(0, 10);
+  getData(base_url+`reports/viral_load_report?start_date='${todayDate}'&end_date='${todayDate}'`,'display_data')
  
 </script>
 </body>

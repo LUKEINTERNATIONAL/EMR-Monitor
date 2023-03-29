@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
-  <script> var active_menu = "reports"; var active_link = "vpn_report"; </script>
+  <script> var active_menu = "reports"; var active_link = "usability_report"; </script>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -56,7 +56,7 @@
                         <i class="far fa-calendar-alt"></i>
                       </span>
                     </div>
-                    <input type="text" class="form-control float-right" id="date_range">
+                    <input type="text" class="form-control float-right" id="date_range" >
                   </div>
                   <!-- /.input group -->
                 </div>
@@ -72,7 +72,7 @@
            
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">VPN Report Details</h3>
+                <h3 class="card-title">Usability Report Details</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -80,10 +80,10 @@
                   <thead>
                   <tr>
                     <th>Facility</th>
-                    <th>IP Address</th>
-                    <th class="table_row">VPN Status</th>
-                    <th>VPN Downtime</th>
-                    <th class="table_row">Date</th>
+                    <th>Program</th>
+                    <th>Encounters</th>
+                    <th>Patients</th>
+                    <th>Date</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -163,7 +163,23 @@ $(function () {
 </script>
 <!-- Page specific script -->
 <script>
-   
+   function display_data(data) {
+    console.log(data)
+    data = data.facilities.map((value) =>{
+      return [
+        value['facility_name'],
+        value['program_name'],
+        value['total_encounters'],
+        value['total_patients'],
+        value['encounter_date']
+    ]
+    })
+
+    var datatable = $("#example1").dataTable().api();
+    datatable.clear();
+    datatable.rows.add(data);
+    datatable.draw();
+  };
 
   $(function () {
     $("#example1").DataTable({
@@ -185,45 +201,16 @@ $(function () {
 <!-- date -->
 <script>
   var data ={}
-  var start_date="";
-  var end_date="";
   $(function () {
     data = $('#date_range').daterangepicker(
       {opens: 'right'},
         function(start, end, label) {
-          start_date = start.format('YYYY-MM-DD')
-          end_date = end.format('YYYY-MM-DD')
-          getData(base_url+`reports/vpn_report?start_date='${start_date}'&end_date='${end_date}'`,'display_data')
+            getData(base_url+`reports/usability_report?start_date='${start.format('YYYY-MM-DD')}'&end_date='${end.format('YYYY-MM-DD')}'`,'display_data')
         }
     )
   })
   var todayDate = new Date().toISOString().slice(0, 10);
-  getData(base_url+`reports/vpn_report?start_date='${todayDate}'&end_date='${todayDate}'`,'display_data')
-
-  function display_data(data) {
-    data = data.facilities.map((value) =>{
-      if(value['date']){
-        vpn_status= value['vpn_status']
-        date = value['date']
-      }else{
-        vpn_status = 'N/A'
-        date = "From "+start_date+" to "+end_date
-      }
-      return [
-          value['facility_name'],
-          value['ip_address'],
-          vpn_status=='active' ? `<span class=" bg-gradient-success btn-xs">${vpn_status}</span>` :  
-          `<span class=" bg-gradient-danger btn-xs">${vpn_status}</span>`,
-          value['total_time'],
-          date
-      ]
-    })
-
-    var datatable = $("#example1").dataTable().api();
-    datatable.clear();
-    datatable.rows.add(data);
-    datatable.draw();
-  };
+  getData(base_url+`reports/usability_report?start_date='${todayDate}'&end_date='${todayDate}'`,'display_data')
 </script>
 </body>
 </html>

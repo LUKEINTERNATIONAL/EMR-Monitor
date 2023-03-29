@@ -3,7 +3,7 @@ class Bars extends HTMLElement{
         this.innerHTML = `
         <!-- Preloader -->
         <div class="preloader flex-column justify-content-center align-items-center">
-          <img class="animation__shake" src="/dist/img/AdminLTELogo.png" alt="EMR MONITOR" height="60" width="60">
+          <img class="animation__shake" src="/dist/img/emr_monitor.png" alt="EMR MONITOR" height="60" width="60">
         </div>
       
         <!-- Navbar -->
@@ -17,15 +17,22 @@ class Bars extends HTMLElement{
               <a href="/index.html" class="nav-link">Home</a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-              <a href="#" class="nav-link">Contact</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
               <a href="#" onclick="logout()" class="nav-link">Logout</a>
             </li>
           </ul>
       
           <!-- Right navbar links -->
           <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#" role="button">
+                <i class="fas fa-broadcast-tower" id="vpn_status"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" role="button">
+                <i class="fas fa-cloud" id="internet_status"></i>
+              </a>
+            </li>
             <!-- Navbar Search -->
             <li class="nav-item">
               <a class="nav-link" data-widget="navbar-search" href="#" role="button">
@@ -47,34 +54,7 @@ class Bars extends HTMLElement{
                 </form>
               </div>
             </li>
-      
-            <!-- Notifications Dropdown Menu -->
-            <li class="nav-item dropdown">
-              <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge">15</span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <span class="dropdown-item dropdown-header">15 Notifications</span>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="fas fa-envelope mr-2"></i> 4 new messages
-                  <span class="float-right text-muted text-sm">3 mins</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="fas fa-users mr-2"></i> 8 friend requests
-                  <span class="float-right text-muted text-sm">12 hours</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="fas fa-file mr-2"></i> 3 new reports
-                  <span class="float-right text-muted text-sm">2 days</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-              </div>
-            </li>
+
             <li class="nav-item">
               <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                 <i class="fas fa-expand-arrows-alt"></i>
@@ -93,7 +73,7 @@ class Bars extends HTMLElement{
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
           <!-- Brand Logo -->
           <a href="/index.html" class="brand-link">
-            <img src="/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+            <img src="/dist/img/emr_monitor.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
             <span class="brand-text font-weight-light">EMR MONITOR</span>
           </a>
       
@@ -102,10 +82,10 @@ class Bars extends HTMLElement{
             <!-- Sidebar user panel (optional) -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
               <div class="image">
-                <img src="/dist/img/avatar5.png" class="img-circle elevation-2" alt="User Image">
+                <img src="/dist/img/avatar.svg" class="img-circle elevation-2" alt="User Image">
               </div>
               <div class="info">
-                <a href="#" class="d-block">Petros Kayange</a>
+                <a href="#" class="d-block">${sessionStorage.getItem('name')}</a>
               </div>
             </div>
       
@@ -126,16 +106,31 @@ class Bars extends HTMLElement{
               <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
-                <li class="nav-item menu-open">
-                  <a href="/index.html" class="nav-link">
+                <li class="nav-item" id="dashboard">
+                  <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-tachometer-alt"></i>
                     <p>
                       Dashboard
+                      <i class="fas fa-angle-left right"></i>
                     </p>
                   </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="/index.html" class="nav-link" id="dashboard_v1">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Dashboard v1</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="/index2.html" class="nav-link" id="dashboard_v2">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Dashboard v2</p>
+                      </a>
+                    </li>
+                  </ul>
                 </li>
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
+                <li class="nav-item" id="general">
+                  <a href="#" class="nav-link" id="dashboard_v1">
                     <i class="nav-icon fas fa-edit"></i>
                     <p>
                       General
@@ -144,28 +139,69 @@ class Bars extends HTMLElement{
                   </a>
                   <ul class="nav nav-treeview">
                     <li class="nav-item">
-                      <a href="/pages/manage_facilities.html" class="nav-link">
+                      <a href="/pages/manage_facilities.html" class="nav-link" id="manage_facilities">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Manage Facilities</p>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="/pages/manage_users.html" class="nav-link">
+                      <a href="/pages/manage_districts.html" class="nav-link" id="manage_districts">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Manage Districts</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="/pages/manage_users.html" class="nav-link" id="manage_users">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Manage Users</p>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="/pages/manage_databases.html" class="nav-link">
+                      <a href="/pages/manage_zones.html" class="nav-link" id="manage_zones">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Manage Databases</p>
+                        <p>Manage Zones</p>
+                      </a>
+                    </li>
+                   
+                  </ul>
+                </li>
+                <li class="nav-item" id="databases">
+                  <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-database"></i>
+                    <p>
+                      Databases
+                      <i class="fas fa-angle-left right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="/pages/manage_databases.html" class="nav-link" id="view_databases">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>View databases</p>
                       </a>
                     </li>
                   </ul>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" id="maps">
                   <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-edit"></i>
+                    <i class="nav-icon fas fa-map-marked-alt"></i>
+                    <p>
+                      Maps
+                      <i class="fas fa-angle-left right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="/pages/map.html" class="nav-link" id="view_map">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>View Map</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item" id="reports">
+                  <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-file-alt"></i>
                     <p>
                       Reports
                       <i class="fas fa-angle-left right"></i>
@@ -173,15 +209,44 @@ class Bars extends HTMLElement{
                   </a>
                   <ul class="nav nav-treeview">
                     <li class="nav-item">
-                      <a href="/pages/encounter_report.html" class="nav-link">
+                      <a href="/pages/usability_report.html" class="nav-link" id="usability_report">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Encounters Report</p>
+                        <p>Usability Report</p>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="/pages/vpn_report.html" class="nav-link">
+                      <a href="/pages/vpn_report.html" class="nav-link" id="vpn_report">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>VPN report</p>
+                        <p>VPN Report</p>
+                      </a>
+                    </li>   
+                    <li class="nav-item">
+                      <a href="/pages/viral_load.html" class="nav-link" id="viral_load_report">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Viral Load Report</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>                
+                <li class="nav-item" id="settings">
+                  <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-cog"></i>
+                    <p>
+                      Settings
+                      <i class="fas fa-angle-left right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Profile</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Change Password</p>
                       </a>
                     </li>
                   </ul>
@@ -201,10 +266,10 @@ class Footer extends HTMLElement{
     connectedCallback(){
         this.innerHTML = `
         <footer class="main-footer">
-            <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">EMR MONITOR</a>.</strong>
+            <strong>Copyright &copy; ${new Date().toISOString().slice(0, 4)} <a href="">EMR MONITOR</a>.</strong>
             All rights reserved.
             <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 3.2.0
+            <b>Version</b> 1.0.0
             </div>
         </footer>
         `
@@ -213,8 +278,16 @@ class Footer extends HTMLElement{
 customElements.define('app-footer',Footer)
 customElements.define('app-bars',Bars)
 
-var base_url = "http://localhost:8000/"
+var base_url = "http://0.0.0.0:8000/"
+if(!sessionStorage.getItem('is_superuser')){
+  document.getElementById('general').setAttribute("style","display:none")
+}
+document.getElementById(active_menu).setAttribute("class","nav-item menu-open")
+document.getElementById(active_link).setAttribute("class","nav-link active")
 function logout(){
   sessionStorage.setItem("Authorization","")
+  sessionStorage.setItem("name","")
+  sessionStorage.setItem("username","")
+  sessionStorage.setItem("is_superuser","")
   window.location = "/pages/login.html"
 }

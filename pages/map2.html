@@ -1,0 +1,267 @@
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/aparshin/leaflet-boundary-canvas/f00b4d35/src/BoundaryCanvas.js"></script>
+
+  <!-- CSS and JS files for Search Box -->
+    <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
+
+    <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+
+    
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EMR-Monitor</title>
+  <link rel="shortcut icon" href="/dist/img/emr_monitor.png" type="image/x-icon">
+
+      <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../plugins/fontawesome-free/css/all.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!-- daterange picker -->
+  <link rel="stylesheet" href="../plugins/daterangepicker/daterangepicker.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+    <style>
+        #map { height: 100%; }
+    </style>
+</head>
+
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+  <!-- bars plus loader -->
+  <app-bars></app-bars>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+   <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Map</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- left column -->
+          <div class="col-md-12">
+           
+           
+            <!-- /.card -->
+           
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Facility Details</h3>
+              </div>
+              <div class="card-body">
+                <!-- /.form group -->
+                <!-- Date range -->
+                <div class="form-group">
+                  <label>Date range:</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                      </span>
+                    </div>
+                    <input type="text" class="form-control float-right" id="date_range">
+                  </div>
+                  <!-- /.input group -->
+                </div>
+                <!-- /.form group -->
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body" style="height: 90vh;">
+                <div id="map" ></div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!--/.col (left) -->
+        
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <app-footer></app-footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+<script src="../components/bars.js"></script>
+<script src="../dist/js/backend.js"></script>
+
+<!-- jQuery -->
+<script src="../plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 -->
+<script src="../plugins/select2/js/select2.full.min.js"></script>
+<!-- bs-custom-file-input -->
+<script src="../plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+
+<!-- DataTables  & Plugins -->
+<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="../plugins/jszip/jszip.min.js"></script>
+<script src="../plugins/pdfmake/pdfmake.min.js"></script>
+<script src="../plugins/pdfmake/vfs_fonts.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<!-- date-range-picker -->
+<script src="../plugins/daterangepicker/daterangepicker.js"></script>
+<!-- AdminLTE App -->
+<script src="../dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="../dist/js/demo.js"></script>
+
+<script>
+    var map = L.map("map");
+    $.getJSON('/dist/malawi-detailed-boundary_966.json').then(function(geoJSON) {
+    var osm = new L.TileLayer.BoundaryCanvas("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        boundary: geoJSON,
+        attribution: 'Map of Malawi'
+    });
+    map.addLayer(osm);
+    var MalawiLayer = L.geoJSON(geoJSON);
+    map.fitBounds(MalawiLayer.getBounds());
+    });
+
+     // Control 3: This add a Search bar
+    var searchControl = new L.esri.Controls.Geosearch().addTo(map);
+
+    /*var results = new L.LayerGroup().addTo(map);
+
+        searchControl.on('results', function(data){
+        results.clearLayers();
+        for (var i = data.results.length - 1; i >= 0; i--) {
+            results.addLayer(L.marker(data.results[i].latlng));
+        }
+        }); */
+
+    function addMarker(data){
+        var color = ""
+        data['vpn_status']=='active' ? color ='green' : color ='red'
+        var marker = L.marker([data['latitude'], data['longitude']]).addTo(map);
+        marker.bindPopup(`<b>${data['facility_name']} (${data['encounter_date']})</b><br>
+        VPN Status: <b style='color:${color}'> ${data['vpn_status']}</b><br>
+        Total Patient: <b>${data['total_patients']}</b> <br> 
+        Total Enconters: <b>${data['total_encounters']}</b><br>
+        Total Viral load Results: <b>${data['vpn_status']}</b>`);
+    }
+
+    // locationName = 'Karonga District Hospital';
+    
+var todayDate = new Date().toISOString().slice(0, 10);
+  getData(base_url+`reports/facilities_with_coordinates?start_date='${todayDate}'&end_date='${todayDate}'`,'display_makers')
+function display_makers(data) {
+    for(facility in data.facilities){
+        addMarker(data.facilities[facility])
+    }
+}
+    
+
+
+  
+  
+
+  
+
+  function get_coordinates(obj){
+ //var locationName = 'Nkhata Bay District Hospital'
+    if(obj.length > 0 && obj[0]['latitude'] == ""){
+        const url = `https://nominatim.openstreetmap.org/search?q=${obj[0]['facility_name']}&format=json`;
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length > 0) {  
+            const lat = data[0].lat;
+            const lon = data[0].lon;
+            console.log(`The coordinates of ${obj[0]['facility_name']} are (${lat}, ${lon}).`);
+          
+            parameters = {
+              'user_name':obj[0]['user_name'],
+              'password':obj[0]['password'],
+              'district_id':obj[0]['district_id'],
+              'latitude' : lat,
+              'longitude' : lon
+            }
+            console.log(obj[0])
+            console.log(parameters)
+            updateData(parameters,base_url + "facilities/" + obj[0]['facility_id'])
+          
+          } else {
+            console.error(`Could not find coordinates for ${obj[0]['facility_name']}.`);
+          }
+          obj.shift()
+          console.log("petros 111")
+          get_coordinates(obj)
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    else
+    if(obj.length > 0){
+      console.log("petros 222")
+      obj.shift()
+      get_coordinates(obj)
+      
+    }
+      
+    
+   }
+
+
+  function display_data(data) {
+    //for(x in data.facilities){
+    //  if(data.facilities[x]['latitude'] == "")
+         get_coordinates(data.facilities)
+   // }
+    
+  }
+  var data ={}
+  $(function () {
+    data = $('#date_range').daterangepicker(
+      {opens: 'right'},
+        function(start, end, label) {
+            getData(base_url+`reports/vpn_report?start_date='${start.format('YYYY-MM-DD')}'&end_date='${end.format('YYYY-MM-DD')}'`,'display_data')
+        }
+    )
+  })
+  getData(base_url+'facilities/list/','display_data')
+</script>

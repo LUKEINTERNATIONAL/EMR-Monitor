@@ -44,39 +44,57 @@ function getData(url,returnToFunction) {
 }
 
 function deleteData(url) {
-  loader_up()
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    loader_down()
-    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-     alert("Successfully deleted")
-     window.location.reload()
-    }else if(this.status == 401){
-      window.location = "/pages/login.html"
-    }
-  };
-  xhttp.open("DELETE", url, true);
-  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"));
-  xhttp.setRequestHeader('Content-type', "application/json");
-  xhttp.send();
+  if(sessionStorage.getItem('is_superuser')){
+    loader_up()
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      loader_down()
+      if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+      alert("Successfully deleted")
+      window.location.reload()
+      }else if(this.status == 401){
+        window.location = "/pages/login.html"
+      }
+    };
+    xhttp.open("DELETE", url, true);
+    xhttp.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"));
+    xhttp.setRequestHeader('Content-type', "application/json");
+    xhttp.send();
+  }
+  else{
+    alert("You do not have permission to perform this action")
+  }
 }
 
-function updateData(url) {
-  loader_up()
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-      loader_down()
-      alert("Successfully Updated")
-      window.location.reload()
-    }else if(this.status == 401){
-      window.location = "/pages/login.html"
-    }
-  };
-  xhttp.open("PUT", url, true);
-  xhttp.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"));
-  xhttp.setRequestHeader('Content-type', "application/json");
-  xhttp.send();
+function updateData(parameters,url) {
+  if(sessionStorage.getItem('is_superuser')){
+    loader_up()
+    var parametersPassed = JSON.stringify(parameters);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+        loader_down()
+        // alert("Saved Successfully")
+        // window.location.reload()
+        // try {
+        //   var obj = JSON.parse(this.responseText);
+        //   eval(returnToFunction)(obj);
+        // } catch (error) {
+          
+        // }
+      }
+      else if(this.status == 401){
+        window.location = "/pages/login.html"
+      }
+    };
+    xhttp.open("PUT", url, true);
+    xhttp.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"));
+    xhttp.setRequestHeader('Content-type', "application/json");
+    xhttp.send(parametersPassed);
+  }
+  else{
+    alert("You do not have permission to perform this action")
+  }
 }
 
 function setCookie(name,value,days) {
@@ -113,6 +131,28 @@ function loader_down() {
   $('#cover').attr('style','display:none')
 }
 
+function vpn_status(status){
+  console.log(status.vpn)
+  if(status.vpn != "False")
+    $("#vpn_status").attr('style','color:green')
+  else
+    $("#vpn_status").attr('style','color:red')
+}
+function internet_status(status){
+  console.log(status.internet)
+  if(status.internet != "False")
+    $("#internet_status").attr('style','color:green')
+  else
+    $("#internet_status").attr('style','color:red')
+}
+function refresh(){
+  getData(base_url+'vpn/vpn_status','vpn_status')
+  getData(base_url+'vpn/internet_status','internet_status')
+}
+setInterval(function() {
+  refresh();
+}, 200000);
+refresh();
 style=`
 <style>
 /*Horizontal circles as bars loader-3 */
