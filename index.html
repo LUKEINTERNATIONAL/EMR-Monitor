@@ -30,6 +30,22 @@
   <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
+
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://cdn.rawgit.com/aparshin/leaflet-boundary-canvas/f00b4d35/src/BoundaryCanvas.js"></script>
+
+  <!-- CSS and JS files for Search Box -->
+  <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
+
+  <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+  <style>
+        #map { height: 100%; }
+  </style>
   <script> var active_menu = "dashboard"; var active_link = "dashboard_v1"; </script>
   <style>
     .checkbox-green::before {
@@ -50,7 +66,7 @@
     }
   </style>
 </head>
-<body class="hold-transition sidebar-mini layout-fixed">
+<body class="hold-transition sidebar-mini sidebar-collapse layout-fixed">
 <div class="wrapper">
 
   <!-- bars plus loader -->
@@ -59,7 +75,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header">
+    <div class="content-header" style='padding: 5px .5rem;'>
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
@@ -79,133 +95,125 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-        <!-- Small boxes (Stat box) -->
-        <div class="row">
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-info">
-              <div class="inner">
-                <h3 id="user_count">...</h3>
-                <p>Total Users</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>
-              <a href="/pages/manage_users.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3 id="facilities_count">...</h3>
-
-                <p>Total Facilities</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a href="/pages/manage_facilities.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3 id="inactive_vpn_count">...</h3>
-
-                <p>Total Inactive VPN</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a href="#" onclick="view_inactive_facilities()" data-toggle="modal" data-target="#modal-default" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-warning">
-              <div class="inner">
-                <h3 id="encounters_count">...</h3>
-
-                <p id="bargraph_card">Total Encounters</p>
-              </div>
-              <div class="icon">
-                <i class="ion  ion-stats-bars"></i>
-              </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-        </div>
         <!-- /.row -->
         <!-- Main row -->
         <div class="row">
           <!-- Left col -->
-          <section class="col-lg-9 connectedSortable">
-             <!-- BAR CHART -->
-             <div class="card">
-              <div class="card-header">
-                <h3 class="card-title" id="bargraph_title">Encounters</h3>
-
-                <div class="card-tools">
-                  <ul class="pagination pagination-sm" id="pages_btn_set">
-                    <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage-1)">&laquo;</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_chart(1)">1</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage+1)">&raquo;</a></li>
-                  </ul>
+        <section class="col-lg-9 connectedSortable">
+          <!-- Small boxes (Stat box) -->
+          <div class="row">
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-info">
+                <div class="inner">
+                  <h3 id="user_count">...</h3>
+                  <p>Total Users</p>
                 </div>
-              </div>
-              <div class="card-body">
-                <div class="chart" id="chart_set">
-                  <canvas id="barChart1" style="min-height: 59vh; height: 59vh; max-height: 59vh; max-width: 100%;"></canvas>
+                <div class="icon">
+                  <i class="ion ion-person-add"></i>
                 </div>
+                <a href="/pages/manage_users.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
               </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-success">
+                <div class="inner">
+                  <h3 id="facilities_count">...</h3>
 
-          </section>
-          <!-- /.Left col -->
-          <!-- right col (We are only adding the ID to make the widgets sortable)-->
-          <section class="col-lg-3 connectedSortable">
-
-             <!-- TO DO List -->
-             <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">
-                  <i class="ion ion-clipboard mr-1"></i>
-                  VPN Status
-                </h3>
-
-                <div class="card-tools">
-                  <ul class="pagination pagination-sm" id="vpn_pages_btn_set">
-                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage-1)">&laquo;</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(1)">1</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage+1)">&raquo;</a></li>
-                  </ul>
+                  <p>Total Facilities</p>
                 </div>
+                <div class="icon">
+                  <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="/pages/manage_facilities.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
               </div>
-              <!-- /.card-header -->
-              <div class="outer_vpn" id="outer_vpn" style="height: 63vh;">
-                <ul class="todo-list inner_vpn" data-widget="todo-list" id="vpn_list" style="overflow:unset; min-height: 63.5vh; height: 63.5vh; max-height: 63.5vh; max-width: 100%;">
-                  
-                </ul>
-              </div>
-            
-            <!-- /.card -->
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-danger">
+                <div class="inner">
+                  <h3 id="inactive_vpn_count">...</h3>
 
-          </section>
-          <!-- right col -->
-        </div>
-        <!-- /.row (main row) -->
-      </div><!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
+                  <p>Total Inactive VPN</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="#" onclick="view_inactive_facilities()" data-toggle="modal" data-target="#modal-default" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-warning">
+                <div class="inner">
+                  <h3 id="encounters_count">...</h3>
+
+                  <p id="bargraph_card">Total Encounters</p>
+                </div>
+                <div class="icon">
+                  <i class="ion  ion-stats-bars"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <!-- BAR CHART -->
+          <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" id="bargraph_title">Encounters</h3>
+
+            <div class="card-tools">
+              <ul class="pagination pagination-sm" id="pages_btn_set">
+                <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage-1)">&laquo;</a></li>
+                <li class="page-item"><a class="page-link" onclick="setpage_chart(1)">1</a></li>
+                <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage+1)">&raquo;</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart" id="chart_set">
+              <canvas id="barChart1" style="min-height: 61.5vh; height: 61.5vh; max-height: 61.5vh; max-width: 100%;"></canvas>
+            </div>
+          </div>
+          <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </section>
+        <!-- /.Left col -->
+        <!-- right col (We are only adding the ID to make the widgets sortable)-->
+        <section class="col-lg-3 connectedSortable">
+
+            <!-- TO DO List -->
+            <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="ion ion-clipboard mr-1"></i>
+                <span id="right_side_title">  </span> 
+              </h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="outer_vpn" id="outer_vpn" style="height: 83vh; display: none;">
+              <ul class="todo-list inner_vpn" data-widget="todo-list" id="vpn_list" style="overflow:unset; min-height: 83.5vh; height: 83.5vh; max-height: 83.5vh; max-width: 100%;">
+              </ul>
+            </div> 
+            <div class="card-body" id="display_map" style="height: 83vh; display: none;">
+              <div id="map" ></div>
+            </div>
+          <!-- /.card -->
+
+        </section>
+        <!-- right col -->
+      </div>
+      <!-- /.row (main row) -->
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
 
 <div class="modal fade" id="modal-default">
     <div class="modal-dialog modal-xl">
@@ -309,6 +317,10 @@
 <!-- <script src="dist/js/pages/dashboard.js"></script> -->
 <script src="dist/js/backend.js"></script>
 
+<!-- bs-custom-file-input -->
+<script src="plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<script src="dist/js/pages/maps.js"></script>
+
 <script>
 
   var chart_setting = {
@@ -324,15 +336,6 @@
     pageNum: 1,
     currentPage: 1
   };
-
-  // function process_vpn_data(data){
-    // vpn_setting.pageNum = Math.ceil(data.vpn.length / paginationLimit);
-    // if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
-    // vpn_setting.data = data.vpn;
-    // var vpn = data.vpn.filter((el) => el.vpn_status == "inactive")
-    // $("#inactive_vpn_count").text(vpn.length)
-    // setpage_vpn(vpn_setting.currentPage);
-  // }
 
   function random_rgba(program_name) {
     var o = Math.round, r = Math.random, s = 255;
@@ -607,9 +610,24 @@
   }
   
   $(function () {
+   
+
     $('body').attr("class","layout-fixed control-sidebar-slide-open sidebar-collapse")
     refresh();
     function autoScrollDown(){
+      const outer_vpn = $("#outer_vpn")
+      const display_map = $("#display_map")
+      console.log(outer_vpn['0'].style.display)
+      if (display_map['0'].style.display === 'none') {
+        outer_vpn['0'].style.display = 'none';
+        display_map['0'].style.display = 'block';
+        $('#right_side_title').text('Map of Malawi')
+      } else {
+        outer_vpn['0'].style.display = 'block';
+        display_map['0'].style.display = 'none';
+         $('#right_side_title').text('VPN Status')
+      }
+
     $(".inner_vpn").css({top:-$(".outer_vpn").outerHeight()}) // jump back
                   .animate({top:0},50000,"linear", autoScrollDown); // and animate
     }
@@ -620,16 +638,19 @@
     
     autoScrollDown();
 
-    $('#outer_vpn').attr('style','height: 63vh;')
+    //$('#outer_vpn').attr('style','height: 63vh;')
     setInterval(function() {
+      //$('#display_map').attr('style','height: 63vh;')
       // $('#vpn_list').animate({scrollTop: 8}, 4000);
       $("#next_btn").click();
-    }, 60000);
+    }, 20000);
 
     setInterval(function() {
       window.location.href = "/index2.html"
       refresh();
     }, 200000);
+
+    
   });
 </script>
 </body>

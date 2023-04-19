@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
   <script> var active_menu = "general"; var active_link = "manage_facilities"; </script>
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini sidebar-collapse">
 <div class="wrapper">
   <!-- bars plus loader -->
   <app-bars></app-bars>
@@ -70,6 +70,7 @@
                     <th>Facility Name</th>
                     <th>Server Username</th>
                     <th>IP address</th>
+                    <th>Viral Load Status</th>
                     <th>VPN Status</th>
                     <th>Action</th>
                   </tr>
@@ -85,6 +86,7 @@
                     <th>Facility Name</th>
                     <th>Server Username</th>
                     <th>IP address</th>
+                    <th>Viral Load Status</th>
                     <th>VPN Status</th>
                     <th>Action</th>
                   </tr>
@@ -317,10 +319,12 @@ $(function () {
         value['facility_name'],
         value['user_name'],
         value['ip_address'],
+        value['viral_load']=='1' ? `<span class=" bg-gradient-success btn-xs">Activated</span>` :
+        `<span class=" bg-gradient-danger btn-xs">Deactivated</span>`,
         value['vpn_status']=='active' ? `<span class=" bg-gradient-success btn-xs">${value['vpn_status']}</span>` :  
         `<span class=" bg-gradient-danger btn-xs">${value['vpn_status']}</span>`,
         `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
-            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['ip_address']}',
+            <button type="button" class="btn btn-block  btn-xs" onclick="setForm('${value['ip_address']}',
               '${value['user_name']}',
               '${value['password']}',
               false,
@@ -328,7 +332,7 @@ $(function () {
               )">Edit</button>
           </span>
           <span class="badge bg-danger">
-            <button type="button" class="btn btn-block bg-gradient-danger btn-xs" onclick="deleteFacility('${value['id']}')">Delete</button> 
+            <button type="button" class="btn btn-block btn-xs" onclick="deleteFacility('${value['id']}')">Delete</button> 
           </span>`
         ]
     })

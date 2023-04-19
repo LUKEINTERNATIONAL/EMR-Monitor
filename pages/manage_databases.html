@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
   <script> var active_menu = "databases"; var active_link = "view_databases"; </script>
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini sidebar-collapse">
 <div class="wrapper">
   <!-- bars plus loader -->
   <app-bars></app-bars>
@@ -172,6 +172,7 @@ $(function () {
 </script>
 <!-- Page specific script -->
 <script>
+var facility_name = ""
   function setForm(ip, username, password, is_add, id) {
     $('input[name="ip_address"]').prop("value", ip)
     $('input[name="user_name"]').prop("value", username)
@@ -250,11 +251,34 @@ $(function () {
   function refresh_facilities_list() {
     getData(base_url+'databases/list_dumps/','display_overview_dumps')
   }
-  function get_facility_dump(facility_name){
+  function get_facility_dump(){
     getData(base_url+'databases/list_facility_dumps/'+facility_name,'display_facility_dumps')
   }
 
- function view_facility_dumps(facility_name){
+ 
+function download_dump(dump_name) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', base_url+'databases/download_dump/'+facility_name+'+Backups+'+dump_name);
+  xhr.responseType = 'blob';
+  xhr.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"));
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      var a = document.createElement('a');
+      a.href = window.URL.createObjectURL(xhr.response);
+      a.download = dump_name;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(a.href);
+    } else {
+      console.log('File download failed.');
+    }
+  };
+  xhr.send();
+  
+}
+ function view_facility_dumps(_facility_name){
+  facility_name = _facility_name
   $("#facility_dump").dataTable().fnDestroy();
   $(function() {
     $('#facility_dump').DataTable({
@@ -267,11 +291,10 @@ $(function () {
       "responsive": true,
     });
 
-    get_facility_dump(facility_name);
+    get_facility_dump();
   });
   }
   function display_overview_dumps(data) {
-    console.log(data.facilities)
     data = data.facilities.map((value) =>{
       return [
         value['facility_name'],
@@ -302,7 +325,7 @@ function display_facility_dumps(data) {
           value['dump_status'],
           ` <button type="button" style="width: fit-content; font-size: 15px;" 
           data-toggle="modal" data-target="#modal-default" class="btn btn-block bg-gradient-primary btn-xs" 
-          onclick="download(${value['dump_name']})">
+          onclick="download_dump('${value['dump_name']}')">
           Download</button>
           `
           ]

@@ -169,7 +169,7 @@ class Bars extends HTMLElement{
                   <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-database"></i>
                     <p>
-                      Databases
+                      Dumps
                       <i class="fas fa-angle-left right"></i>
                     </p>
                   </a>
@@ -177,7 +177,7 @@ class Bars extends HTMLElement{
                     <li class="nav-item">
                       <a href="/pages/manage_databases.html" class="nav-link" id="view_databases">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>View databases</p>
+                        <p>View Dumps</p>
                       </a>
                     </li>
                   </ul>
