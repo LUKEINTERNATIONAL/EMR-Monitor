@@ -30,7 +30,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setForm('','','',true)">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setAddForm()">
               Add Zone
             </button>
           </div>
@@ -174,76 +174,33 @@ $(function () {
 </script>
 <!-- Page specific script -->
 <script>
-  function setForm(ip, username, password, is_add, id) {
-    $('input[name="ip_address"]').prop("value", ip)
-    $('input[name="user_name"]').prop("value", username)
-    $('input[name="password"]').prop("value", password)
+  function setAddForm() {
+    $('input[name="zone"]').prop("value", '')
 
-    if(is_add) {
       $("#modify_zone_btn").prop("hidden", true)
       $("#create_zone_btn").prop("hidden", false)
       $("#form_title").text("Add Zone")
-    }
-    else {
+    
+  }
+ function setUpdateForm(zone, id) {
+    $('input[name="zone"]').prop("value", zone)
+
       $("#create_zone_btn").prop("hidden", true)
       $("#modify_zone_btn").prop("hidden", false)
-      $("#modify_zone_btn").prop("onclick", 'modifyZone(' + id + ')')
+      $("#modify_zone_btn").attr("onclick", 'modifyZone(' + id + ')')
       $("#form_title").text("Modify Zone")
-    }
   }
-
   function addZone() {
-    event.preventDefault();
-    form = $("form").serializeArray()
-    data = {}
-    for(const e of form) {
-      data[e.name] = e.value
-    }
-    submitParameters(data,base_url+'zones/create_zone','')
+    submitParameters(getFormData(),base_url+'zones/create_zone','')
   }
   
 
   function modifyZone(id) {
-    // event.preventDefault();
-    // form = $("form").serializeArray()
-    // data = {}
-    // for(const e of form) {
-    //   data[e.name] = e.value
-    // }
-    
-    // $.ajax({
-    //   type: "PUT",
-    //   data: data,
-    //   url: base_url + "/facilities/" + id,
-    //   success: function(data) {
-    //     alert("success");
-    //     $("#toggle").click();
-    //     get_zones_list();
-    //   },
-    //   error: function(jqXHR, status, error) {
-    //     alert(jqXHR.responseJSON.status)
-    //   }
-    // });
-    updateData(base_url + "Zones/" + id)
+    updateData(getFormData(),base_url + "zones/" + id)
   }
 
   function deleteZone(id) {
-    deleteData(base_url + "Zones/" + id) 
-    // event.preventDefault();
-    // if(confirm("do you really want to delete?")) {
-    //   $.ajax({
-    //     type: "DELETE",
-    //     url: base_url + "/facilities/" + id,
-    //     success: function(data) {
-    //       alert("success");
-    //       $("#toggle").click();
-    //       get_zones_list();
-    //     },
-    //     error: function(jqXHR, status, error) {
-    //       alert(jqXHR.responseJSON.status)
-    //     }
-    //   });
-    // }
+    deleteData(base_url + "zones/" + id) 
   }
   
   function get_zones_list() {
@@ -257,7 +214,7 @@ $(function () {
         value['zone'],
      
         `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
-            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['zone']}',
+            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setUpdateForm('${value['zone']}','${value['id']}',
               '${value['id']}'
               )">Edit</button>
           </span>

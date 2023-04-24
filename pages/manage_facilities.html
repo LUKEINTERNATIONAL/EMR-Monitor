@@ -33,7 +33,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setForm('','','',true)">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setAddForm()">
               Add Facility
             </button>
           </div>
@@ -153,7 +153,7 @@
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <input type="submit" value="Save Changes" class="btn btn-primary" id="create_facility_btn" onclick="addFacility()">
-          <button type="button" class="btn btn-primary" id="modify_facility_btn" hidden>Save Changes</button>
+          <input type="submit" value="Update Changes" class="btn btn-primary" id="modify_facility_btn" >
         </div>
       </form>
       </div>
@@ -218,48 +218,53 @@ $(function () {
 <script>
   getData(base_url+'districts/list/','display_districts')
 
-  function display_districts(data) {
-    console.log('district')
-    for(district of data.districts){
-      console.log(district.district)
-    }
-
+  function display_districts(data,selected="") {
+    sessionStorage.setItem('facilities',JSON.stringify(data));
     data = data.districts.map((value) =>{
-      return [
-        `<option value='${value['id']}'>${value['district']}</option>`,
-        ]
+      if(selected == value['district_id'])
+        data = [`<option value='${value['district_id']}' selected  >${value['district']}</option>`, ]
+      else
+        data = [`<option value='${value['district_id']}' >${value['district']}</option>`, ]
+      return data
     })
-    console.log(data)
     data.unshift('<option></option>')
     $("#district").html(data)
     
   };
-  function setForm(ip, username, password, is_add, id) {
+  function setAddForm() {
+    display_districts(JSON.parse(sessionStorage.getItem('facilities')),'')
+    $('input[name="ip_address"]').prop("value", '')
+    $('input[name="user_name"]').prop("value", '')
+    $('input[name="password"]').prop("value", '')
+    $("#modify_facility_btn").prop("hidden", true)
+    $("#create_facility_btn").prop("hidden", false)
+    $("#form_title").text("Add Facility")
+  }
+
+   function setUpDateForm(ip, username, password,district_id, id) {
+    display_districts(JSON.parse(sessionStorage.getItem('facilities')),district_id)
     $('input[name="ip_address"]').prop("value", ip)
     $('input[name="user_name"]').prop("value", username)
     $('input[name="password"]').prop("value", password)
+    $("#create_facility_btn").prop("hidden", true)
+    $("#modify_facility_btn").prop("hidden", false)
+    $("#modify_facility_btn").attr("onclick", `modifyFacility(${id})`)
+    $("#form_title").text("Modify Facility")
+      
+  }
 
-    if(is_add) {
-      $("#modify_facility_btn").prop("hidden", true)
-      $("#create_facility_btn").prop("hidden", false)
-      $("#form_title").text("Add Facility")
-    }
-    else {
-      $("#create_facility_btn").prop("hidden", true)
-      $("#modify_facility_btn").prop("hidden", false)
-      $("#modify_facility_btn").prop("onclick", 'modifyFacility(' + id + ')')
-      $("#form_title").text("Modify Facility")
-    }
+  function getFormParamiters(){
+    event.preventDefault();
+      form = $("form").serializeArray()
+      data = {}
+      for(const e of form) {
+        data[e.name] = e.value
+      }
+      return data
   }
 
   function addFacility() {
-    event.preventDefault();
-    form = $("form").serializeArray()
-    data = {}
-    for(const e of form) {
-      data[e.name] = e.value
-    }
-    submitParameters(data,base_url+'encounters/create_site','')
+    submitParameters(getFormParamiters(),base_url+'encounters/create_site','')
   }
   
 
@@ -284,9 +289,15 @@ $(function () {
     //     alert(jqXHR.responseJSON.status)
     //   }
     // });
-    updateData(base_url + "facilities/" + id)
+    updateData(getFormParamiters(),base_url + "facilities/" + id)
   }
-
+  function updateViralLoadFacilityStatus(ip_address, status){
+    parameters={
+      'ip_address':ip_address,
+      'status':status
+    }
+    updateData(parameters,base_url + "facilities/update_viral_load")
+  }
   function deleteFacility(id) {
     deleteData(base_url + "facilities/" + id) 
     // event.preventDefault();
@@ -319,21 +330,20 @@ $(function () {
         value['facility_name'],
         value['user_name'],
         value['ip_address'],
-        value['viral_load']=='1' ? `<span class=" bg-gradient-success btn-xs">Activated</span>` :
-        `<span class=" bg-gradient-danger btn-xs">Deactivated</span>`,
+        value['viral_load']=='1' ? `
+        <button type="button" class="btn btn-success" style="padding:0.2rem" onclick="updateViralLoadFacilityStatus('${value['ip_address']}','0')">Activated</button>` :
+        `<button type="button" class="btn btn-danger" style="padding:0.2rem" onclick="updateViralLoadFacilityStatus('${value['ip_address']}','1')">Deactivated</button>`,
         value['vpn_status']=='active' ? `<span class=" bg-gradient-success btn-xs">${value['vpn_status']}</span>` :  
         `<span class=" bg-gradient-danger btn-xs">${value['vpn_status']}</span>`,
-        `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
-            <button type="button" class="btn btn-block  btn-xs" onclick="setForm('${value['ip_address']}',
-              '${value['user_name']}',
-              '${value['password']}',
-              false,
-              '${value['id']}'
+        `<button type="button" class="btn btn-warning" style="padding:0.2rem" data-toggle="modal" data-target="#modal-default" onclick="setUpDateForm(
+            '${value['ip_address']}',
+            '${value['user_name']}',
+            '${value['password']}',
+            '${value['district_id']}',
+            '${value['facility_id']}'
               )">Edit</button>
-          </span>
-          <span class="badge bg-danger">
-            <button type="button" class="btn btn-block btn-xs" onclick="deleteFacility('${value['id']}')">Delete</button> 
-          </span>`
+          <button type="button" class="btn btn-danger" style="padding:0.2rem" onclick="deleteFacility('${value['facility_id']}')">Delete</button> 
+         `
         ]
     })
 

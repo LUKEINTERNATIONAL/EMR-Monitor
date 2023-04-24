@@ -30,7 +30,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setForm('','','',true)">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setAddForm()">
               Add District
             </button>
           </div>
@@ -122,7 +122,7 @@
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <input type="submit" value="Save Changes" class="btn btn-primary" id="create_district_btn" onclick="addDistrict()">
-          <button type="button" class="btn btn-primary" id="modify_district_btn" hidden>Save Changes</button>
+          <input type="submit" value="Update Changes" class="btn btn-primary" id="modify_district_btn">
         </div>
       </form>
       </div>
@@ -178,44 +178,40 @@ $(function () {
 <script>
 getData(base_url+'zones/list/','display_zones')
 
-  function display_zones(data) {
-   
+  function display_zones(data,selected = "") {
+   sessionStorage.setItem('zones',JSON.stringify(data));
     data = data.zones.map((value) =>{
-      return [
-        `<option value='${value['id']}'>${value['zone']}</option>`,
-        ]
+      if(selected == value['id'])
+        data = [`<option value='${value['id']}' selected  >${value['zone']}</option>`, ]
+      else
+        data = [`<option value='${value['id']}' >${value['zone']}</option>`, ]
+      return data
     })
     console.log(data)
     data.unshift('<option></option>')
     $("#zone").html(data)
     
   };
-  function setForm(ip, username, password, is_add, id) {
-    $('input[name="ip_address"]').prop("value", ip)
-    $('input[name="user_name"]').prop("value", username)
-    $('input[name="password"]').prop("value", password)
-
-    if(is_add) {
-      $("#modify_district_btn").prop("hidden", true)
-      $("#create_district_btn").prop("hidden", false)
-      $("#form_title").text("Add District")
-    }
-    else {
-      $("#create_district_btn").prop("hidden", true)
-      $("#modify_district_btn").prop("hidden", false)
-      $("#modify_district_btn").prop("onclick", 'modifyDistrict(' + id + ')')
-      $("#form_title").text("Modify District")
-    }
+  function setAddForm(){
+    $('input[name="district"]').prop("value", '')
+    display_zones(JSON.parse(sessionStorage.getItem('zones')),'')
+    $("#modify_district_btn").prop("hidden", true)
+    $("#create_district_btn").prop("hidden", false)
+    $("#form_title").text("Add District")
+  }
+  function setUpDateForm(district, district_id, zone_id) {
+    $('input[name="district"]').prop("value", district)
+    display_zones(JSON.parse(sessionStorage.getItem('zones')),zone_id)
+    $("#create_district_btn").prop("hidden", true)
+    $("#modify_district_btn").prop("hidden", false)
+    $("#modify_district_btn").attr("onclick", `modifyDistrict(${district_id})`)
+    $("#form_title").text("Modify District")
+    
   }
 
   function addDistrict() {
-    event.preventDefault();
-    form = $("form").serializeArray()
-    data = {}
-    for(const e of form) {
-      data[e.name] = e.value
-    }
-    submitParameters(data,base_url+'districts/create_district','')
+    
+    submitParameters(getFormData(),base_url+'districts/create_district','')
   }
   
 
@@ -240,7 +236,7 @@ getData(base_url+'zones/list/','display_zones')
     //     alert(jqXHR.responseJSON.status)
     //   }
     // });
-    updateData(base_url + "districts/" + id)
+    updateData(getFormData(),base_url + "districts/" + id)
   }
 
   function deleteDistrict(id) {
@@ -273,14 +269,15 @@ getData(base_url+'zones/list/','display_zones')
         value['zone'],
         value['district'],
      
-        `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
-            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['district']}',
-              '${value['id']}'
-              )">Edit</button>
-          </span>
-          <span class="badge bg-danger">
-            <button type="button" class="btn btn-block bg-gradient-danger btn-xs" onclick="deleteDistrict('${value['id']}')">Delete</button> 
-          </span>`
+        `<button type="button" class="btn btn-warning" style="padding:0.2rem" data-toggle="modal" data-target="#modal-default" onclick="setUpDateForm(
+          '${value['district']}',
+              '${value['district_id']}',
+              '${value['zone_id']}'
+              )">
+              
+              Edit</button>
+           <button type="button" class="btn btn-danger" style="padding:0.2rem" onclick="deleteDistrict('${value['district_id']}')">Delete</button> 
+         `
         ]
     })
 

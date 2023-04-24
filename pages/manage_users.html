@@ -33,7 +33,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setForm('','', true)">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setAddForm()">
               Add User
             </button>
           </div>
@@ -145,16 +145,16 @@
                   <input type="text" class="form-control" id="username" placeholder="Username" name="username">
                 </div>
               </div>
-              <div class="form-group row">
+              <div class="form-group row password_row">
                 <label for="password" class="col-sm-2 col-form-label">Password</label>
                 <div class="col-sm-10">
                   <input type="password" class="form-control" id="password" placeholder="Password" name="password">
                 </div>
               </div>
-              <div class="form-group row">
+              <div class="form-group row password_row">
                 <label for="validate_password" class="col-sm-2 col-form-label">Confirm Password</label>
                 <div class="col-sm-10">
-                  <input type="password" class="form-control" id="validate_password" placeholder="Confirm Password" name="validate_password">
+                  <input type="password" class="form-control"  placeholder="Confirm Password" name="validate_password">
                 </div>
               </div>
 
@@ -285,103 +285,48 @@ function click_district(obj){
     "is_staff": undefined,
     "is_superuser": undefined
   };
+function setAddForm(){
+  $("#email").prop("value", '')
+  $("#email").prop("value", '')
+  $("#username").prop("value", '')
+  $("#username").prop("value", '')
+  $("#username").prop("value", '')
+  $("#password_row").prop("hidden", false)
+  $("#modify_user_btn").prop("hidden", true)
+  $("#create_user_btn").prop("hidden", false)
+  $("#username").prop("readonly", false)
+  $("#form_title").text("Add User")
 
-  function setForm(username, email, is_add, is_staff, is_superuser) {
+  $("#is_staff").prop("checked", false)
+  $("#is_superuser").prop("checked", false)
+}
+  function setUpdateForm(name,email,username, phone,district, is_staff, is_superuser) {
+    $("#name").prop("value", name)
     $("#email").prop("value", email)
     $("#username").prop("value", username)
-    $("#password").prop("value", "")
-    $("#validate_password").prop("value", "")
+    $("#phone").prop("value", phone)
+    $("#district_id").prop("value", district)
+    $(".password_row").prop("hidden", true)
 
-    if(is_add) {
-      $("#modify_user_btn").prop("hidden", true)
-      $("#create_user_btn").prop("hidden", false)
-      $("#username").prop("readonly", false)
-      $("#form_title").text("Add User")
-
-      $("#is_staff").prop("checked", false)
-      $("#is_superuser").prop("checked", false)
-    }
-    else {
+    
       $("#create_user_btn").prop("hidden", true)
       $("#modify_user_btn").prop("hidden", false)
       $("#username").prop("readonly", true)
       $("#form_title").text("Modify User")
 
-      if(is_staff === false) {
-        $("#is_staff").prop("checked", false)
-      }
-      else {
-        $("#is_staff").prop("checked", true)
-      }
-      if(is_superuser === false) {
-        $("#is_superuser").prop("checked", false)
-      }
-      else {
-        $("#is_superuser").prop("checked", true)
-      }
-    }
+      $("#is_staff").prop("checked", true)
+      $("#is_superuser").prop("checked", false)
+     
 
-    if(user.is_superuser) {
-      $("#is_staff").prop("disabled", false)
-      $("#is_superuser").prop("disabled", false)
-    }
-    else if(user.is_staff) {
-      $("#is_staff").prop("disabled", false)
-      $("#is_superuser").prop("disabled", true)
-    }
-    else {
-      $("#is_staff").prop("disabled", true)
-      $("#is_superuser").prop("disabled", true)
-    }
+  
   }
 
   function modifyUser() {
-    event.preventDefault();
-    form = $("#create_user_form").serializeArray()
-    data = {}
-    for(const e of form) {
-      data[e.name] = e.value
-    }
-
-    // $.ajax({
-    //   type: "PATCH",
-    //   data: data,
-    //   url: base_url + "/users/" + data.username,
-    //   success: function(data) {
-    //     alert("success");
-    //     $("#toggle").click();
-    //     refresh_user_list();
-    //   },
-    //   error: function(jqXHR, status, error) {
-    //     alert(jqXHR.responseJSON.status)
-    //   }
-    // });
-    updateData(data,base_url+'users/'+data.username,'')
+    updateData(getFormData(),base_url+'users/'+data.username,'')
   }
 
   function addUser() {
-    event.preventDefault();
-    form = $("#create_user_form").serializeArray()
-    data = {}
-    for(const e of form) {
-      if(e.value !="")
-        data[e.name] = e.value
-    }
-
-    // $.ajax({
-    //   type: "POST",
-    //   data: data,
-    //   url: base_url + "/users/",
-    //   success: function(data) {
-    //     alert("success");
-    //     $("#toggle").click();
-    //     refresh_user_list();
-    //   },
-    //   error: function(jqXHR, status, error) {
-    //     alert(jqXHR.responseJSON.status)
-    //   }
-    // });
-    submitParameters(data,base_url+'users/','')
+    submitParameters(getFormData(),base_url+'users/','')
   }
 
   function deleteUser(username) {
@@ -415,7 +360,15 @@ function click_district(obj){
         value['district'],
         value['is_superuser'],
         `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
-            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['username']}','${value['email']}', false, ${value['is_staff']}, ${value['is_superuser']})">Edit</button>
+            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setUpdateForm(
+              '${value['name']}',
+              '${value['email']}', 
+              '${value['username']}',
+              '${value['phone']}', 
+              '${value['district']}', 
+\              ${value['is_staff']}, 
+              ${value['is_superuser']}
+              )">Edit</button>
           </span>
           <span class="badge bg-danger">
             <button type="button" class="btn btn-block bg-gradient-danger btn-xs" onclick="deleteUser('${value['username']}')">Delete</button> 

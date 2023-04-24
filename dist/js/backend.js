@@ -16,6 +16,9 @@ function submitParameters(parameters, url, returnToFunction) {
     }
     else if(this.status == 401){
       window.location = "/pages/login.html"
+    }else{
+      alert("Fail to save")
+      window.location.reload()
     }
   };
   xhttp.open("POST", url, true);
@@ -45,25 +48,37 @@ function getData(url,returnToFunction) {
 
 function deleteData(url) {
   if(sessionStorage.getItem('is_superuser')){
-    loader_up()
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      loader_down()
-      if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-      alert("Successfully deleted")
-      window.location.reload()
-      }else if(this.status == 401){
-        window.location = "/pages/login.html"
-      }
-    };
-    xhttp.open("DELETE", url, true);
-    xhttp.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"));
-    xhttp.setRequestHeader('Content-type', "application/json");
-    xhttp.send();
+    if (confirm('Are you sure you want to delete this element?')) {
+      loader_up()
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        loader_down()
+        if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
+        alert("Successfully deleted")
+        window.location.reload()
+        }else if(this.status == 401){
+          window.location = "/pages/login.html"
+        }
+      };
+      xhttp.open("DELETE", url, true);
+      xhttp.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"));
+      xhttp.setRequestHeader('Content-type', "application/json");
+      xhttp.send();
+    }
   }
   else{
     alert("You do not have permission to perform this action")
   }
+}
+
+function getFormData(){
+  event.preventDefault();
+    form = $("form").serializeArray()
+    data = {}
+    for(const e of form) {
+      data[e.name] = e.value
+    }
+    return data;
 }
 
 function updateData(parameters,url) {
@@ -74,6 +89,8 @@ function updateData(parameters,url) {
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
         loader_down()
+        alert("Successfully updated")
+        window.location.reload()
         // alert("Saved Successfully")
         // window.location.reload()
         // try {
