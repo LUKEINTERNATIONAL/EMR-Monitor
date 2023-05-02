@@ -126,16 +126,27 @@
                 </div>
               </div>
               <div class="form-group row">
-                <label for="district" class="col-sm-2 col-form-label">District</label>
+                <label for="category" class="col-sm-2 col-form-label">Category</label>
                 <div class="col-sm-10">
-                  <select class="form-control select2" name="district_id" style="width: 100%;" id="district" onchange="click_district(this)">
+                  <select class="form-control select2" name="category_id" style="width: 100%;" id="category" onchange="click_category(this)">
+                    <option value=''></option>
+                    <option value='district'>District</option>
+                    <option value='zone'>Zone</option>
+                    <option value='manager'>Manager</option>
                   </select>
                 </div>
               </div>
-              <div class="form-group row">
+              <div class="form-group row hide_district" hidden>
+                <label for="district" class="col-sm-2 col-form-label">District</label>
+                <div class="col-sm-10">
+                  <select class="form-control select2" name="district_id" style="width: 100%;" id="district">
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row hide_zone" hidden>
                 <label for="zone" class="col-sm-2 col-form-label">Zone</label>
                 <div class="col-sm-10">
-                  <select class="form-control select2" name="zone_id" style="width: 100%;" id="zone" onchange="click_zone(this)">
+                  <select class="form-control select2" name="zone_id" style="width: 100%;" id="zone">
                   </select>
                 </div>
               </div>
@@ -158,20 +169,20 @@
                 </div>
               </div>
 
-                <!-- radio -->
-                <div class="form-group row">
-                  <label for="superuser" class="col-sm-2 col-form-label">Role</label>
-                  <div class="col-sm-6">
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" value="False" name="is_superuser" checked>
-                      <label class="form-check-label">Staff</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" value="True"name="is_superuser" >
-                      <label class="form-check-label">Admin</label>
-                    </div>
+              <!-- radio -->
+              <div class="form-group row">
+                <label for="superuser" class="col-sm-2 col-form-label">Role</label>
+                <div class="col-sm-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="False" name="is_superuser" id="is_staff" checked>
+                    <label class="form-check-label">Staff</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="True"name="is_superuser" id="is_superuser" >
+                    <label class="form-check-label">Admin</label>
                   </div>
                 </div>
+              </div>
           </form>
         </div>
         <!-- /.card -->
@@ -241,166 +252,192 @@ $(function () {
 <!-- Page specific script -->
 
 <script>
-function click_zone(obj){
-  if(obj.value)
-    $('#district').attr("disabled",true)
-  else
-    $('#district').attr("disabled",false)
+
+function click_category(obj){
+  if(obj.value == "district"){
+    $('.hide_district').prop("hidden",false)
+    $('.hide_zone').prop("hidden",true)
+  }
+  else if(obj.value == "zone"){
+    $('.hide_zone').prop("hidden",false)
+    $('.hide_district').prop("hidden",true)
+  }else{
+    $('.hide_zone').prop("hidden",true)
+    $('.hide_district').prop("hidden",true)
+  }
 }
 
-function click_district(obj){
-  if(obj.value)
-    $('#zone').attr("disabled",true)
-  else
-    $('#zone').attr("disabled",false)
-}
+getData(base_url+'zones/list/','display_zones')
+function display_zones(data,zone_id = '') {
+  sessionStorage.setItem('zones',JSON.stringify(data));
+  data = data.zones.map((value) =>{
+    if(zone_id == value['id'])
+      return [`<option value='${value['id']}' selected>${value['zone']}</option>`]
+    else
+      return [`<option value='${value['id']}'>${value['zone']}</option>`]
+  })
+  data.unshift('<option></option>')
+  $("#zone").html(data)
+};
 
-  getData(base_url+'zones/list/','display_zones')
-  function display_zones(data) {
-    data = data.zones.map((value) =>{
-      return [
-        `<option value='${value['id']}'>${value['zone']}</option>`,
-        ]
-    })
-    console.log(data)
-    data.unshift('<option></option>')
-    $("#zone").html(data)
-  };
-  getData(base_url+'districts/list/','display_districts')
-
-  function display_districts(data) {
+getData(base_url+'districts/list/','display_districts')
+function display_districts(data,district_id="") {
+  sessionStorage.setItem('districts',JSON.stringify(data));
+  data = data.districts.map((value) =>{
+    if(district_id == value['district_id'])
+      var data = [`<option value='${value['district_id']}' selected >${value['district']}</option>`]
+    else
+      var data = [`<option value='${value['district_id']}'>${value['district']}</option>`]
+    return data
+  })
+  data.unshift('<option></option>')
+  $("#district").html(data)
   
-    data = data.districts.map((value) =>{
-      return [
-        `<option value='${value['id']}'>${value['district']}</option>`,
-        ]
-    })
-    console.log(data)
-    data.unshift('<option></option>')
-    $("#district").html(data)
-    
-  };
-  var user = {
-    "username": undefined,
-    "is_staff": undefined,
-    "is_superuser": undefined
-  };
+};
+var user = {
+  "username": undefined,
+  "is_staff": undefined,
+  "is_superuser": undefined
+};
+
 function setAddForm(){
+  $("#name").prop("value", '')
   $("#email").prop("value", '')
-  $("#email").prop("value", '')
   $("#username").prop("value", '')
-  $("#username").prop("value", '')
-  $("#username").prop("value", '')
-  $("#password_row").prop("hidden", false)
+  $("#phone").prop("value", '')
+  $("#district_id").prop("value", '')
+  $(".password_row").prop("hidden", false)
   $("#modify_user_btn").prop("hidden", true)
   $("#create_user_btn").prop("hidden", false)
-  $("#username").prop("readonly", false)
   $("#form_title").text("Add User")
-
   $("#is_staff").prop("checked", false)
   $("#is_superuser").prop("checked", false)
 }
-  function setUpdateForm(name,email,username, phone,district, is_staff, is_superuser) {
-    $("#name").prop("value", name)
-    $("#email").prop("value", email)
-    $("#username").prop("value", username)
-    $("#phone").prop("value", phone)
-    $("#district_id").prop("value", district)
-    $(".password_row").prop("hidden", true)
 
-    
-      $("#create_user_btn").prop("hidden", true)
-      $("#modify_user_btn").prop("hidden", false)
-      $("#username").prop("readonly", true)
-      $("#form_title").text("Modify User")
-
-      $("#is_staff").prop("checked", true)
-      $("#is_superuser").prop("checked", false)
-     
-
-  
+function setUpdateForm(user_id,name,email,username, phone,district_id,is_zone, is_staff, is_superuser) {
+  sessionStorage.setItem('user_id',user_id);
+  if(district_id != 0 && is_zone == 0){
+    $('.hide_district').prop("hidden",false)
+    $('.hide_zone').prop("hidden",true)
+    var category =  `<option value=''></option>
+      <option value='district' selected>District</option>
+      <option value='zone'>Zone</option>
+      <option value='manager'>Manager</option>`
+    $("#category").html(category)
+    display_districts(JSON.parse(sessionStorage.getItem('districts')),district_id)
+  }else
+  if(is_zone != 0 && district_id == 0){
+    var category =  `<option value=''></option>
+      <option value='district' >District</option>
+      <option value='zone' selected>Zone</option>
+      <option value='manager'>Manager</option>`
+    $("#category").html(category)
+    $('.hide_district').prop("hidden",true)
+    $('.hide_zone').prop("hidden",false)
+    display_zones(JSON.parse(sessionStorage.getItem('zones')),is_zone)
+  }else
+  if(is_zone == 0 && district_id == 0){
+    var category =  `<option value=''></option>
+      <option value='district' >District</option>
+      <option value='zone'>Zone</option>
+      <option value='manager' selected>Manager</option>`
+    $("#category").html(category)
   }
+  $("#name").prop("value", name)
+  $("#email").prop("value", email)
+  $("#username").prop("value", username)
+  $("#phone").prop("value", phone)
+  $(".password_row").prop("hidden", true)
+  $("#create_user_btn").prop("hidden", true)
+  $("#modify_user_btn").prop("hidden", false)
+  $("#form_title").text("Modify User")
 
-  function modifyUser() {
-    updateData(getFormData(),base_url+'users/'+data.username,'')
+  if(is_superuser){
+    $("#is_staff").prop("checked", false)
+    $("#is_superuser").prop("checked",true )
   }
-
-  function addUser() {
-    submitParameters(getFormData(),base_url+'users/','')
+  else{
+    $("#is_staff").prop("checked", true)
+    $("#is_superuser").prop("checked", false)
   }
+}
 
-  function deleteUser(username) {
-    event.preventDefault();
-    if(confirm("do you really want to delete?")) {
-      $.ajax({
-        type: "DELETE",
-        url: base_url + "users/" + username,
-        success: function(data) {
-          alert("success");
-          refresh_user_list();
-        },
-        error: function(jqXHR, status, error) {
-          alert(jqXHR.responseJSON.status)
-        }
-      });
-    }
+function modifyUser() {
+  var data = getFormData()
+  if(data['category_id'] == 'zone')
+    delete data.district_id;
+  else
+  if(data['category_id'] == 'district')
+    delete data.zone_id;
+  else{
+    delete data.zone_id;
+    delete data.district_id;
   }
+  updateData(getFormData(),base_url+'users/'+sessionStorage.getItem('user_id'))
+}
 
-  function refresh_user_list() {
-    getData(base_url+'users/','display_data')
-  }
+function addUser() {
+  submitParameters(getFormData(),base_url+'users/','')
+}
 
-  function display_data(data) {
-    data = data.users.map((value) =>{
-      return [
-        value['name'],
-        value['email'],
-        value['username'],
-        value['phone'],
-        value['district'],
-        value['is_superuser'],
-        `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
-            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setUpdateForm(
-              '${value['name']}',
-              '${value['email']}', 
-              '${value['username']}',
-              '${value['phone']}', 
-              '${value['district']}', 
-\              ${value['is_staff']}, 
-              ${value['is_superuser']}
-              )">Edit</button>
-          </span>
-          <span class="badge bg-danger">
-            <button type="button" class="btn btn-block bg-gradient-danger btn-xs" onclick="deleteUser('${value['username']}')">Delete</button> 
-          </span>`
-        ]
-    })
+function deleteUser(id) {
+  deleteData(base_url + "users/" + id)
+}
 
-    var datatable = $("#example1").dataTable().api();
-    datatable.clear();
-    datatable.rows.add(data);
-    datatable.draw();
-  };
+function refresh_user_list() {
+  getData(base_url+'users/','display_data')
+}
 
-  $(function () {
-    $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
-      data:{}
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
+function display_data(data) {
+  data = data.users.map((value) =>{
+    return [
+      value['name'],
+      value['email'],
+      value['username'],
+      value['phone'],
+      value['district'],
+      value['is_superuser'],
+      `<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-default" style="padding:0.2rem" onclick="setUpdateForm(
+            '${value['userid']}',
+            '${value['name']}',
+            '${value['email']}', 
+            '${value['username']}',
+            '${value['phone']}', 
+            '${value['district_id']}', 
+            '${value['is_zone']}', 
+            ${value['is_staff']}, 
+            ${value['is_superuser']}
+            )">Edit</button>
+        <button type="button" class="btn btn-danger" style="padding:0.2rem" onclick="deleteUser('${value['userid']}')">Delete</button> 
+       `
+      ]
+  })
 
-    refresh_user_list();
+  var datatable = $("#example1").dataTable().api();
+  datatable.clear();
+  datatable.rows.add(data);
+  datatable.draw();
+};
 
+$(function () {
+  $("#example1").DataTable({
+    "responsive": true, "lengthChange": false, "autoWidth": false,
+    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+    data:{}
+  }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+  $('#example2').DataTable({
+    "paging": true,
+    "lengthChange": false,
+    "searching": false,
+    "ordering": true,
+    "info": true,
+    "autoWidth": false,
+    "responsive": true,
   });
+
+  refresh_user_list();
+
+});
 </script>
 </body>
 </html>

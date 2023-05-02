@@ -88,6 +88,7 @@ if(data['vpn_status']=='active'){
       Total Enconters: <b>${data['total_encounters']}</b><br>`);
 }
 function display_makers(data) {
+  console.log(data)
   for(facility in data.facilities){
       addMarker(data.facilities[facility])
   }
