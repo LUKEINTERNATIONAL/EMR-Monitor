@@ -6,10 +6,12 @@
     <title>EMR-Monitor</title>
   <link rel="shortcut icon" href="/dist/img/emr_monitor.png" type="image/x-icon">
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Tempusdominus Bootstrap 4 -->
@@ -26,27 +28,20 @@
   <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
-  <script> var active_menu = "dashboard"; var active_link = "dashboard_v2"; </script>
-  <style>
-    .checkbox-green::before {
-      background: #20c997;
-    }
-    .checkbox-red::before {
-      background: #e74c3c;
-    }
-    .small-box p {
-    font-size: 1.2rem;
-    }
-    .inner_vpn{
-        position:relative;
-        top:0px;
-    }
-    .outer_vpn{
-        overflow:hidden;
-    }
-  </style>
-</head>
 
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+
+  <style>
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+      margin-top: -8px;
+  }
+  </style>
+  <script> var active_menu = "dashboard"; var active_link = "dashboard_v1"; </script>
+ 
+</head>
 <body class="hold-transition sidebar-mini sidebar-collapse layout-fixed">
 <div class="wrapper">
 
@@ -56,16 +51,22 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header">
+    <div class="content-header" style='padding: 5px .5rem;'>
       <div class="container-fluid">
         <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Dashboard</h1>
+          <div class="col-sm-2">
+            <select class="form-control select2" name="id" id="facility_list">
+            </select>
           </div><!-- /.col -->
-          <div class="col-sm-6">
+           <div class="col-sm-10">
+            <ol class="breadcrumb float-sm-left">
+              <li class="breadcrumb-item" id="_dde_status">DDE <i class="fas fa-circle nav-icon "></i></li>
+              <li class="breadcrumb-item" id="_vpn_status">VPN <i class="fas fa-circle nav-icon "></i></li>
+            </ol>
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Dashboard v2</li>
+              <li class="breadcrumb-item"><i class="fas fa-user"></i> HIS officer: <b>Petros Kayange </b></li>
+              <li class="breadcrumb-item"><i class="far fa-calendar-alt"></i> Last Dump Update: <b>2023-03-05 </b></li>
+              <li class="breadcrumb-item"><i class="fas fa-hospital"></i> Facility: <b>Mzuzu Central Hospital</b></li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -76,164 +77,366 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-        <!-- Small boxes (Stat box) -->
+         <!-- Info boxes -->
         <div class="row">
-         <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3 id="facilities_count">...</h3>
-                <p>Total Facilities</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a href="/pages/manage_facilities.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-info">
-              <div class="inner">
-                <h3 id="orders_with_results">...</h3>
-                <p>Total Manual Results</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a href="/pages/manage_users.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-         
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3 id="orders_without_results">...</h3>
-                <p>Total Electronic Results</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a href="/pages/manage_facilities.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-warning">
-              <div class="inner">
-                <h3 id="total_orders">...</h3>
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box">
+              <span class="info-box-icon bg-info elevation-1"><i class="fas fa-hospital-user"></i></span>
 
-                <p id="bargraph_card">Total Available Results</p>
+              <div class="info-box-content">
+                <span class="info-box-text">Patients</span>
+                <span class="info-box-number" id="patients_count">
+                  ...
+                </span>
               </div>
-              <div class="icon">
-                <i class="ion  ion-stats-bars"></i>
-              </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              <!-- /.info-box-content -->
             </div>
+            <!-- /.info-box -->
           </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box">
+              <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-notes-medical"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Encounters</span> 
+                <span class="info-box-number" id="encounters_count">
+                ...
+                </span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-server"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Devices</span>
+                <span class="info-box-number" id='count_devices'>...</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+
+          <!-- fix for small devices only -->
+          <div class="clearfix hidden-md-up"></div>
+
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-success elevation-1"><i class="fas fa-clock"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Down Time</span>
+                <span class="info-box-number" id="downtime">...</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-list"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Viral load</span>
+                <span class="info-box-number" id="viral_load">...</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-database"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Dumps</span>
+                <span class="info-box-number">2GB (6files)</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
         </div>
         <!-- /.row -->
         <!-- Main row -->
         <div class="row">
           <!-- Left col -->
-          <section class="col-lg-12 connectedSortable">
-             <!-- BAR CHART -->
-             <div class="card">
+          <section class="col-lg-5 connectedSortable">
+            <!-- Custom tabs (Charts with tabs)-->
+            <div class="card">
               <div class="card-header">
-                <h3 class="card-title" id="bargraph_title">Viral Load <span id="_date"> </span></h3>
-                <a href="#" data-toggle="modal" data-target="#modal-default" id="toggle"> <i class="fas fa-calendar-alt"></i></a>
-
+                <h3 class="card-title">
+                  <i class="fas fa-chart-bar mr-1"></i>
+                  Patients
+                </h3>
                 <div class="card-tools">
-                  <ul class="pagination pagination-sm" id="pages_btn_set">
-                    <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage-1)">&laquo;</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_chart(1)">1</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage+1)">&raquo;</a></li>
-                  </ul>
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
                 </div>
-              </div>
+              </div><!-- /.card-header -->
               <div class="card-body">
-                <div class="chart" id="chart_set">
-                  <canvas id="barChart1" style="min-height: 59vh; height: 59vh; max-height: 59vh; max-width: 100%;"></canvas>
+                <div class="chart">
+                  <canvas id="barChart" style="min-height: 305px; height: 305px; max-height: 305px; max-width: 100%;"></canvas>
                 </div>
-              </div>
-              <!-- /.card-body -->
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            
+            <!-- Custom tabs (Charts with tabs)-->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-chart-bar mr-1"></i>
+                  Devices
+                </h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <table id="devices_table" class="table table-bordered table-striped">
+                      <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>IP Address</th>
+                        <th>Status</th>
+                        <th>Mac Address</th>
+                        <th>Ports</th>
+                      </tr>
+                      </thead>
+                      <tbody id="table_body">
+                    
+                      </tbody>
+                  </table>
+              </div><!-- /.card-body -->
             </div>
             <!-- /.card -->
 
+
           </section>
           <!-- /.Left col -->
+          <!-- right col (We are only adding the ID to make the widgets sortable)-->
+          <section class="col-lg-4 connectedSortable">
+
+             <!-- Donut chart -->
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="far fa-chart-bar"></i>
+                  Sample Tracking
+                </h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="echart_pie" style="min-height: 250px; height: 300px; max-height: 300px; max-width: 100%;"></div>
+              </div>
+              <!-- /.card-body-->
+            </div>
+            <!-- /.card -->
+
+              <!-- Donut chart -->
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="far fa-chart-bar"></i>
+                  VPN
+                </h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                    <table id="vpn_table" class="table table-bordered table-striped">
+                      <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Response</th>
+                        <th>Downtime</th>
+                      </tr>
+                      </thead>
+                    </table>
+                <!-- /.row -->
+              </div>
+              <!-- /.card-body-->
+            </div>
+            <!-- /.card -->
+
+          
+
+          </section>
+          <!-- right col -->
+
+          <!-- right col (We are only adding the ID to make the widgets sortable)-->
+          <section class="col-lg-3 connectedSortable">
+
+             <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Viral load</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="chart">
+                    <div class="chart-responsive">
+                      <div id="echart_donut" style="min-height: 250px; height: 300px; max-height: 300px; max-width: 100%;"></div>
+                    </div>
+                    <!-- ./chart-responsive -->
+                </div>
+                <!-- /.row -->
+              </div>
+            
+            </div>
+            <!-- /.card -->
+          
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Connectivity</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="chart">
+                    <div class="chart-responsive">
+                      <canvas id="Chartpie" style="min-height: 250px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
+                    </div>
+                    <!-- ./chart-responsive -->
+                </div>
+                <!-- /.row -->
+              </div>
+            
+            </div>
+            <!-- /.card -->
+            
+
+          </section>
+          <!-- right col -->
         </div>
         <!-- /.row (main row) -->
       </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
-  <app-footer></app-footer>
-   <div class="modal fade" id="modal-default">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="form_title">Add Facility</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-         <!-- Horizontal Form -->
-       
-          <!-- form start -->
-          <form class="form-horizontal">
-            <div class="card-body">
-                <!-- /.form group -->
-                <!-- Date range -->
-                <div class="form-group">
-                  <label>Date range:</label>
-                  <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text">
-                        <i class="far fa-calendar-alt"></i>
-                      </span>
-                    </div>
-                    <input type="text" class="form-control  float-right" name="daterange" id="date_range" >
-                  </div>
-                  <!-- /.input group -->
-                </div>
-                <!-- /.form group -->
-              </div>
-        <!-- /.card -->
-        <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </form>
+    
+
+</div>
+<!-- /.content-wrapper -->
+
+<div class="modal fade" id="modal-default">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="form_title">Ports for device</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-      <!-- /.modal-content -->
+       <!-- Horizontal Form -->
+        <div class="col-md-12">
+         
+          <!-- /.card -->
+         
+          <div class="card">
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table id="table_services" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  <th>Service Name</th>
+                  <th>Port</th>
+                  <th>State</th>
+                </tr>
+                </thead>
+                <tbody id="table_body_services">
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+        <!--/.col (left) -->
+     
+    
     </div>
-    <!-- /.modal-dialog -->
+    <!-- /.modal-content -->
   </div>
-  <!-- /.modal -->
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+  <app-footer></app-footer>
+<!-- ./wrapper -->
+
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
     <!-- Control sidebar content goes here -->
   </aside>
   <!-- /.control-sidebar -->
 </div>
-<!-- ./wrapper -->
 <script src="components/bars.js"></script>
 
 <!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
+<!-- <script src="plugins/jquery/jquery.min.js"></script> -->
 <!-- jQuery UI 1.11.4 -->
 <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
   $.widget.bridge('uibutton', $.ui.button)
 </script>
+<script src="dist/js/jquery.min.js"></script>
+<script src="dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ECharts -->
+<script src="/plugins/echarts/dist/echarts.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script> -->
 <!-- ChartJS -->
 <script src="plugins/chart.js/Chart.js"></script>
 <!-- Sparkline -->
@@ -252,273 +455,780 @@
 <script src="plugins/summernote/summernote-bs4.min.js"></script>
 <!-- overlayScrollbars -->
 <script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- Select2 -->
+<script src="/plugins/select2/js/select2.full.min.js"></script>
+<!-- bs-custom-file-input -->
+<script src="/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/jszip/jszip.min.js"></script>
+<script src="/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.js"></script>
+<!-- FLOT CHARTS -->
+<script src="/plugins/flot/jquery.flot.js"></script>
+<!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
+<script src="/plugins/flot/plugins/jquery.flot.resize.js"></script>
+<!-- FLOT PIE PLUGIN - also used to draw donut charts -->
+<script src="/plugins/flot/plugins/jquery.flot.pie.js"></script>
+
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <!-- <script src="dist/js/pages/dashboard.js"></script> -->
 <script src="dist/js/backend.js"></script>
 
+
+<!-- bs-custom-file-input -->
+<script src="plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<script src="/dist/js/pages/dashboard3/barchats.js"></script>
+<script src="/components/facility_list.js"></script>
+
+
 <script>
+$(function () {
+   //Initialize Select2 Elements
+   $('.select2').select2()
 
-  var chart_setting = {
-    cur_dataset: undefined,
-    cur_datawrapper: undefined,
-    cur_label: undefined,
-    pageNum: 1,
-    currentPage: 1
-  };
-  const paginationLimit = 5;
-  var vpn_setting = {
-    data: undefined,
-    pageNum: 1,
-    currentPage: 1
-  };
+   //Initialize Select2 Elements
+   $('.select2bs4').select2({
+     theme: 'bootstrap4'
+   })
+  bsCustomFileInput.init();
+});
+</script>
+<!-- Page specific script -->
+<script>
+  
+  if ($('#echart_pie').length) {
 
+var echartPie = echarts.init(document.getElementById('echart_pie'), theme);
 
-  function random_rgba(program_name) {
-    var o = Math.round, r = Math.random, s = 255;
-    var R = 256, G = 256, B = 256;
-    while(R+G+B > 600){
-      R = o(r()*s)
-      G = o(r()*s)
-      B = o(r()*s)
-    }
-    var opacity = r().toFixed(1)
-    if(program_name == "Electronic Results")
-      return "rgba(56, 175, 210, 0.7)"
-    if(program_name == "Manualy Results")
-      return "rgba(154, 157, 162, 0.8)"
-    else
-    if (opacity < 0.5) opacity += 0.5
-    return 'rgba(' + R + ',' + G + ',' + B + ',' + opacity + ')';
-  }
-
-
-  function process_viral_load_data(data){
-    datasets = []
-    var total_viral_load = 0;
-    data.viral_load.forEach(x => {n = parseInt(x.total_viral_load); total_viral_load += isNaN(n) ? 0 : n;})
-    var orders_with_results = data.viral_load.filter((el) => el.results != "" && el.acknowledgement_type == 'test_results_delivered_to_site_electronically')
-    var orders_without_results = data.viral_load.filter((el) => el.results != "" && el.acknowledgement_type != 'test_results_delivered_to_site_electronically')
-    $("#viral_load_count").text(total_viral_load);
-    $("#total_orders").text(orders_without_results.length + orders_with_results.length)
-    $("#orders_without_results").text(orders_without_results.length)
-    $("#orders_with_results").text(orders_with_results.length)
-
-    const order_status = ["Electronic Results","Manualy Results"];
-    const unique_labels = [...new Set(data.viral_load.map(item => item.facility_name))];
-
-    viral_load_data = []
-    
-    for(const [i, results_status] of order_status.entries()){
-      viral_load_data.push([])
-      for(facility_name in unique_labels){
-        if(i==0){
-          var encounter_value = data.viral_load.filter((el) => el.results != "" && el.facility_name == unique_labels[facility_name] && el.acknowledgement_type == 'test_results_delivered_to_site_electronically' )
-          viral_load_data[i].push(parseInt(encounter_value.length))
-        }
-        if(i==1){
-          var encounter_value = data.viral_load.filter((el) => el.results != "" && el.facility_name == unique_labels[facility_name] && el.acknowledgement_type != 'test_results_delivered_to_site_electronically' )
-          viral_load_data[i].push(parseInt(encounter_value.length))
-        }
-         
-      }
-      
-      graphic= {
-          label               : results_status,
-          backgroundColor     : random_rgba(results_status),
-          borderColor         : random_rgba(results_status),
-          pointRadius          : false,
-          pointColor          : '#3b8bba',
-          pointStrokeColor    : 'rgba(60,141,188,1)',
-          pointHighlightFill  : '#fff',
-          pointHighlightStroke: 'rgba(60,141,188,1)',
-          data                : [],
-        }
-        datasets.push(graphic)
-    }
-    
-    chart_setting.cur_datawrapper = datasets;
-    chart_setting.cur_dataset = viral_load_data;
-    chart_setting.cur_label = unique_labels;
-    chart_setting.pageNum = Math.ceil(unique_labels.length / paginationLimit);
-    if(chart_setting.currentPage > chart_setting.pageNum) chart_setting.currentPage = 1;
-    console.log(datasets)
-    setpage_chart(chart_setting.currentPage);
-    graphs();
-  }
-
-  function setpage_chart(num) {
-    $("#barChart" + chart_setting.currentPage).attr("hidden", true)
-    chart_setting.currentPage = num;
-    if(chart_setting.currentPage == 0) chart_setting.currentPage = chart_setting.pageNum;
-    if(chart_setting.currentPage > chart_setting.pageNum) chart_setting.currentPage = 1;
-    $("#barChart" + chart_setting.currentPage).removeAttr("hidden")
-
-    var from = chart_setting.currentPage-3 > 1 ? chart_setting.currentPage-3 : 1;
-    var to = chart_setting.currentPage+3 < chart_setting.pageNum ?
-             chart_setting.currentPage+3 : chart_setting.pageNum;
-    
-    var html_str = '<li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage-1)">&laquo;</a></li>'
-    for(let i = from; i <= to; i++) {
-      html_str += '<li class="page-item"><a class="page-link"' + 
-                  ' onclick="setpage_chart(' + i + ')">' + i + '</a></li>';
-    }
-    html_str += '<li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage+1)" id="next_btn">&raquo;</a></li>'
-    $("#pages_btn_set").html(html_str);
-  }
-
-  function min(a, b) {
-    return a>b ? b : a;
-  }
-
-
-  function graphs() {
-    /* ChartJS
-     * -------
-     * Here we will create a few charts using ChartJS
-     */
-    for(var cur = 1; cur <= chart_setting.pageNum; cur++) {
-      var wrapper = structuredClone(chart_setting.cur_datawrapper)
-      for(let i = 0; i < wrapper.length; i++) {
-        wrapper[i].data = chart_setting.cur_dataset[i].slice((cur-1)*5, cur*5)
-      }
-      var areaChartData = {
-        labels  : chart_setting.cur_label.slice((cur-1)*5, cur*5),
-        datasets: wrapper
-      }
-
-      if(cur != 1) {
-        $('#chart_set').append('<canvas id="barChart' + cur + '" style="min-height:59vh; height:59vh; max-height:59vh; max-width: 100%;" hidden></canvas>')
-      }
-      //-------------
-      //- BAR CHART -
-      //-------------
-      var barChartCanvas = $('#barChart' + cur).get(0).getContext('2d')
-
-      var barChartOptions = {
-        responsive              : true,
-        maintainAspectRatio     : false,
-        datasetFill             : false
-      }
-
-      // new Chart(barChartCanvas, {
-      //   type: 'bar',
-      //   data: areaChartData,
-      //   options: barChartOptions
-      // })
-
-      var UserVsMyApps = new Chart(barChartCanvas, {
-        type: 'bar',
-        data: areaChartData,
-        options: {
-            responsive: true,
-            legend: {
-                position: 'top',
-                display: true,
-                labels: {
-                  fontSize: 14
+echartPie.setOption({
+    tooltip: {
+        trigger: 'item',
+        formatter: "{a} <br/>{b} : {c} ({d}%)"
+    },
+    legend: {
+        x: 'center',
+        y: 'bottom',
+        data: ['Drawn', 'Pending', 'Started','Test-rejected','Failed','Voided','Not-done','Completed','Verified']
+    },
+    toolbox: {
+        show: true,
+        feature: {
+            magicType: {
+                show: true,
+                type: ['pie', 'funnel'],
+                option: {
+                    funnel: {
+                        x: '25%',
+                        width: '50%',
+                        funnelAlign: 'left',
+                        max: 1548
+                    }
                 }
- 
             },
-            "hover": {
-              "animationDuration": 0
+            restore: {
+                show: true,
+                title: "Restore"
             },
-             "animation": {
-                "duration": 1,
-              "onComplete": function() {
-                var chartInstance = this.chart,
-                  ctx = chartInstance.ctx;
- 
-                ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
- 
-                this.data.datasets.forEach(function(dataset, i) {
-                  var meta = chartInstance.controller.getDatasetMeta(i);
-                  meta.data.forEach(function(bar, index) {
-                    var data = dataset.data[index];
-                    ctx.fillText(data, bar._model.x, bar._model.y - 5);
-                  });
-                });
-              }
-            },
-            title: {
-                display: false,
-                text: 'Daily EMR Viral Load',
-            },
-            scales: {
-              xAxes: [{
-                ticks: {
-                  beginAtZero: true,
-                  fontSize: 15,  
-                }
-              }],
-              yAxes: [{
-                display: true
-              }]
+            saveAsImage: {
+                show: true,
+                title: "Save Image"
             }
         }
+    },
+    calculable: true,
+    series: [{
+        name: 'Sample Status',
+        type: 'pie',
+        radius: '55%',
+        center: ['50%', '48%'],
+        data: [{
+            value: 335,
+            name: 'Drawn'
+        }, {
+            value: 310,
+            name: 'Pending'
+        }, {
+            value: 310,
+            name: 'Test-rejected'
+        }, {
+            value: 310,
+            name: 'Voided'
+        }, {
+            value: 310,
+            name: 'Not-done'
+        }, {
+            value: 310,
+            name: 'Completed'
+        }, {
+            value: 310,
+            name: 'Verified'
+        }, {
+            value: 234,
+            name: 'Started'
+        }]
+    }]
+});
+
+var dataStyle = {
+    normal: {
+        label: {
+            show: false
+        },
+        labelLine: {
+            show: false
+        }
+    }
+};
+
+var placeHolderStyle = {
+    normal: {
+        color: 'rgba(0,0,0,0)',
+        label: {
+            show: false
+        },
+        labelLine: {
+            show: false
+        }
+    },
+    emphasis: {
+        color: 'rgba(0,0,0,0)'
+    }
+};
+
+}
+
+
+
+
+
+
+
+
+  
+  $(function () {
+   
+
+    $('body').attr("class","layout-fixed control-sidebar-slide-open sidebar-collapse")
+
+    
+  });
+
+var facility_name = 'Chintheche_Rural_Hospital'
+getData(base_url+'databases/list_facility_dumps/'+facility_name,'display_facility_dumps')
+getData(base_url+'devices/list?id=1','display_devices')
+
+
+var devices_service_data = []
+function display_devices_service(ip_address){
+  getData(base_url+'devices/list_devices_service?ip_address='+ip_address,'viewPorts')
+}
+function display_facility_dumps(data) {
+console.log(data)
+     
+  };
+function viewPorts(devices_service_data){
+    $("#table_services").dataTable().fnDestroy();
+    $(function() {
+      $('#inactive_facilities').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+      });
+
+      data = devices_service_data.devices.map((value) =>{
+          return [
+                  value['port'],
+                  value['service'],
+                  value['state']
+                ]
+        })
+
+        var datatable = $("#table_services").dataTable().api();
+        datatable.clear();
+        datatable.rows.add(data);
+        datatable.draw();
+    });
+  }
+
+
+function display_devices(data) {
+ $('#count_devices').text(data.devices.length) 
+data = data.devices.map((value) =>{
+      return [
+        value['device_name'],
+        value['device_ip'],
+        value['device_status']=='active' ? `<span class=" bg-gradient-success btn-xs">${value['device_status']}</span>` :  
+          `<span class=" bg-gradient-danger btn-xs">${value['device_status']}</span>`,
+        value['device_mac'],
+        `<button type="button" class="btn btn-primary" style="padding:0.2rem" data-toggle="modal" data-target="#modal-default"  onclick="display_devices_service('${value['device_ip']}')">View</button> `
+    ]
+    })
+
+    var datatable = $("#devices_table").dataTable().api();
+    datatable.clear();
+    datatable.rows.add(data);
+    datatable.draw();
+     
+  };
+
+
+  $("#vpn_table").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      data:{}
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    $('#ll').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
     });
 
+
+ $("#devices_table").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      data:{}
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    $('#example2').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+
+
+
+
+
+var endDate = new Date().toISOString().slice(0, 10);
+var startDate = '2023-04-10'
+
+getData(base_url+`reports/viral_load_report?facility_id=25&start_date='${startDate}'&end_date='${endDate}'`,'doughnutChartViralLoadResult')
+getData(base_url+`reports/vpn_report?facility_id=25&start_date='${startDate}'&end_date='${endDate}'`,'pieChartVPN')
+getData(base_url+`reports/vpn_report?facility_id=1&per_day=true&start_date='${startDate}'&end_date='${endDate}'`,'VPN_table')
+
+function getCurrentTime(){
+  const currentDate = new Date();
+  const hours = currentDate.getHours().toString().padStart(2, '0');
+  const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+
+function formatBytes(bytes) {
+  if (bytes < 1024) {
+    return bytes + ' B';
+  } else if (bytes < 1024 * 1024) {
+    return (bytes / 1024).toFixed(2) + ' KB';
+  } else {
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+}
+
+function VPN_table(data){
+  console.log(data)
+  let vpn_status = data.facilities[0]['vpn_status']
+
+  
+  data = data.facilities.map((value) =>{  
+    if(value['date'] == endDate){
+      $('#_vpn_status').html(value['vpn_status']=='active' ? `VPN <i class="fas fa-circle nav-icon text-success"></i>` :  
+      `VPN <i class="fas fa-circle nav-icon text-danger"></i>`)
     }
-  }
-  function total_facilities_data(data){$("#facilities_count").text(data.facilities.length)}
-
-  var todayDate = new Date().toISOString().slice(0, 10);
-
-  startDate = todayDate
-  endDate =todayDate
-  var data ={}
- 
-  function refresh() {
-    if(startDate == endDate)
-      $("#_date").text("("+startDate+")")
-    else
-      $("#_date").text("(From "+startDate+" to "+endDate+")")
-    console.log(todayDate)
-    getData(base_url+`reports/viral_load_report?start_date='${startDate}'&end_date='${endDate}'`,'process_viral_load_data')
-    getData(base_url+'facilities/list/','total_facilities_data')
-  }
- 
-  $(function () {
-    data = $('#date_range').daterangepicker(
-        {opens: 'right'}, 
-        function(start, end, label) {
-          // getData(base_url+`reports/viral_load_report?start_date='${start.format('YYYY-MM-DD')}'&end_date='${end.format('YYYY-MM-DD')}'`,'display_data')
-          startDate = start.format('YYYY-MM-DD')
-          endDate = end.format('YYYY-MM-DD')
-          refresh()
-        }
-    )
+          
+    return [
+        value['date'],
+        value['vpn_status']=='active' ? `<span class=" bg-gradient-success btn-xs">${value['vpn_status']}</span>` :  
+          `<span class=" bg-gradient-danger btn-xs">${value['vpn_status']}</span>`,
+        parseFloat(value['response_time']).toFixed(2),
+        // formatBytes(value['received_bandwidth'])+'/'+formatBytes(value['transmitted_bandwidth']),
+        value['total_time'].replace(/hours/g, 'H').replace(/minutes/g, 'M'),
+    ]
   })
-  $(function () {
-    console.log("outside")
-    $('body').attr("class","layout-fixed control-sidebar-slide-open sidebar-collapse")
-    refresh();
-    function autoScrollDown(){
-    $(".inner_vpn").css({top:-$(".outer_vpn").outerHeight()}) // jump back
-                  .animate({top:0},50000,"linear", autoScrollDown); // and animate
-    }
-    // fix hight of outer_vpn:
-    $('.outer_vpn').css({maxHeight: $('.inner_vpn').height()});
-    // duplicate content of inner_vpn:
-    $('.inner_vpn').html($('.inner_vpn').html() + $('.inner_vpn').html());
+
+    var datatable = $("#vpn_table").dataTable().api();
+    datatable.clear();
+    datatable.rows.add(data);
+    datatable.draw();
+}
+
+function getDownTime(data){
+  const time = data.facilities[0].total_time;
+  const [hours, minutes] = time.match(/\d+/g);
+  return hours+'.'+minutes
+}
+
+function getTotalTime(){
+  const startDate1 = new Date(startDate+' 00:00');
+  const endDate1 = new Date(endDate+' '+getCurrentTime());
+
+  // Calculate the time difference in milliseconds
+  const timeDiff = endDate1 - startDate1;
+
+  // Convert milliseconds to minutes
+  const minutesDiff = timeDiff / (1000 * 60);
+
+  // Calculate hours and minutes separately
+  const hours1 = Math.floor(minutesDiff / 60);
+  const minutes1 = Math.floor(minutesDiff % 60);
+
+  return `${hours1}.${minutes1}`
+}
+function convertMinutes(minutes) {
+  if (minutes < 0) {
+    throw new Error("Minutes cannot be negative");
+  }
+  
+  if (minutes >= 1440) {
+    const days = Math.floor(minutes / 1440);
+    const remainingMinutes = minutes % 1440;
     
-    autoScrollDown();
+    return days + " days " + convertMinutes(remainingMinutes);
+  }
+  
+  if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    
+    return hours + " H " + Math.round(remainingMinutes) + " M";
+  }
+  
+  return minutes + " M";
+}
 
-    $('#outer_vpn').attr('style','height: 63vh;')
-    setInterval(function() {
-      // $('#vpn_list').animate({scrollTop: 8}, 4000);
-      $("#next_btn").click();
-    }, 60000);
 
-    setInterval(function() {
-      window.location.href = "/index.html"
-    }, 200000);
-  });
+
+
+
+
+
+
+function pieChartVPN(data){
+  const downTime = getDownTime(data)
+  const timeData = [downTime,getTotalTime()-downTime];
+  const colors = ['#f56954', '#00a65a']
+  const labels = [
+    'Down Time',
+    'Up Time'
+  ]
+  
+  $('#downtime').text(convertMinutes(downTime))
+  pieDoughnutChart('pie',timeData,colors,labels)
+}
+
+function doughnutChartViralLoad(data){
+  var electronic_results = data.viral_load.filter((el) => el.results != "" && el.acknowledgement_type == 'test_results_delivered_to_site_electronically')
+  var manual_results = data.viral_load.filter((el) => el.results != "" && el.acknowledgement_type != 'test_results_delivered_to_site_electronically')
+  var without_results = data.viral_load.filter((el) => el.results == "")
+  $('#viral_load').text(data.viral_load.length) 
+  data = [without_results.length, electronic_results.length, manual_results.length]
+  colors = ['#f56954', '#00a65a', '#f39c12']
+  labels = [
+    'No results',
+    'Electronic',
+    'Manual'
+  ]
+  pieDoughnutChart('doughnut',data,colors,labels)
+}
+
+function pieDoughnutChart(graph_type,data,colors,labels)
+{
+
+    //-------------
+  // - PIE CHART -
+  //-------------
+  // Get context with jQuery - using jQuery's .get() method.
+  var pieChartCanvas = $('#Chart'+graph_type).get(0).getContext('2d')
+  var pieData = {
+    labels: labels,
+    datasets: [
+      {
+        data: data,
+        backgroundColor: colors
+      }
+    ]
+  }
+
+  var options = {
+    tooltips: {
+      callbacks: {
+        label: function(tooltipItem, data) {
+          var dataset = data.datasets[tooltipItem.datasetIndex];
+          var value = dataset.data[tooltipItem.index];
+          return convertMinutes(value);
+        }
+      }
+    }
+  };
+
+
+
+  var pieChart = new Chart(pieChartCanvas, {
+    type: graph_type,
+    data: pieData,
+    options: options
+  })
+}
+
+
+
+
+
+
+
+
+
+
+
+var theme = {
+        color: [
+            '#26B99A', '#34495E', '#BDC3C7', '#3498DB',
+            '#9B59B6', '#8abb6f', '#759c6a', '#bfd3b7'
+        ],
+
+        title: {
+            itemGap: 8,
+            textStyle: {
+                fontWeight: 'normal',
+                color: '#408829'
+            }
+        },
+
+        dataRange: {
+            color: ['#1f610a', '#97b58d']
+        },
+
+        toolbox: {
+            color: ['#408829', '#408829', '#408829', '#408829']
+        },
+
+        tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            axisPointer: {
+                type: 'line',
+                lineStyle: {
+                    color: '#408829',
+                    type: 'dashed'
+                },
+                crossStyle: {
+                    color: '#408829'
+                },
+                shadowStyle: {
+                    color: 'rgba(200,200,200,0.3)'
+                }
+            }
+        },
+
+        dataZoom: {
+            dataBackgroundColor: '#eee',
+            fillerColor: 'rgba(64,136,41,0.2)',
+            handleColor: '#408829'
+        },
+        grid: {
+            borderWidth: 0
+        },
+
+        categoryAxis: {
+            axisLine: {
+                lineStyle: {
+                    color: '#408829'
+                }
+            },
+            splitLine: {
+                lineStyle: {
+                    color: ['#eee']
+                }
+            }
+        },
+
+        valueAxis: {
+            axisLine: {
+                lineStyle: {
+                    color: '#408829'
+                }
+            },
+            splitArea: {
+                show: true,
+                areaStyle: {
+                    color: ['rgba(250,250,250,0.1)', 'rgba(200,200,200,0.1)']
+                }
+            },
+            splitLine: {
+                lineStyle: {
+                    color: ['#eee']
+                }
+            }
+        },
+        timeline: {
+            lineStyle: {
+                color: '#408829'
+            },
+            controlStyle: {
+                normal: { color: '#408829' },
+                emphasis: { color: '#408829' }
+            }
+        },
+
+        k: {
+            itemStyle: {
+                normal: {
+                    color: '#68a54a',
+                    color0: '#a9cba2',
+                    lineStyle: {
+                        width: 1,
+                        color: '#408829',
+                        color0: '#86b379'
+                    }
+                }
+            }
+        },
+        map: {
+            itemStyle: {
+                normal: {
+                    areaStyle: {
+                        color: '#ddd'
+                    },
+                    label: {
+                        textStyle: {
+                            color: '#c12e34'
+                        }
+                    }
+                },
+                emphasis: {
+                    areaStyle: {
+                        color: '#99d2dd'
+                    },
+                    label: {
+                        textStyle: {
+                            color: '#c12e34'
+                        }
+                    }
+                }
+            }
+        },
+        force: {
+            itemStyle: {
+                normal: {
+                    linkStyle: {
+                        strokeColor: '#408829'
+                    }
+                }
+            }
+        },
+        chord: {
+            padding: 4,
+            itemStyle: {
+                normal: {
+                    lineStyle: {
+                        width: 1,
+                        color: 'rgba(128, 128, 128, 0.5)'
+                    },
+                    chordStyle: {
+                        lineStyle: {
+                            width: 1,
+                            color: 'rgba(128, 128, 128, 0.5)'
+                        }
+                    }
+                },
+                emphasis: {
+                    lineStyle: {
+                        width: 1,
+                        color: 'rgba(128, 128, 128, 0.5)'
+                    },
+                    chordStyle: {
+                        lineStyle: {
+                            width: 1,
+                            color: 'rgba(128, 128, 128, 0.5)'
+                        }
+                    }
+                }
+            }
+        },
+        gauge: {
+            startAngle: 225,
+            endAngle: -45,
+            axisLine: {
+                show: true,
+                lineStyle: {
+                    color: [[0.2, '#86b379'], [0.8, '#68a54a'], [1, '#408829']],
+                    width: 8
+                }
+            },
+            axisTick: {
+                splitNumber: 10,
+                length: 12,
+                lineStyle: {
+                    color: 'auto'
+                }
+            },
+            axisLabel: {
+                textStyle: {
+                    color: 'auto'
+                }
+            },
+            splitLine: {
+                length: 18,
+                lineStyle: {
+                    color: 'auto'
+                }
+            },
+            pointer: {
+                length: '90%',
+                color: 'auto'
+            },
+            title: {
+                textStyle: {
+                    color: '#333'
+                }
+            },
+            detail: {
+                textStyle: {
+                    color: 'auto'
+                }
+            }
+        },
+        textStyle: {
+            fontFamily: 'Arial, Verdana, sans-serif'
+        }
+    };
+
+
+
+
+
+
+
+
+    function doughnutChartViralLoadResult(data){
+  var electronic_results = data.viral_load.filter((el) => el.results != "" && el.acknowledgement_type == 'test_results_delivered_to_site_electronically')
+  var manual_results = data.viral_load.filter((el) => el.results != "" && el.acknowledgement_type != 'test_results_delivered_to_site_electronically')
+  var without_results = data.viral_load.filter((el) => el.results == "")
+  $('#viral_load').text(data.viral_load.length) 
+
+
+  /*
+     * DONUT CHART
+     * -----------
+     */
+
+    
+  
+    /*
+     * END DONUT CHART
+     */
+
+     /*
+   * Custom Label formatter
+   * ----------------------
+   */
+
+  //echart Donut
+
+    if ($('#echart_donut').length) {
+
+        var echartDonut = echarts.init(document.getElementById('echart_donut'), theme);
+
+        echartDonut.setOption({
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            calculable: true,
+            legend: {
+                x: 'center',
+                y: 'bottom',
+                data: ['Manual', 'Electron', 'No Results']
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    magicType: {
+                        show: true,
+                        type: ['pie', 'funnel'],
+                        option: {
+                            funnel: {
+                                x: '100%',
+                                width: '100%',
+                                funnelAlign: 'center',
+                                max: 1548
+                            }
+                        }
+                    },
+                    restore: {
+                        show: true,
+                        title: "Restore"
+                    },
+                    saveAsImage: {
+                        show: true,
+                        title: "Save Image"
+                    }
+                }
+            },
+            series: [{
+                name: 'Access to the resource',
+                type: 'pie',
+                radius: ['35%', '55%'],
+                itemStyle: {
+                    normal: {
+                        label: {
+                            show: true
+                        },
+                        labelLine: {
+                            show: true
+                        }
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            position: 'center',
+                            textStyle: {
+                                fontSize: '14',
+                                fontWeight: 'normal'
+                            }
+                        }
+                    }
+                },
+
+
+                data: [{
+                    value: manual_results.length,
+                    name: 'Manual'
+                }, {
+                    value: electronic_results.length,
+                    name: 'Electron'
+                }, {
+                    value: without_results.length,
+                    name: 'No Results'
+                }]
+            }]
+        });
+
+    }
+  }
+    //echart Pie
+
 </script>
 </body>
 </html>

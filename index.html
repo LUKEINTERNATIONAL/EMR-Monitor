@@ -24,19 +24,24 @@
   <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
-
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="https://cdn.rawgit.com/aparshin/leaflet-boundary-canvas/f00b4d35/src/BoundaryCanvas.js"></script>
+  
+  <link rel="stylesheet" href="/dist/css/leaflet.css">
+  <script src="/dist/js/leaflet.js"></script>
+  <script src="/dist/js/BoundaryCanvas.js"></script>
+  <script src="/dist/js/esri-leaflet.js"></script>
+  <script src="/dist/js/esri-leaflet-geocoder.js"></script>
+  <link rel="stylesheet" href="/dist/css/esri-leaflet-geocoder.css">
+  <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/> -->
+  <!-- <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script> -->
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
+  <!-- <script src="https://cdn.rawgit.com/aparshin/leaflet-boundary-canvas/f00b4d35/src/BoundaryCanvas.js"></script> -->
 
   <!-- CSS and JS files for Search Box -->
-  <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
+  <!-- <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet/0.0.1-beta.5/esri-leaflet.js"></script>
 
   <script src="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.js"></script>
 
-  <link rel="stylesheet" type="text/css" href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css"> -->
   <style>
         #map { height: 100%; }
   </style>
@@ -157,23 +162,23 @@
           </div>
           <!-- BAR CHART -->
           <div class="card">
-          <div class="card-header">
-            <h3 class="card-title" id="bargraph_title">Encounters</h3>
+            <div class="card-header">
+              <h3 class="card-title" id="bargraph_title">Encounters</h3>
 
-            <div class="card-tools">
-              <ul class="pagination pagination-sm" id="pages_btn_set">
-                <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage-1)">&laquo;</a></li>
-                <li class="page-item"><a class="page-link" onclick="setpage_chart(1)">1</a></li>
-                <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage+1)">&raquo;</a></li>
-              </ul>
+              <div class="card-tools">
+                <ul class="pagination pagination-sm" id="pages_btn_set">
+                  <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage-1)">&laquo;</a></li>
+                  <li class="page-item"><a class="page-link" onclick="setpage_chart(1)">1</a></li>
+                  <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage+1)">&raquo;</a></li>
+                </ul>
+              </div>
             </div>
-          </div>
-          <div class="card-body">
-            <div class="chart" id="chart_set">
-              <canvas id="barChart1" style="min-height: 61.5vh; height: 61.5vh; max-height: 61.5vh; max-width: 100%;"></canvas>
+            <div class="card-body">
+              <div class="chart" id="chart_set">
+                <canvas id="barChart1" style="min-height: 61.5vh; height: 61.5vh; max-height: 61.5vh; max-width: 100%;"></canvas>
+              </div>
             </div>
-          </div>
-          <!-- /.card-body -->
+            <!-- /.card-body -->
           </div>
           <!-- /.card -->
         </section>

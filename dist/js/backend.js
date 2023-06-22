@@ -16,9 +16,6 @@ function submitParameters(parameters, url, returnToFunction) {
     }
     else if(this.status == 401){
       window.location = "/pages/login.html"
-    }else{
-      alert("Fail to save")
-      window.location.reload()
     }
   };
   xhttp.open("POST", url, true);

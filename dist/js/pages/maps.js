@@ -12,7 +12,7 @@ bsCustomFileInput.init();
 
   var map = L.map("map");
   $.getJSON('/dist/malawi-detailed-boundary_966.json').then(function(geoJSON) {
-  var osm = new L.TileLayer.BoundaryCanvas("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  var osm = new L.TileLayer.BoundaryCanvas("/offline_map/{z}/{x}/{y}.png", {
       boundary: geoJSON,
       attribution: 'Map of Malawi'
   });
@@ -73,8 +73,8 @@ if(data['vpn_status']=='active'){
       
     
     var greenIcon = new L.Icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/'+maker_image,
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconUrl: '/dist/img/marker/'+maker_image,
+    shadowUrl: '/dist/img/marker/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
@@ -102,6 +102,7 @@ function get_coordinates(obj){
       .then(response => response.json())
       .then(data => {
         if (data.length > 0) {  
+
           const lat = data[0].lat;
           const lon = data[0].lon;
           console.log(`The coordinates of ${obj[0]['facility_name']} are (${lat}, ${lon}).`);
@@ -113,15 +114,12 @@ function get_coordinates(obj){
             'latitude' : lat,
             'longitude' : lon
           }
-          console.log(obj[0])
-          console.log(parameters)
           updateData(parameters,base_url + "facilities/" + obj[0]['facility_id'])
         
         } else {
           console.error(`Could not find coordinates for ${obj[0]['facility_name']}.`);
         }
         obj.shift()
-        console.log("petros 111")
         get_coordinates(obj)
       })
       .catch(error => {
@@ -130,7 +128,6 @@ function get_coordinates(obj){
   }
   else
   if(obj.length > 0){
-    console.log("petros 222")
     obj.shift()
     get_coordinates(obj)
     
