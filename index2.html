@@ -530,9 +530,12 @@ $(function () {
 });
 
 function display_his_officer(data){
-  console.log(data)
-  if(data.users.length)
-    $("#his_officer").text(data.users[0].name)
+  if(data.users.length){
+    user = data.users.map((value)=>{
+     return value.name
+    })
+    $("#his_officer").text(user)
+  }
   else
     $("#his_officer").text('')
 }
