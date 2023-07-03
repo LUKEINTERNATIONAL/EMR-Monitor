@@ -1,6 +1,3 @@
-var todayDate = new Date().toISOString().slice(0, 10);
-getData(base_url+`facilities/one_facility_data/9/'2023-05-19'/'${todayDate}'`,'process_encounter_data')
-
 function random_rgba(program_name) {
   var o = Math.round, r = Math.random, s = 255;
   var R = 256, G = 256, B = 256;
@@ -25,8 +22,13 @@ function random_rgba(program_name) {
 
 
 function process_encounter_data(data){
-  $('#_dde_status').html(data.facilities[0]['dde_enabled']=='true' ? `DDE <i class="fas fa-circle nav-icon text-success"></i>` :  
-  `DDE <i class="fas fa-circle nav-icon text-danger"></i>`)
+  try {
+    $('#_dde_status').html(data.facilities[0]['dde_enabled']=='true' ? `DDE <i class="fas fa-circle nav-icon text-success"></i>` :  
+    `DDE <i class="fas fa-circle nav-icon text-danger"></i>`)
+  } catch (error) {
+    
+  }
+ 
 
   encounter_datasets = []
   patient_datasets = []
@@ -67,7 +69,11 @@ function process_encounter_data(data){
     patient_datasets.push(graphic(program,patient_data))
   }
   // graphs(encounter_datasets,unique_dates,'#barChartEncounters');
-  graphs(patient_datasets,unique_dates,'#barChart');
+ 
+  if(patient_datasets.length > 0)
+    graphs(patient_datasets,unique_dates,'#barChart');
+  else
+    graphs({},[],'#barChart');
 }
 
 function graphic(program,data){
@@ -84,41 +90,41 @@ return {
 }
 }
 
-function graphs(data,unique_dates,chatID) {
-  /* ChartJS
-   * -------
-   * Here we will create a few charts using ChartJS
-   */
 
-  //--------------
-  //- AREA CHART -
-  //--------------
+var barChart; // Variable to hold the chart instance
+
+function graphs(data, unique_dates, chatID) {
+
   
-  // Get context with jQuery - using jQuery's .get() method.
-
   var areaChartData = {
     labels  : unique_dates,
     datasets: data
-  }
-//-------------
+  };
+  console.log('patient_datasets')
+  console.log(areaChartData)
+
+  //-------------
   //- BAR CHART -
   //-------------
-  var barChartCanvas = $(chatID).get(0).getContext('2d')
-  var barChartData = $.extend(true, {}, areaChartData)
-  var temp0 = areaChartData.datasets[0]
-  var temp1 = areaChartData.datasets[1]
-  barChartData.datasets[0] = temp1
-  barChartData.datasets[1] = temp0
-
+  var barChartCanvas = $(chatID).get(0).getContext('2d');
+ 
   var barChartOptions = {
     responsive              : true,
     maintainAspectRatio     : false,
     datasetFill             : false
-  }
+  };
 
-  new Chart(barChartCanvas, {
-    type: 'bar',
-    data: barChartData,
-    options: barChartOptions
-  })
+  if (barChart) {
+    // If the chart instance already exists, update its data and options
+    barChart.data = areaChartData;
+    barChart.options = barChartOptions;
+    barChart.update();
+  } else {
+    // If the chart instance does not exist, create a new chart instance
+    barChart = new Chart(barChartCanvas, {
+      type: 'bar',
+      data: areaChartData,
+      options: barChartOptions
+    });
+  }
 }
