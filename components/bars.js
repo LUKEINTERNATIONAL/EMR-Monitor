@@ -278,7 +278,9 @@ class Footer extends HTMLElement{
 customElements.define('app-footer',Footer)
 customElements.define('app-bars',Bars)
 
-var base_url = "http://0.0.0.0:8000/"
+var script = document.createElement('script');
+script.src = '/config/config.js';
+document.body.appendChild(script);
 if(!sessionStorage.getItem('is_superuser')){
   document.getElementById('general').setAttribute("style","display:none")
 }
