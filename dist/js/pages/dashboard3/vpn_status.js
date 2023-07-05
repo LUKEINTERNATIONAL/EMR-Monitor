@@ -122,9 +122,6 @@ function getDownTime(data){
   
   
 
-getData(base_url+`reports/vpn_report?facility_id=1&per_day=true&start_date='${startDate}'&end_date='${endDate}'`,'VPN_table')
-
-
 function formatBytes(bytes) {
   if (bytes < 1024) {
     return bytes + ' B';
@@ -136,6 +133,7 @@ function formatBytes(bytes) {
 }
 
 function VPN_table(data){
+  console.log("####################")
   console.log(data)
   let vpn_status = data.facilities[0]['vpn_status']
 

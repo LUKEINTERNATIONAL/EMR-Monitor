@@ -5,6 +5,8 @@ function dashboard_urls(){
     getData(base_url+`reports/viral_load_report?facility_id=${facility_id}&start_date='${startDate}'&end_date='${endDate}'`,'viral_load_data')
     getData(base_url+`reports/vpn_report?facility_id=${facility_id}&start_date='${startDate}'&end_date='${endDate}'`,'pieChartVPN')
     getData(base_url+'databases/list_facility_dumps/'+facility_name.replace(/ /g, "_"),'display_facility_dumps')
+    getData(base_url+`reports/vpn_report?facility_id=${facility_id}&per_day=true&start_date='${startDate}'&end_date='${endDate}'`,'VPN_table')
+
 }
 
 function viral_load_data(data){
