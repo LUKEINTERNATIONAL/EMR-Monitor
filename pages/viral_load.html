@@ -81,11 +81,12 @@
                   <tr>
                     <th>Facility</th>
                     <th>Patient ID</th>
+                    <th>Ordered Date</th>
+                    <th>Status</th>
                     <th>Accession Number</th>
                     <th>Results</th>
                     <th>Acknowledgement Type</th>
                     <th>Acknowledgement Date</th>
-                    <th>Ordered Date</th>
                     <th>Released Date</th>
                   </tr>
                   </thead>
@@ -170,11 +171,12 @@ $(function () {
       return [
         value['facility_name'],
         value['person_id'],
+        value['ordered_date'],
+        value['order_status'],
         value['accession_number'],
         value['results'],
         value['acknowledgement_type'],
         value['acknowledgement_date'],
-        value['ordered_date'],
         value['released_date']
     ]
     })

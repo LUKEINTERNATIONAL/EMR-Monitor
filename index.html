@@ -613,16 +613,18 @@
     autoScrollDown();
 
     //$('#outer_vpn').attr('style','height: 63vh;')
-    setInterval(function() {
-      //$('#display_map').attr('style','height: 63vh;')
-      // $('#vpn_list').animate({scrollTop: 8}, 4000);
-      $("#next_btn").click();
-    }, 20000);
+    if(sessionStorage.getItem("auto_dashboard") == '1'){
+      setInterval(function() {
+        //$('#display_map').attr('style','height: 63vh;')
+        // $('#vpn_list').animate({scrollTop: 8}, 4000);
+        $("#next_btn").click();
+      }, 20000);
 
-    setInterval(function() {
-      window.location.href = "/index2.html"
-      refresh();
-    }, 200000);
+      setInterval(function() {
+        window.location.href = "/index2.html"
+        refresh();
+      }, 200000);
+    }
 
     
   });

@@ -116,6 +116,7 @@
           sessionStorage.setItem('username',data['username']);
           sessionStorage.setItem('is_superuser',data['is_superuser']);
           sessionStorage.setItem('Authorization','Token '+data['Token']);
+          sessionStorage.setItem("auto_dashboard","0")
           window.location = "/";
         },
         error: function(jqXHR, error) {

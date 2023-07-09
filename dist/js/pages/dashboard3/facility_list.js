@@ -39,15 +39,18 @@ function slide_facilities(data){
 }
 
 function printValue(data) {
-  if (index < ids.length) {
-    display_facilities(data, ids[index]);
-    index++;
-    setTimeout(() => {
-      printValue(data);
-    }, 60000); // Call printValue again after 20 seconds (20,000 milliseconds)
-  }else
-  {
-    window.location.href = "/index.html"
-  }
+  
+    if (index < ids.length) {
+      display_facilities(data, ids[index]);
+      index++;
+      if(sessionStorage.getItem("auto_dashboard") == '1'){
+        setTimeout(() => {
+          printValue(data);
+        }, 60000); // Call printValue again after 20 seconds (20,000 milliseconds)
+      }
+    }else
+    {
+      window.location.href = "/index.html"
+    }
 }
 
