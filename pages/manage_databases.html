@@ -323,6 +323,10 @@ function display_dump_download_modal(percent,download_speed,remainingTime){
   $('#dump_details').html("Downloading a dump for <b>"+facility_name.replace(/_/g, " ")+"</b>")
   $('.progress-bar').attr("Style","width:"+percent+"%")
 }
+function close_view_facility_dumps(){
+  var closeButton = document.querySelector('.close');
+  closeButton.click();
+}
 
 function formatFileSize(size) {
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
@@ -340,8 +344,7 @@ function formatTime(time) {
 }
 let xhr;
 function download_dump(dump_name) {
-  var closeButton = document.querySelector('.close');
-  closeButton.click();
+  close_view_facility_dumps()
   sessionStorage.setItem('download_status','1')
   
   // Create a new XMLHttpRequest or Fetch request
@@ -445,7 +448,7 @@ function cancel_download() {
         value['dump_status'],
         sessionStorage.getItem('download_status') == 1 ? ` <button type="button" style="width: fit-content; font-size: 15px;" 
         data-toggle="modal" data-target="#modal-download" class="btn btn-block bg-gradient-primary btn-xs" 
-        ">
+        onclick="close_view_facility_dumps()"">
         View Progress</button>
         `
         :
