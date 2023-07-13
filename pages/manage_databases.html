@@ -84,7 +84,7 @@
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title" id="form_title">View Dumps Details</h4>
+          <h4 class="modal-title" id="dump_details_for">View Dumps Details</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -114,6 +114,65 @@
                   </tbody>
                 </table>
               </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!--/.col (left) -->
+       
+      
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+  <div class="modal fade" id="modal-download">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="dump_details"></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+         <!-- Horizontal Form -->
+          <div class="col-md-12">
+           
+            <!-- /.card -->
+           
+            <div class="card">
+              <!-- /.card-header -->
+             <div class="card-body">
+              <div class="row mb-2">
+                <div class="col-sm-4">
+                  <p id="download_percent" ></p>
+                </div>
+                <div class="col-sm-4">
+                <center><p id="remaining_time" ></p></center>
+                </div>
+                <div class="col-sm-4">
+                  <p id="download_speed" style="float: right;"></p>
+                </div>
+              </div><!-- /.row -->
+
+              <div class="progress">
+                <div class="progress-bar bg-primary progress-bar-striped" role="progressbar"
+                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                  <span class="sr-only">100% Complete (success)</span>
+                </div>
+              </div>
+
+              <br/>
+              <center>
+                <button type="button" style="width: fit-content;" 
+          class="btn btn-block bg-gradient-danger btn-xs" 
+          onclick="cancel_download()">
+          Cancel Download</button>
+              </center>
+
+            </div>
               <!-- /.card-body -->
             </div>
             <!-- /.card -->
@@ -256,27 +315,86 @@ var facility_name = ""
     getData(base_url+'databases/list_facility_dumps/'+facility_name,'display_facility_dumps')
   }
 
- 
+
+function display_dump_download_modal(percent,download_speed,remainingTime){
+  $('#download_percent').html("Download Progress <b>"+percent+" %</b>")
+  $('#download_speed').html("Download Speed <b>"+download_speed+"</b>")
+  $('#remaining_time').html("Remaining Time <b>"+remainingTime+"</b>")
+  $('#dump_details').html("Downloading a dump for <b>"+facility_name.replace(/_/g, " ")+"</b>")
+  $('.progress-bar').attr("Style","width:"+percent+"%")
+}
+
+function formatFileSize(size) {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let index = 0;
+  while (size >= 1024 && index < units.length - 1) {
+    size /= 1024;
+    index++;
+  }
+  return size.toFixed(2) + ' ' + units[index];
+}
+function formatTime(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return minutes + 'm ' + seconds + 's';
+}
+let xhr;
 function download_dump(dump_name) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', base_url+'databases/download_dump/'+facility_name+'+Backups+'+dump_name);
-  xhr.responseType = 'blob';
-  xhr.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"));
-  xhr.onload = function() {
+  var closeButton = document.querySelector('.close');
+  closeButton.click();
+  sessionStorage.setItem('download_status','1')
+  
+  // Create a new XMLHttpRequest or Fetch request
+  xhr = new XMLHttpRequest(); // or use 'fetch' instead
+  
+  
+  // Set up progress tracking
+  let startTime = Date.now();
+  xhr.addEventListener('progress', function(event) {
+    if (event.lengthComputable) {
+      const elapsedTime = Date.now() - startTime;
+      const percentComplete = (event.loaded / event.total) * 100;
+      const speed = event.loaded / (elapsedTime / 1000); // Speed in bytes per second
+      const remainingTime = (event.total - event.loaded) / speed; // Remaining time in seconds
+      display_dump_download_modal(percentComplete.toFixed(2),formatFileSize(speed) + '/s', formatTime(remainingTime));
+      console.log('Download progress: ' + percentComplete.toFixed(2) + '%');
+      console.log('Download speed: ' + formatFileSize(speed) + '/s');
+      console.log('Remaining time: ' + formatTime(remainingTime));
+    }
+  });
+
+  // Handle the response
+  xhr.addEventListener('load', function(event) {
     if (xhr.status === 200) {
-      var a = document.createElement('a');
+        var a = document.createElement('a');
       a.href = window.URL.createObjectURL(xhr.response);
       a.download = dump_name;
       a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(a.href);
+      sessionStorage.setItem('download_status','0')
+      // File has been successfully downloaded
+      console.log('File downloaded!');
     } else {
-      console.log('File download failed.');
+      // Error occurred during download
+      console.error('Error downloading file. Status code: ' + xhr.status);
     }
-  };
+  });
+
+  // Send the request
+  xhr.open('GET', base_url+'databases/download_dump/'+facility_name+'+Backups+'+dump_name);
+  xhr.responseType = 'blob';
+  xhr.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"));
   xhr.send();
-  
+}
+// Function to cancel the download
+function cancel_download() {
+  if (xhr) {
+    xhr.abort(); // Cancel the ongoing download request
+    sessionStorage.setItem('download_status','0')
+    console.log('Download canceled!');
+  }
 }
  function view_facility_dumps(_facility_name){
   facility_name = _facility_name
@@ -296,6 +414,7 @@ function download_dump(dump_name) {
   });
   }
   function display_overview_dumps(data) {
+    sessionStorage.setItem('download_status','0')
     data = data.facilities.map((value) =>{
       return [
         value['facility_name'],
@@ -316,26 +435,32 @@ function download_dump(dump_name) {
     datatable.draw();
   };
 
-function display_facility_dumps(data) {
+  function display_facility_dumps(data) {
+    $('#dump_details_for').text("View Dump Details for "+facility_name.replace(/_/g, " "))
+    data = data.facility_dumps.map((value) =>{
+      return [
+        value['dump_name'],
+        value['dump_size'],
+        value['modified_date'],
+        value['dump_status'],
+        sessionStorage.getItem('download_status') == 1 ? ` <button type="button" style="width: fit-content; font-size: 15px;" 
+        data-toggle="modal" data-target="#modal-download" class="btn btn-block bg-gradient-primary btn-xs" 
+        ">
+        View Progress</button>
+        `
+        :
+        ` <button type="button" style="width: fit-content; font-size: 15px;" 
+        data-toggle="modal" data-target="#modal-download" class="btn btn-block bg-gradient-primary btn-xs" 
+        onclick="download_dump('${value['dump_name']}')">
+        Download</button>
+        `
+        ]
+    })
 
-      data = data.facility_dumps.map((value) =>{
-        return [
-          value['dump_name'],
-          value['dump_size'],
-          value['modified_date'],
-          value['dump_status'],
-          ` <button type="button" style="width: fit-content; font-size: 15px;" 
-          data-toggle="modal" data-target="#modal-default" class="btn btn-block bg-gradient-primary btn-xs" 
-          onclick="download_dump('${value['dump_name']}')">
-          Download</button>
-          `
-          ]
-      })
-
-      var datatable = $("#facility_dump").dataTable().api();
-      datatable.clear();
-      datatable.rows.add(data);
-      datatable.draw();
+    var datatable = $("#facility_dump").dataTable().api();
+    datatable.clear();
+    datatable.rows.add(data);
+    datatable.draw();
   };
 
   $(function() {
