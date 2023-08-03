@@ -5,7 +5,7 @@ function submitParameters(parameters, url, returnToFunction) {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
       loader_down()
-      alert("Saved Successfully")
+      showPopup("Saved Successfully",true)
       window.location.reload()
       // try {
       //   var obj = JSON.parse(this.responseText);
@@ -16,6 +16,9 @@ function submitParameters(parameters, url, returnToFunction) {
     }
     else if(this.status == 401){
       window.location = "/pages/login.html"
+    }else
+    {
+      showPopup("Request failed with status: " + this.status,false);
     }
   };
   xhttp.open("POST", url, true);
@@ -25,12 +28,14 @@ function submitParameters(parameters, url, returnToFunction) {
 }
   
   
-function getData(url,returnToFunction) {
-  loader_up()
+function getData(url,returnToFunction,loader='yes') {
+  if(loader=='yes')
+    loader_up()
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-      loader_down()
+      if(loader=='yes')
+        loader_down()
       var obj = JSON.parse(this.responseText);
       eval(returnToFunction)(obj);
     }else if(this.status == 401){
@@ -51,10 +56,13 @@ function deleteData(url) {
       xhttp.onreadystatechange = function() {
         loader_down()
         if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-        alert("Successfully deleted")
+          showPopup("Successfully deleted",true)
         window.location.reload()
         }else if(this.status == 401){
           window.location = "/pages/login.html"
+        }else
+        {
+          showPopup("Request failed with status: " + this.status,false);
         }
       };
       xhttp.open("DELETE", url, true);
@@ -64,7 +72,7 @@ function deleteData(url) {
     }
   }
   else{
-    alert("You do not have permission to perform this action")
+    showPopup("You do not have permission to perform this action",false)
   }
 }
 
@@ -86,9 +94,8 @@ function updateData(parameters,url) {
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
         loader_down()
-        alert("Successfully updated")
+        showPopup("Successfully updated",true)
         window.location.reload()
-        // alert("Saved Successfully")
         // window.location.reload()
         // try {
         //   var obj = JSON.parse(this.responseText);
@@ -99,6 +106,9 @@ function updateData(parameters,url) {
       }
       else if(this.status == 401){
         window.location = "/pages/login.html"
+      }else
+      {
+        showPopup("Request failed with status: " + this.status,false);
       }
     };
     xhttp.open("PUT", url, true);
@@ -107,10 +117,29 @@ function updateData(parameters,url) {
     xhttp.send(parametersPassed);
   }
   else{
-    alert("You do not have permission to perform this action")
+    showPopup("You do not have permission to perform this action",false)
   }
 }
+function showPopup(message, isSuccess) {
+  var popup = document.getElementById("popup");
+  var popupText = document.getElementById("popupText");
 
+  popupText.textContent = message;
+
+  if (isSuccess) {
+    popup.className = "popup success";
+  } else {
+    popup.className = "popup error";
+  }
+
+  popup.style.visibility = "visible";
+  popup.style.opacity = 1;
+
+  setTimeout(function() {
+    popup.style.visibility = "hidden";
+    popup.style.opacity = 0;
+  }, 5000); // 5000 milliseconds = 5 seconds
+}
 function setCookie(name,value,days) {
   var expires = "";
   if (days) {
@@ -160,14 +189,73 @@ function internet_status(status){
     $("#internet_status").attr('style','color:red')
 }
 function refresh(){
-  getData(base_url+'vpn/vpn_status','vpn_status')
-  getData(base_url+'vpn/internet_status','internet_status')
+  var loader = 'no'
+  getData(base_url+'vpn/vpn_status','vpn_status',loader)
+  getData(base_url+'vpn/internet_status','internet_status',loader)
 }
-setInterval(function() {
-  refresh();
-}, 200000);
+
+function calculateTimeDifference(startDateTime, endDateTime) {
+  const start = new Date(startDateTime);
+  const end = new Date(endDateTime);
+  const differenceInMilliseconds = end - start;
+
+  const minutesDifference = differenceInMilliseconds / (1000 * 60);
+  const hoursDifference = Math.floor(minutesDifference / 60);
+  const remainingMinutes = minutesDifference % 60;
+
+  $('#spend_time').html("Spent Time Per Day: <b>("+parseInt(hoursDifference)+" Hours, "+ parseInt(remainingMinutes)+" Minutes)</b>")
+  console.log(parseInt(hoursDifference)+" Hours, "+ parseInt(remainingMinutes)+" Minutes")
+}
+
+function _trackusers(){
+  data = {
+    'login_page': 'false',
+    'other_page': 'true'
+  }
+  $.ajax({
+    type: "POST",
+    data: data,
+    url: base_url + "trackusers/",
+    beforeSend: function(xhr) {
+      xhr.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"))
+    },
+    success: function(data) {
+      var spend_time =calculateTimeDifference(data['track_users']['login_time'], data['track_users']['logout_time']) 
+      console.log(spend_time)
+      console.log("successfully tracked");
+    },
+    error: function(jqXHR, error) {
+      console.log("tracking failed.");
+    }
+  });
+
+}
+setInterval(function() { refresh();}, 200000);
+setInterval(function() {_trackusers();}, 60000);
+_trackusers();
 refresh();
 style=`
+<style>
+  .popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    color: white;
+    padding: 6px;
+    border-radius: 5px;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.5s linear;
+    z-index: 2000;
+  }
+  .success {
+    background-color: #4CAF50; /* Green */
+  }
+
+  .error {
+    background-color: #f44336; /* Red */
+  }
+</style>
 <style>
 /*Horizontal circles as bars loader-3 */
 #cover{

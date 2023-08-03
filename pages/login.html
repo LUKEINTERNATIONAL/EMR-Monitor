@@ -98,6 +98,28 @@
 </script><script src="/components/bars.js"></script>
 
 <script>
+function user_tracker(){
+  data = {
+    'login_page': 'true',
+    'other_page': 'false'
+  }
+  $.ajax({
+    type: "POST",
+    data: data,
+    url: base_url + "trackusers/",
+    beforeSend: function(xhr) {
+      xhr.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"))
+    },
+    success: function(data) {
+      console.log("successfully tracked");
+      window.location = "/";
+    },
+    error: function(jqXHR, error) {
+      alert("tracking failed.");
+    }
+  });
+
+}
   $(function() {
     $("#login").on("click",function(event) {
       event.preventDefault();
@@ -117,7 +139,7 @@
           sessionStorage.setItem('is_superuser',data['is_superuser']);
           sessionStorage.setItem('Authorization','Token '+data['Token']);
           sessionStorage.setItem("auto_dashboard","0")
-          window.location = "/";
+          user_tracker()
         },
         error: function(jqXHR, error) {
           alert("login failed.")

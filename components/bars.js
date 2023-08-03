@@ -1,6 +1,9 @@
 class Bars extends HTMLElement{
     connectedCallback(){
         this.innerHTML = `
+        <div id="popup" class="popup">
+          <span id="popupText"></span>
+        </div>
         <!-- Preloader -->
         <div class="preloader flex-column justify-content-center align-items-center">
           <img class="animation__shake" src="/dist/img/emr_monitor.png" alt="EMR MONITOR" height="60" width="60">
@@ -23,6 +26,9 @@ class Bars extends HTMLElement{
       
           <!-- Right navbar links -->
           <ul class="navbar-nav ml-auto">
+            <li class="nav-item" style="margin-top: 15px;font-size: 10px;">
+              <span id='spend_time'></span>
+            </li>
             <li class="nav-item">
               <a class="nav-link" href="#" role="button">
                 <i class="fas fa-broadcast-tower" id="vpn_status"></i>
@@ -224,6 +230,12 @@ class Bars extends HTMLElement{
                       <a href="/pages/viral_load.html" class="nav-link" id="viral_load_report">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Viral Load Report</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="/pages/track_users.html" class="nav-link" id="track_users">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Track System Users</p>
                       </a>
                     </li>
                   </ul>
