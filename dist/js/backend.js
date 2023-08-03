@@ -138,6 +138,7 @@ function showPopup(message, isSuccess) {
   setTimeout(function() {
     popup.style.visibility = "hidden";
     popup.style.opacity = 0;
+    location.reload()
   }, 5000); // 5000 milliseconds = 5 seconds
 }
 function setCookie(name,value,days) {
