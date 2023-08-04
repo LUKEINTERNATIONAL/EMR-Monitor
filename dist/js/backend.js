@@ -3,22 +3,23 @@ function submitParameters(parameters, url, returnToFunction) {
   var parametersPassed = JSON.stringify(parameters);
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-      loader_down()
-      showPopup("Saved Successfully",true)
-      window.location.reload()
-      // try {
-      //   var obj = JSON.parse(this.responseText);
-      //   eval(returnToFunction)(obj);
-      // } catch (error) {
-        
-      // }
-    }
-    else if(this.status == 401){
-      window.location = "/pages/login.html"
-    }else
-    {
-      showPopup("Request failed with status: " + this.status,false);
+    if(this.readyState == 4 ){
+        if ( (this.status == 201 || this.status == 200)) {
+          loader_down()
+          showPopup("Saved Successfully",true)
+          window.location.reload()
+          // try {
+          //   var obj = JSON.parse(this.responseText);
+          //   eval(returnToFunction)(obj);
+          // } catch (error) {
+            
+          // }
+        }
+        else if(this.status == 401){
+          window.location = "/pages/login.html"
+        }else {
+          popup_message_display(this)
+      }
     }
   };
   xhttp.open("POST", url, true);
@@ -26,20 +27,38 @@ function submitParameters(parameters, url, returnToFunction) {
   xhttp.setRequestHeader('Content-type', "application/json");
   xhttp.send(parametersPassed);
 }
-  
+
+function popup_message_display(resp){
+  try {
+    var errorResponse = JSON.parse(resp.responseText);
+    if (errorResponse && errorResponse.error) {
+        showPopup("Error: " + errorResponse.error, false);
+    } else
+    if (errorResponse && errorResponse.detail) {
+        showPopup("Detail: " + errorResponse.detail, false);
+    } else {
+        showPopup("Request failed with status: " + resp.status, false);
+    }
+  } catch (error) {
+      showPopup("Request failed with status: " + resp.status, false);
+  }
+
+}
   
 function getData(url,returnToFunction,loader='yes') {
   if(loader=='yes')
     loader_up()
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-      if(loader=='yes')
-        loader_down()
-      var obj = JSON.parse(this.responseText);
-      eval(returnToFunction)(obj);
-    }else if(this.status == 401){
-      window.location = "/pages/login.html"
+    if(this.readyState == 4){
+      if ( (this.status == 201 || this.status == 200)) {
+        if(loader=='yes')
+          loader_down()
+        var obj = JSON.parse(this.responseText);
+        eval(returnToFunction)(obj);
+      }else if(this.status == 401){
+        window.location = "/pages/login.html"
+      }
     }
   };
   xhttp.open("GET", url, true);
@@ -49,20 +68,21 @@ function getData(url,returnToFunction,loader='yes') {
 }
 
 function deleteData(url) {
-  if(sessionStorage.getItem('is_superuser')){
     if (confirm('Are you sure you want to delete this element?')) {
       loader_up()
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
         loader_down()
-        if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-          showPopup("Successfully deleted",true)
-        window.location.reload()
-        }else if(this.status == 401){
-          window.location = "/pages/login.html"
-        }else
-        {
-          showPopup("Request failed with status: " + this.status,false);
+        if(this.readyState == 4){
+          if ((this.status == 201 || this.status == 200)) {
+            showPopup("Successfully deleted",true)
+          window.location.reload()
+          }else if(this.status == 401){
+            window.location = "/pages/login.html"
+          }else
+          {
+            popup_message_display(this)
+          }
         }
       };
       xhttp.open("DELETE", url, true);
@@ -71,10 +91,8 @@ function deleteData(url) {
       xhttp.send();
     }
   }
-  else{
-    showPopup("You do not have permission to perform this action",false)
-  }
-}
+  
+
 
 function getFormData(){
   event.preventDefault();
@@ -87,38 +105,36 @@ function getFormData(){
 }
 
 function updateData(parameters,url) {
-  if(sessionStorage.getItem('is_superuser')){
     loader_up()
     var parametersPassed = JSON.stringify(parameters);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && (this.status == 201 || this.status == 200)) {
-        loader_down()
-        showPopup("Successfully updated",true)
-        window.location.reload()
-        // window.location.reload()
-        // try {
-        //   var obj = JSON.parse(this.responseText);
-        //   eval(returnToFunction)(obj);
-        // } catch (error) {
-          
-        // }
-      }
-      else if(this.status == 401){
-        window.location = "/pages/login.html"
-      }else
-      {
-        showPopup("Request failed with status: " + this.status,false);
+      if (this.readyState == 4){
+        if ( (this.status == 201 || this.status == 200)) {
+          loader_down()
+          showPopup("Successfully updated",true)
+          window.location.reload()
+          // window.location.reload()
+          // try {
+          //   var obj = JSON.parse(this.responseText);
+          //   eval(returnToFunction)(obj);
+          // } catch (error) {
+            
+          // }
+        }
+        else if(this.status == 401){
+          window.location = "/pages/login.html"
+        }else
+        {
+          popup_message_display(this)
+        }
       }
     };
     xhttp.open("PUT", url, true);
     xhttp.setRequestHeader('Authorization', sessionStorage.getItem("Authorization"));
     xhttp.setRequestHeader('Content-type', "application/json");
     xhttp.send(parametersPassed);
-  }
-  else{
-    showPopup("You do not have permission to perform this action",false)
-  }
+  
 }
 function showPopup(message, isSuccess) {
   var popup = document.getElementById("popup");
