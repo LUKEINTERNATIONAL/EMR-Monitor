@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EMR-Monitor</title>
+    <title>EMR-Monitor</title>
+  <link rel="shortcut icon" href="/dist/img/emr_monitor.png" type="image/x-icon">
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -13,10 +14,14 @@
   <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <script> var active_menu = "general"; var active_link = "manage_users"; </script>
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini sidebar-collapse">
 <div class="wrapper">
   <!-- bars plus loader -->
   <app-bars></app-bars>
@@ -28,7 +33,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setForm('','', true)">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setAddForm()">
               Add User
             </button>
           </div>
@@ -60,10 +65,12 @@
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>Username</th>
+                    <th>Name</th>
                     <th>Email</th>
-                    <th>Is Staff</th>
-                    <th>Is Admin</th>
+                    <th>Username</th>
+                    <th>Phone</th>
+                    <th>District</th>
+                    <th>Superuser</th>
                     <th>Action</th>
                   </tr>
                   </thead>
@@ -101,37 +108,68 @@
           <form class="form-horizontal" id="create_user_form">
             <div class="card-body">
               <div class="form-group row">
+                <label for="name" class="col-sm-2 col-form-label">Name</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="name" placeholder="name" name="name">
+                </div>
+              </div>
+              <div class="form-group row">
                 <label for="email" class="col-sm-2 col-form-label">Email</label>
                 <div class="col-sm-10">
                   <input type="email" class="form-control" id="email" placeholder="Email" name="email">
                 </div>
               </div>
               <div class="form-group row">
+                <label for="phone" class="col-sm-2 col-form-label">Phone</label>
+                <div class="col-sm-10">
+                  <input type="phone" class="form-control" id="phone" placeholder="phone" name="phone">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="category" class="col-sm-2 col-form-label">Category</label>
+                <div class="col-sm-10">
+                  <select class="form-control select2" name="category_id" style="width: 100%;" id="category" onchange="click_category(this)">
+                    <option value=''></option>
+                    <option value='district'>District</option>
+                    <option value='zone'>Zone</option>
+                    <option value='manager'>Manager</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row hide_district" hidden>
+                <label for="district" class="col-sm-2 col-form-label">District</label>
+                <div class="col-sm-10">
+                  <select class="form-control select2" name="district_id" style="width: 100%;" id="district">
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row hide_zone" hidden>
+                <label for="zone" class="col-sm-2 col-form-label">Zone</label>
+                <div class="col-sm-10">
+                  <select class="form-control select2" name="zone_id" style="width: 100%;" id="zone">
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
                 <label for="username" class="col-sm-2 col-form-label">Username</label>
                 <div class="col-sm-10">
-                  <input type="email" class="form-control" id="username" placeholder="Username" name="username">
+                  <input type="text" class="form-control" id="username" placeholder="Username" name="username">
                 </div>
               </div>
+
+              <!-- radio -->
               <div class="form-group row">
-                <label for="password" class="col-sm-2 col-form-label">Password</label>
-                <div class="col-sm-10">
-                  <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+                <label for="superuser" class="col-sm-2 col-form-label">Role</label>
+                <div class="col-sm-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="False" name="is_superuser" id="is_staff" checked>
+                    <label class="form-check-label">Staff</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="True"name="is_superuser" id="is_superuser" >
+                    <label class="form-check-label">Admin</label>
+                  </div>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="validate_password" class="col-sm-2 col-form-label">Confirm Password</label>
-                <div class="col-sm-10">
-                  <input type="password" class="form-control" id="validate_password" placeholder="Confirm Password" name="validate_password">
-                </div>
-              </div>
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="is_staff" name="is_staff">
-                <label class="form-check-label" for="exampleCheck1" onclick="$('#is_staff').click()">staff</label>
-              </div>
-              <br>
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="is_superuser" name="is_superuser">
-                <label class="form-check-label" for="exampleCheck1" onclick="$('#is_superuser').click()">admin</label>
               </div>
           </form>
         </div>
@@ -157,12 +195,15 @@
   <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
-<script src="/components/bars.js"></script>
+<script src="/config/config.js">
+</script><script src="/components/bars.js"></script>
 
 <!-- jQuery -->
 <script src="../plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 -->
+<script src="../plugins/select2/js/select2.full.min.js"></script>
 <!-- bs-custom-file-input -->
 <script src="../plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
@@ -184,199 +225,208 @@
 <!-- AdminLTE for demo purposes -->
 <script src="../dist/js/demo.js"></script>
 <!-- Page specific script -->
+<script src="/dist/js/backend.js"></script>
 <script>
 $(function () {
+  //Initialize Select2 Elements
+  $('.select2').select2()
+
+  //Initialize Select2 Elements
+  $('.select2bs4').select2({
+    theme: 'bootstrap4'
+  })
   bsCustomFileInput.init();
 });
 </script>
 <!-- Page specific script -->
+
 <script>
-  var user = {
-    "username": undefined,
-    "is_staff": undefined,
-    "is_superuser": undefined
-  };
 
-  function setForm(username, email, is_add, is_staff, is_superuser) {
-    $("#email").prop("value", email)
-    $("#username").prop("value", username)
-    $("#password").prop("value", "")
-    $("#validate_password").prop("value", "")
-
-    if(is_add) {
-      $("#modify_user_btn").prop("hidden", true)
-      $("#create_user_btn").prop("hidden", false)
-      $("#username").prop("readonly", false)
-      $("#form_title").text("Add User")
-
-      $("#is_staff").prop("checked", false)
-      $("#is_superuser").prop("checked", false)
-    }
-    else {
-      $("#create_user_btn").prop("hidden", true)
-      $("#modify_user_btn").prop("hidden", false)
-      $("#username").prop("readonly", true)
-      $("#form_title").text("Modify User")
-
-      if(is_staff === false) {
-        $("#is_staff").prop("checked", false)
-      }
-      else {
-        $("#is_staff").prop("checked", true)
-      }
-      if(is_superuser === false) {
-        $("#is_superuser").prop("checked", false)
-      }
-      else {
-        $("#is_superuser").prop("checked", true)
-      }
-    }
-
-    if(user.is_superuser) {
-      $("#is_staff").prop("disabled", false)
-      $("#is_superuser").prop("disabled", false)
-    }
-    else if(user.is_staff) {
-      $("#is_staff").prop("disabled", false)
-      $("#is_superuser").prop("disabled", true)
-    }
-    else {
-      $("#is_staff").prop("disabled", true)
-      $("#is_superuser").prop("disabled", true)
-    }
+function click_category(obj){
+  if(obj.value == "district"){
+    $('.hide_district').prop("hidden",false)
+    $('.hide_zone').prop("hidden",true)
   }
-
-  function modifyUser() {
-    event.preventDefault();
-    form = $("#create_user_form").serializeArray()
-    data = {}
-    for(const e of form) {
-      data[e.name] = e.value
-    }
-
-    $.ajax({
-      type: "PATCH",
-      data: data,
-      url: base_url + "/user/" + data.username,
-      success: function(data) {
-        alert("success");
-        $("#toggle").click();
-        refresh_user_list();
-      },
-      error: function(jqXHR, status, error) {
-        alert(jqXHR.responseJSON.status)
-      }
-    });
+  else if(obj.value == "zone"){
+    $('.hide_zone').prop("hidden",false)
+    $('.hide_district').prop("hidden",true)
+  }else{
+    $('.hide_zone').prop("hidden",true)
+    $('.hide_district').prop("hidden",true)
   }
+}
 
-  function addUser() {
-    event.preventDefault();
-    form = $("#create_user_form").serializeArray()
-    data = {}
-    for(const e of form) {
-      data[e.name] = e.value
-    }
+getData(base_url+'zones/list/','display_zones')
+function display_zones(data,zone_id = '') {
+  sessionStorage.setItem('zones',JSON.stringify(data));
+  data = data.zones.map((value) =>{
+    if(zone_id == value['id'])
+      return [`<option value='${value['id']}' selected>${value['zone']}</option>`]
+    else
+      return [`<option value='${value['id']}'>${value['zone']}</option>`]
+  })
+  data.unshift('<option></option>')
+  $("#zone").html(data)
+};
 
-    $.ajax({
-      type: "POST",
-      data: data,
-      url: base_url + "/user/",
-      success: function(data) {
-        alert("success");
-        $("#toggle").click();
-        refresh_user_list();
-      },
-      error: function(jqXHR, status, error) {
-        alert(jqXHR.responseJSON.status)
-      }
-    });
+getData(base_url+'districts/list/','display_districts')
+function display_districts(data,district_id="") {
+  sessionStorage.setItem('districts',JSON.stringify(data));
+  data = data.districts.map((value) =>{
+    if(district_id == value['district_id'])
+      var data = [`<option value='${value['district_id']}' selected >${value['district']}</option>`]
+    else
+      var data = [`<option value='${value['district_id']}'>${value['district']}</option>`]
+    return data
+  })
+  data.unshift('<option></option>')
+  $("#district").html(data)
+  
+};
+var user = {
+  "username": undefined,
+  "is_staff": undefined,
+  "is_superuser": undefined
+};
+
+function setAddForm(){
+  $("#name").prop("value", '')
+  $("#email").prop("value", '')
+  $("#username").prop("value", '')
+  $("#phone").prop("value", '')
+  $("#district_id").prop("value", '')
+  $(".password_row").prop("hidden", false)
+  $("#modify_user_btn").prop("hidden", true)
+  $("#create_user_btn").prop("hidden", false)
+  $("#form_title").text("Add User")
+  $("#is_staff").prop("checked", false)
+  $("#is_superuser").prop("checked", false)
+}
+
+function setUpdateForm(user_id,name,email,username, phone,district_id,is_zone, is_staff, is_superuser) {
+  sessionStorage.setItem('user_id',user_id);
+  if(district_id != 0 && is_zone == 0){
+    $('.hide_district').prop("hidden",false)
+    $('.hide_zone').prop("hidden",true)
+    var category =  `<option value=''></option>
+      <option value='district' selected>District</option>
+      <option value='zone'>Zone</option>
+      <option value='manager'>Manager</option>`
+    $("#category").html(category)
+    display_districts(JSON.parse(sessionStorage.getItem('districts')),district_id)
+  }else
+  if(is_zone != 0 && district_id == 0){
+    var category =  `<option value=''></option>
+      <option value='district' >District</option>
+      <option value='zone' selected>Zone</option>
+      <option value='manager'>Manager</option>`
+    $("#category").html(category)
+    $('.hide_district').prop("hidden",true)
+    $('.hide_zone').prop("hidden",false)
+    display_zones(JSON.parse(sessionStorage.getItem('zones')),is_zone)
+  }else
+  if(is_zone == 0 && district_id == 0){
+    var category =  `<option value=''></option>
+      <option value='district' >District</option>
+      <option value='zone'>Zone</option>
+      <option value='manager' selected>Manager</option>`
+    $("#category").html(category)
   }
+  $("#name").prop("value", name)
+  $("#email").prop("value", email)
+  $("#username").prop("value", username)
+  $("#phone").prop("value", phone)
+  $(".password_row").prop("hidden", true)
+  $("#create_user_btn").prop("hidden", true)
+  $("#modify_user_btn").prop("hidden", false)
+  $("#form_title").text("Modify User")
 
-  function deleteUser(username) {
-    event.preventDefault();
-    if(confirm("do you really want to delete?")) {
-      $.ajax({
-        type: "DELETE",
-        url: base_url + "/user/" + username,
-        success: function(data) {
-          alert("success");
-          refresh_user_list();
-        },
-        error: function(jqXHR, status, error) {
-          alert(jqXHR.responseJSON.status)
-        }
-      });
-    }
+  if(is_superuser){
+    $("#is_staff").prop("checked", false)
+    $("#is_superuser").prop("checked",true )
   }
-
-  function refresh_user_list() {
-    $.ajax({
-      type: "GET",
-      url: base_url + "/user/",
-      success: display_data,
-      error: function(jqXHR, status, error) {
-        window.location = "/pages/login.html"
-      }
-    });
+  else{
+    $("#is_staff").prop("checked", true)
+    $("#is_superuser").prop("checked", false)
   }
+}
 
-  function display_data(data) {
-    data = data.map((value) =>{
-      return [
-        value['username'],
-        value['email'],
-        value['is_staff'],
-        value['is_superuser'],
-        `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
-            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['username']}','${value['email']}', false, ${value['is_staff']}, ${value['is_superuser']})">Edit</button>
-          </span>
-          <span class="badge bg-danger">
-            <button type="button" class="btn btn-block bg-gradient-danger btn-xs" onclick="deleteUser('${value['username']}')">Delete</button> 
-          </span>`
-        ]
-    })
+function modifyUser() {
+  var data = getFormData()
+  if(data['category_id'] == 'zone')
+    delete data.district_id;
+  else
+  if(data['category_id'] == 'district')
+    delete data.zone_id;
+  else{
+    delete data.zone_id;
+    delete data.district_id;
+  }
+  updateData(getFormData(),base_url+'users/'+sessionStorage.getItem('user_id'))
+}
 
-    var datatable = $("#example1").dataTable().api();
-    datatable.clear();
-    datatable.rows.add(data);
-    datatable.draw();
-  };
+function addUser() {
+  submitParameters(getFormData(),base_url+'users/','')
+}
 
-  $(function () {
-    $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
-      data:{}
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
+function deleteUser(id) {
+  deleteData(base_url + "users/" + id)
+}
 
-    refresh_user_list();
+function refresh_user_list() {
+  getData(base_url+'users/','display_data')
+}
 
-    $.ajax({
-      type: "GET",
-      url: base_url + "/user/test",
-      success: function(data) {
-        if(data.logged_in === false) {
-          window.location = "/pages/login.html";
-        }
-        else {
-          user.is_staff = data.is_staff;
-          user.is_superuser = data.is_superuser;
-        }
-      },
-      error: function(jqXHR, status, error) {
-        window.location = "/pages/login.html";
-      }
-    });
+function display_data(data) {
+  data = data.users.map((value) =>{
+    return [
+      value['name'],
+      value['email'],
+      value['username'],
+      value['phone'],
+      value['district'],
+      value['is_superuser'],
+      `<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-default" style="padding:0.2rem" onclick="setUpdateForm(
+            '${value['userid']}',
+            '${value['name']}',
+            '${value['email']}', 
+            '${value['username']}',
+            '${value['phone']}', 
+            '${value['district_id']}', 
+            '${value['is_zone']}', 
+            ${value['is_staff']}, 
+            ${value['is_superuser']}
+            )">Edit</button>
+        <button type="button" class="btn btn-danger" style="padding:0.2rem" onclick="deleteUser('${value['userid']}')">Delete</button> 
+       `
+      ]
+  })
+
+  var datatable = $("#example1").dataTable().api();
+  datatable.clear();
+  datatable.rows.add(data);
+  datatable.draw();
+};
+
+$(function () {
+  $("#example1").DataTable({
+    "responsive": true, "lengthChange": false, "autoWidth": false,
+    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+    data:{}
+  }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+  $('#example2').DataTable({
+    "paging": true,
+    "lengthChange": false,
+    "searching": false,
+    "ordering": true,
+    "info": true,
+    "autoWidth": false,
+    "responsive": true,
   });
+
+  refresh_user_list();
+
+});
 </script>
 </body>
 </html>

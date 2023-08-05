@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EMR-Monitor</title>
+    <title>EMR-Monitor</title>
+  <link rel="shortcut icon" href="/dist/img/emr_monitor.png" type="image/x-icon">
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -13,10 +14,14 @@
   <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <script> var active_menu = "general"; var active_link = "manage_facilities"; </script>
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini sidebar-collapse">
 <div class="wrapper">
   <!-- bars plus loader -->
   <app-bars></app-bars>
@@ -28,7 +33,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setForm('','','',true)">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="toggle" onclick="setAddForm()">
               Add Facility
             </button>
           </div>
@@ -60,10 +65,12 @@
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
+                    <th>Zone</th>
+                    <th>District</th>
                     <th>Facility Name</th>
                     <th>Server Username</th>
                     <th>IP address</th>
-                    <th>Server Password</th>
+                    <th>DDE Activated</th>
                     <th>VPN Status</th>
                     <th>Action</th>
                   </tr>
@@ -74,10 +81,12 @@
                   </tbody>
                   <tfoot>
                   <tr>
+                    <th>Zone</th>
+                    <th>District</th>
                     <th>Facility Name</th>
                     <th>Server Username</th>
                     <th>IP address</th>
-                    <th>Server Password</th>
+                    <th>DDE Activated</th>
                     <th>VPN Status</th>
                     <th>Action</th>
                   </tr>
@@ -131,15 +140,59 @@
                   <input type="text" name="password" class="form-control" placeholder="Server Password">
                 </div>
               </div>
+              <div class="form-group row">
+                <label for="district" class="col-sm-2 col-form-label">District</label>
+                <div class="col-sm-10">
+                  <select class="form-control select2" name="district_id" style="width: 100%;" id="district">
+                  </select>
+                </div>
+              </div>
+              <input type="text" name="get_device_status" id="" hidden>
+              <input type="text" name="viral_load" id="" hidden>
           
         </div>
         <!-- /.card -->
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <input type="submit" value="Save Changes" class="btn btn-primary" id="create_facility_btn" onclick="addFacility()">
-          <button type="button" class="btn btn-primary" id="modify_facility_btn" hidden>Save Changes</button>
+          <input type="submit" value="Update Changes" class="btn btn-primary" id="modify_facility_btn" >
         </div>
       </form>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+   <div class="modal fade" id="modal-facility-status">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="form_title">Facility Monitoring Status </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      
+
+         <div class="card-body">
+                <table id="change_facility_status" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>Elements</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody id="table_">
+                 
+                  
+                  </tbody>
+                </table>
+              </div>
+
+
       </div>
       <!-- /.modal-content -->
     </div>
@@ -156,12 +209,15 @@
   <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
-<script src="../components/bars.js"></script>
+<script src="/config/config.js">
+</script><script src="/components/bars.js"></script>
 
 <!-- jQuery -->
 <script src="../plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 -->
+<script src="../plugins/select2/js/select2.full.min.js"></script>
 <!-- bs-custom-file-input -->
 <script src="../plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
@@ -184,119 +240,177 @@
 <script src="../dist/js/demo.js"></script>
 <!-- Page specific script -->
 <script src="../dist/js/backend.js"></script>
+<script src="/components/districts_list.js"></script>
 <script>
 $(function () {
+   //Initialize Select2 Elements
+   $('.select2').select2()
+
+   //Initialize Select2 Elements
+   $('.select2bs4').select2({
+     theme: 'bootstrap4'
+   })
   bsCustomFileInput.init();
 });
 </script>
 <!-- Page specific script -->
 <script>
-  function setForm(ip, username, password, is_add, id) {
+  
+  function setAddForm() {
+    display_districts(JSON.parse(sessionStorage.getItem('facilities')),'')
+    $('input[name="ip_address"]').prop("value", '')
+    $('input[name="user_name"]').prop("value", '')
+    $('input[name="password"]').prop("value", '')
+    $("#modify_facility_btn").prop("hidden", true)
+    $("#create_facility_btn").prop("hidden", false)
+    $("#form_title").text("Add Facility")
+  }
+
+   function setUpDateForm(ip, username, password,district_id, id) {
+    display_districts(JSON.parse(sessionStorage.getItem('facilities')),district_id)
     $('input[name="ip_address"]').prop("value", ip)
     $('input[name="user_name"]').prop("value", username)
     $('input[name="password"]').prop("value", password)
+    $("#create_facility_btn").prop("hidden", true)
+    $("#modify_facility_btn").prop("hidden", false)
+    $("#modify_facility_btn").attr("onclick", `modifyFacility(${id})`)
+    $("#form_title").text("Modify Facility")
+      
+  }
 
-    if(is_add) {
-      $("#modify_facility_btn").prop("hidden", true)
-      $("#create_facility_btn").prop("hidden", false)
-      $("#form_title").text("Add Facility")
-    }
-    else {
-      $("#create_facility_btn").prop("hidden", true)
-      $("#modify_facility_btn").prop("hidden", false)
-      $("#modify_facility_btn").prop("onclick", 'modifyFacility(' + id + ')')
-      $("#form_title").text("Modify Facility")
-    }
+  function getFormParamiters(){
+    event.preventDefault();
+      form = $("form").serializeArray()
+      data = {}
+      for(const e of form) {
+        data[e.name] = e.value
+      }
+      return data
   }
 
   function addFacility() {
-    event.preventDefault();
-    form = $("form").serializeArray()
-    data = {}
-    for(const e of form) {
-      data[e.name] = e.value
-    }
-    $.ajax({
-      type: "POST",
-      data: data,
-      url: base_url+'/encounters/create_site',
-      success: function(data) {
-        alert("success");
-        $("#toggle").click();
-        refresh_facilities_list();
-      },
-      error: function(jqXHR, status, error) {
-        alert(jqXHR.responseJSON.status)
-      }
-    });
+    submitParameters(getFormParamiters(),base_url+'facilities/create_facility','')
   }
+  
 
   function modifyFacility(id) {
-    event.preventDefault();
-    form = $("form").serializeArray()
-    data = {}
-    for(const e of form) {
-      data[e.name] = e.value
-    }
+    // event.preventDefault();
+    // form = $("form").serializeArray()
+    // data = {}
+    // for(const e of form) {
+    //   data[e.name] = e.value
+    // }
     
-    $.ajax({
-      type: "PUT",
-      data: data,
-      url: base_url + "/facilities/" + id,
-      success: function(data) {
-        alert("success");
-        $("#toggle").click();
-        refresh_facilities_list();
-      },
-      error: function(jqXHR, status, error) {
-        alert(jqXHR.responseJSON.status)
-      }
-    });
+    // $.ajax({
+    //   type: "PUT",
+    //   data: data,
+    //   url: base_url + "/facilities/" + id,
+    //   success: function(data) {
+    //     alert("success");
+    //     $("#toggle").click();
+    //     refresh_facilities_list();
+    //   },
+    //   error: function(jqXHR, status, error) {
+    //     alert(jqXHR.responseJSON.status)
+    //   }
+    // });
+    updateData(getFormParamiters(),base_url + "facilities/" + id)
   }
-
-  function deleteFacility(id) {
-    event.preventDefault();
-    if(confirm("do you really want to delete?")) {
-      $.ajax({
-        type: "DELETE",
-        url: base_url + "/facilities/" + id,
-        success: function(data) {
-          alert("success");
-          $("#toggle").click();
-          refresh_facilities_list();
-        },
-        error: function(jqXHR, status, error) {
-          alert(jqXHR.responseJSON.status)
-        }
-      });
+  function updateFacilityStatus(ip_address, status,element){
+    parameters={
+      'element':element,
+      'ip_address':ip_address,
+      'status':status
     }
+    if(element == 'get_devices') updateData(parameters,base_url + "facilities/update_get_device_status")
+    if(element == 'vl') updateData(parameters,base_url + "facilities/update_viral_load")
+    if(element == 'close_mon') updateData(parameters,base_url + "facilities/update_close_mon")
+  }
+  function deleteFacility(id) {
+    deleteData(base_url + "facilities/" + id) 
+    // event.preventDefault();
+    // if(confirm("do you really want to delete?")) {
+    //   $.ajax({
+    //     type: "DELETE",
+    //     url: base_url + "/facilities/" + id,
+    //     success: function(data) {
+    //       alert("success");
+    //       $("#toggle").click();
+    //       refresh_facilities_list();
+    //     },
+    //     error: function(jqXHR, status, error) {
+    //       alert(jqXHR.responseJSON.status)
+    //     }
+    //   });
+    // }
   }
   
   function refresh_facilities_list() {
-    getData(base_url+'/facilities/list/','display_data')
+    getData(base_url+'facilities/list/','display_data')
+  }
+
+  function setUpStatusData(close_monitoring_status,get_device_status,viral_load,ip_address){
+      var data= [[
+        'Get Devices',
+        get_device_status=='1' ? `<span class=" bg-gradient-success btn-xs">Active</span>` :  
+        `<span class=" bg-gradient-danger btn-xs">Inactive</span>`,
+        get_device_status!='1' ? `
+        <button type="button" class="btn btn-success" style="padding:0.2rem" onclick="updateFacilityStatus('${ip_address}','1','get_devices')">Activate</button>` :
+        `<button type="button" class="btn btn-danger" style="padding:0.2rem" onclick="updateFacilityStatus('${ip_address}','0','get_devices')">Deactivate</button>`,
+        ],
+        [
+        'Viral load Monitoring',
+        viral_load=='1' ? `<span class=" bg-gradient-success btn-xs">Active</span>` :  
+        `<span class=" bg-gradient-danger btn-xs">Inactive</span>`,
+        viral_load!='1' ? `
+        <button type="button" class="btn btn-success" style="padding:0.2rem" onclick="updateFacilityStatus('${ip_address}','1','vl')">Activate</button>` :
+        `<button type="button" class="btn btn-danger" style="padding:0.2rem" onclick="updateFacilityStatus('${ip_address}','0','vl')">Deactivate</button>`,
+        ],
+        [
+        'Close Monitoring',
+        close_monitoring_status=='1' ? `<span class=" bg-gradient-success btn-xs">Active</span>` :  
+        `<span class=" bg-gradient-danger btn-xs">Inactive</span>`,
+        close_monitoring_status!='1' ? `
+        <button type="button" class="btn btn-success" style="padding:0.2rem" onclick="updateFacilityStatus('${ip_address}','1','close_mon')">Activate</button>` :
+        `<button type="button" class="btn btn-danger" style="padding:0.2rem" onclick="updateFacilityStatus('${ip_address}','0','close_mon')">Deactivate</button>`,
+        ]
+      
+      ]
+    var datatable = $("#change_facility_status").dataTable().api();
+    datatable.clear();
+    datatable.rows.add(data);
+    datatable.draw();
+
   }
 
   function display_data(data) {
-    console.log(data)
     data = data.facilities.map((value) =>{
       return [
+        value['zone'],
+        value['district'],
         value['facility_name'],
         value['user_name'],
         value['ip_address'],
-        value['password'],
+        value['dde_enabled']=='true' ? `<span class=" bg-gradient-success btn-xs">${value['dde_enabled']}</span>` :  
+        `<span class=" bg-gradient-danger btn-xs">${value['dde_enabled']}</span>`,
         value['vpn_status']=='active' ? `<span class=" bg-gradient-success btn-xs">${value['vpn_status']}</span>` :  
         `<span class=" bg-gradient-danger btn-xs">${value['vpn_status']}</span>`,
-        `<span class="badge bg-warning" data-toggle="modal" data-target="#modal-default">
-            <button type="button" class="btn btn-block bg-gradient-warning btn-xs" onclick="setForm('${value['ip_address']}',
-              '${value['user_name']}',
-              '${value['password']}',
-              false,
-              '${value['id']}'
+        `
+        <button type="button" class="btn btn-primary" style="padding:0.2rem" data-toggle="modal" data-target="#modal-facility-status" onclick="setUpStatusData(
+            '${value['close_monitoring_status']}',
+            '${value['get_device_status']}',
+            '${value['viral_load']}',
+            '${value['ip_address']}'
+              )">Status</button>
+        <button type="button" class="btn btn-warning" style="padding:0.2rem" data-toggle="modal" data-target="#modal-default" onclick="setUpDateForm(
+            '${value['ip_address']}',
+            '${value['user_name']}',
+            '${value['password']}',
+            '${value['district_id']}',
+            '${value['facility_id']}'
               )">Edit</button>
-          </span>
-          <span class="badge bg-danger">
-            <button type="button" class="btn btn-block bg-gradient-danger btn-xs" onclick="deleteFacility('${value['id']}')">Delete</button> 
-          </span>`
+          <button type="button" class="btn btn-danger" style="padding:0.2rem" onclick="deleteFacility('${value['facility_id']}')">Delete</button> 
+         `
         ]
     })
 
@@ -313,7 +427,8 @@ $(function () {
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
       data:{}
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
+
+    $('#change_facility_status').DataTable({
       "paging": true,
       "lengthChange": false,
       "searching": false,
@@ -321,6 +436,7 @@ $(function () {
       "info": true,
       "autoWidth": false,
       "responsive": true,
+      data:{}
     });
 
     refresh_facilities_list();

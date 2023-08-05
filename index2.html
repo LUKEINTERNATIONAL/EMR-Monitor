@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EMR-Monitor</title>
+  <link rel="shortcut icon" href="/dist/img/emr_monitor.png" type="image/x-icon">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Tempusdominus Bootstrap 4 -->
+  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
+  <!-- summernote -->
+  <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
+
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+
+  <style>
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+      margin-top: -8px;
+  }
+  </style>
+  <script> var active_menu = "dashboard"; var active_link = "dashboard_v1"; </script>
+ 
+</head>
+<body class="hold-transition sidebar-mini sidebar-collapse layout-fixed">
+<div class="wrapper">
+
+  <!-- bars plus loader -->
+  <app-bars></app-bars>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header" style='padding: 5px .5rem;'>
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-2">
+            <select class="form-control select2" name="id" id="facility_list">
+            </select>
+          </div><!-- /.col -->
+          <div class="col-sm-2">
+            <ol class="breadcrumb float-sm-left">
+              <li class="breadcrumb-item" id="_dde_status">DDE <i class="fas fa-circle nav-icon "></i></li>
+              <li class="breadcrumb-item" id="_vpn_status">VPN <i class="fas fa-circle nav-icon "></i></li>
+            </ol>
+          </div>
+          <div class="col-sm-4">
+            <center><b>Displaying a data set spanning 7 days</b></center>
+          </div>
+           <div class="col-sm-4">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><i class="fas fa-user"></i> HIS officer: <b id="his_officer">... </b></li>
+              <li class="breadcrumb-item"><i class="fas fa-hospital"></i> Facility: <b id="facility_name">...</b></li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+         <!-- Info boxes -->
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box">
+              <span class="info-box-icon bg-info elevation-1"><i class="fas fa-hospital-user"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Patients</span>
+                <span class="info-box-number" id="patients_count">
+                  ...
+                </span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box">
+              <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-notes-medical"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Encounters</span> 
+                <span class="info-box-number" id="encounters_count">
+                ...
+                </span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-server"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Devices</span>
+                <span class="info-box-number" id='count_devices'>...</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+
+          <!-- fix for small devices only -->
+          <div class="clearfix hidden-md-up"></div>
+
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-success elevation-1"><i class="fas fa-clock"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Down Time</span>
+                <span class="info-box-number" id="downtime">...</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-list"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Viral load</span>
+                <span class="info-box-number" id="viral_load">...</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-database"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Dumps <b id="dump_date" style="font-size: 11px;"></b></span>
+                <span class="info-box-number" id="dump_size">...</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+        <!-- Main row -->
+        <div class="row">
+          <!-- Left col -->
+          <section class="col-lg-5 connectedSortable">
+            <!-- Custom tabs (Charts with tabs)-->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-chart-bar mr-1"></i>
+                  Patients
+                </h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="chart">
+                  <canvas id="barChart" style="min-height: 305px; height: 305px; max-height: 305px; max-width: 100%;"></canvas>
+                </div>
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            
+            <!-- Custom tabs (Charts with tabs)-->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-chart-bar mr-1"></i>
+                  Devices
+                </h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <table id="devices_table" class="table table-bordered table-striped">
+                      <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>IP Address</th>
+                        <th>Status</th>
+                        <th>Mac Address</th>
+                        <th>Ports</th>
+                      </tr>
+                      </thead>
+                      <tbody id="table_body">
+                    
+                      </tbody>
+                  </table>
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+
+          </section>
+          <!-- /.Left col -->
+          <!-- right col (We are only adding the ID to make the widgets sortable)-->
+          <section class="col-lg-4 connectedSortable">
+
+             <!-- Donut chart -->
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="far fa-chart-bar"></i>
+                  Sample Tracking
+                </h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="echart_pie" style="min-height: 250px; height: 300px; max-height: 300px; max-width: 100%;"></div>
+              </div>
+              <!-- /.card-body-->
+            </div>
+            <!-- /.card -->
+
+              <!-- Donut chart -->
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="far fa-chart-bar"></i>
+                  VPN
+                </h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                    <table id="vpn_table" class="table table-bordered table-striped">
+                      <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Response</th>
+                        <th>Downtime</th>
+                      </tr>
+                      </thead>
+                    </table>
+                <!-- /.row -->
+              </div>
+              <!-- /.card-body-->
+            </div>
+            <!-- /.card -->
+
+          
+
+          </section>
+          <!-- right col -->
+
+          <!-- right col (We are only adding the ID to make the widgets sortable)-->
+          <section class="col-lg-3 connectedSortable">
+
+             <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Viral load</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="chart">
+                    <div class="chart-responsive">
+                      <div id="echart_donut" style="min-height: 250px; height: 300px; max-height: 300px; max-width: 100%;"></div>
+                    </div>
+                    <!-- ./chart-responsive -->
+                </div>
+                <!-- /.row -->
+              </div>
+            
+            </div>
+            <!-- /.card -->
+          
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Connectivity</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="chart">
+                    <div class="chart-responsive">
+                      <canvas id="Chartpie" style="min-height: 250px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
+                    </div>
+                    <!-- ./chart-responsive -->
+                </div>
+                <!-- /.row -->
+              </div>
+            
+            </div>
+            <!-- /.card -->
+            
+
+          </section>
+          <!-- right col -->
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    
+
+</div>
+<!-- /.content-wrapper -->
+
+<div class="modal fade" id="modal-default">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="form_title">Ports for device</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+       <!-- Horizontal Form -->
+        <div class="col-md-12">
+         
+          <!-- /.card -->
+         
+          <div class="card">
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table id="table_services" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  <th>Service Name</th>
+                  <th>Port</th>
+                  <th>State</th>
+                </tr>
+                </thead>
+                <tbody id="table_body_services">
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+        <!--/.col (left) -->
+     
+    
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+  <app-footer></app-footer>
+<!-- ./wrapper -->
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<script src="/config/config.js">
+</script><script src="/components/bars.js"></script>
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- ECharts -->
+<script src="/plugins/echarts/dist/echarts.min.js"></script>
+<!-- Bootstrap 4 -->
+<!-- <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script> -->
+<!-- ChartJS -->
+<script src="plugins/chart.js/Chart.js"></script>
+<!-- Sparkline -->
+<script src="plugins/sparklines/sparkline.js"></script>
+<!-- JQVMap -->
+<script src="plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<!-- jQuery Knob Chart -->
+<script src="plugins/jquery-knob/jquery.knob.min.js"></script>
+<!-- daterangepicker -->
+<script src="plugins/moment/moment.min.js"></script>
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Summernote -->
+<script src="plugins/summernote/summernote-bs4.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- Select2 -->
+<script src="/plugins/select2/js/select2.full.min.js"></script>
+<!-- bs-custom-file-input -->
+<script src="/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/jszip/jszip.min.js"></script>
+<script src="/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<!-- AdminLTE App -->
+<script src="dist/js/adminlte.js"></script>
+<!-- FLOT CHARTS -->
+<script src="/plugins/flot/jquery.flot.js"></script>
+<!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
+<script src="/plugins/flot/plugins/jquery.flot.resize.js"></script>
+<!-- FLOT PIE PLUGIN - also used to draw donut charts -->
+<script src="/plugins/flot/plugins/jquery.flot.pie.js"></script>
+
+<!-- AdminLTE for demo purposes -->
+<script src="dist/js/demo.js"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<!-- <script src="dist/js/pages/dashboard.js"></script> -->
+<script src="dist/js/backend.js"></script>
+
+
+
+<script>
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() - 7);
+  var startDate = currentDate.toISOString().slice(0, 10);
+
+  var endDate = new Date().toISOString().slice(0, 10);
+  var todayDate = new Date().toISOString().slice(0, 10);
+  var facility_id = 1
+  var facility_name = ''
+</script>
+<!-- bs-custom-file-input -->
+<script src="/dist/js/pages/dashboard3/facility_list.js"></script>
+<script src="/dist/js/pages/dashboard3/url.js"></script>
+<script src="plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<script src="/dist/js/pages/dashboard3/barchats.js"></script>
+<script src="/dist/js/pages/dashboard3/theme.js"></script>
+<script src="/dist/js/pages/dashboard3/pie_sample_tracking.js"></script>
+<script src="/dist/js/pages/dashboard3/devices.js"></script>
+<script src="/dist/js/pages/dashboard3/vpn_status.js"></script>
+<script src="/dist/js/pages/dashboard3/doughnut_vl_mode_d.js"></script>
+<script src="/dist/js/pages/dashboard3/dumps.js"></script>
+
+
+<script>
+  $(function () {
+    //Initialize Select2 Elements
+    $('.select2').select2()
+    
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+    bsCustomFileInput.init();
+  });
+</script>
+<!-- Page specific script -->
+<script>
+
+$(function () {
+  $('body').attr("class","layout-fixed control-sidebar-slide-open sidebar-collapse")
+});
+
+function display_his_officer(data){
+  if(data.users.length){
+    user = data.users.map((value)=>{
+     return value.name
+    })
+    $("#his_officer").text(user)
+  }
+  else
+    $("#his_officer").text('')
+}
+</script>
+</body>
+</html>
+
+

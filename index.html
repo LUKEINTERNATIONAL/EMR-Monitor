@@ -3,28 +3,40 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EMR-Monitor</title>
+    <title>EMR-Monitor</title>
+  <link rel="shortcut icon" href="/dist/img/emr_monitor.png" type="image/x-icon">
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+   <!-- DataTables -->
+  <link rel="stylesheet" href="../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <!-- Tempusdominus Bootstrap 4 -->
-  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <link rel="stylesheet" href="/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
   <!-- iCheck -->
-  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- JQVMap -->
-  <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
+  <link rel="stylesheet" href="/plugins/jqvmap/jqvmap.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
   <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
   <!-- Daterange picker -->
-  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
+  <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
   <!-- summernote -->
-  <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
+  <link rel="stylesheet" href="/plugins/summernote/summernote-bs4.min.css">
+  
+  <link rel="stylesheet" href="/dist/css/leaflet.css">
+  <script src="/dist/js/leaflet.js"></script>
+  <script src="/dist/js/BoundaryCanvas.js"></script>
+  <script src="/dist/js/esri-leaflet.js"></script>
+  <script src="/dist/js/esri-leaflet-geocoder.js"></script>
+  <link rel="stylesheet" href="/dist/css/esri-leaflet-geocoder.css">
+ <style>
+        #map { height: 100%; }
+  </style>
+  <script> var active_menu = "dashboard"; var active_link = "dashboard_v1"; </script>
   <style>
     .checkbox-green::before {
       background: #20c997;
@@ -32,9 +44,19 @@
     .checkbox-red::before {
       background: #e74c3c;
     }
+    .small-box p {
+    font-size: 1.2rem;
+    }
+    .inner_vpn{
+        position:relative;
+        top:0px;
+    }
+    .outer_vpn{
+        overflow:hidden;
+    }
   </style>
 </head>
-<body class="hold-transition sidebar-mini layout-fixed">
+<body class="hold-transition sidebar-mini sidebar-collapse layout-fixed">
 <div class="wrapper">
 
   <!-- bars plus loader -->
@@ -43,7 +65,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header">
+    <div class="content-header" style='padding: 5px .5rem;'>
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
@@ -63,158 +85,168 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-        <!-- Small boxes (Stat box) -->
-        <div class="row">
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-info">
-              <div class="inner">
-                <h3 id="user_count">...</h3>
-                <p>Total Users</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>
-              <a href="/pages/manage_users.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3 id="facilities_count">...</h3>
-
-                <p>Total Facilities</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a href="/pages/manage_facilities.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3 id="inactive_vpn_count">...</h3>
-
-                <p>Total Inactive VPN</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a href="/pages/manage_facilities.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-warning">
-              <div class="inner">
-                <h3 id="encounters_count">...</h3>
-
-                <p>Total Encounters</p>
-              </div>
-              <div class="icon">
-                <i class="ion  ion-stats-bars"></i>
-              </div>
-              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-        </div>
         <!-- /.row -->
         <!-- Main row -->
         <div class="row">
           <!-- Left col -->
-          <section class="col-lg-7 connectedSortable">
-             <!-- BAR CHART -->
-             <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">Encounters</h3>
-
-                <div class="card-tools">
-                  <ul class="pagination pagination-sm" id="pages_btn_set">
-                    <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage-1)">&laquo;</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_chart(1)">1</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage+1)">&raquo;</a></li>
-                  </ul>
+        <section class="col-lg-9 connectedSortable">
+          <!-- Small boxes (Stat box) -->
+          <div class="row">
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-info">
+                <div class="inner">
+                  <h3 id="user_count">...</h3>
+                  <p>Total Users</p>
                 </div>
+                <div class="icon">
+                  <i class="ion ion-person-add"></i>
+                </div>
+                <a href="/pages/manage_users.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
               </div>
-              <div class="card-body">
-                <div class="chart" id="chart_set">
-                  <canvas id="barChart1" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-success">
+                <div class="inner">
+                  <h3 id="facilities_count">...</h3>
+
+                  <p>Total Facilities</p>
                 </div>
+                <div class="icon">
+                  <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="/pages/manage_facilities.html" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-danger">
+                <div class="inner">
+                  <h3 id="inactive_vpn_count">...</h3>
+
+                  <p>Total Inactive VPN</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="#" onclick="view_inactive_facilities()" data-toggle="modal" data-target="#modal-default" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+              <!-- small box -->
+              <div class="small-box bg-warning">
+                <div class="inner">
+                  <h3 id="encounters_count">...</h3>
+
+                  <p id="bargraph_card">Total Encounters</p>
+                </div>
+                <div class="icon">
+                  <i class="ion  ion-stats-bars"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <!-- BAR CHART -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title" id="bargraph_title">Encounters</h3>
+
+              <div class="card-tools">
+                <ul class="pagination pagination-sm" id="pages_btn_set">
+                  <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage-1)">&laquo;</a></li>
+                  <li class="page-item"><a class="page-link" onclick="setpage_chart(1)">1</a></li>
+                  <li class="page-item"><a class="page-link" onclick="setpage_chart(chart_setting.currentPage+1)">&raquo;</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart" id="chart_set">
+                <canvas id="barChart1" style="min-height: 61.5vh; height: 61.5vh; max-height: 61.5vh; max-width: 100%;"></canvas>
+              </div>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </section>
+        <!-- /.Left col -->
+        <!-- right col (We are only adding the ID to make the widgets sortable)-->
+        <section class="col-lg-3 connectedSortable">
+
+            <!-- TO DO List -->
+            <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="ion ion-clipboard mr-1"></i>
+                <span id="right_side_title">  </span> 
+              </h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="outer_vpn" id="outer_vpn" style="height: 83vh; display: none;">
+              <ul class="todo-list inner_vpn" data-widget="todo-list" id="vpn_list" style="overflow:unset; min-height: 83.5vh; height: 83.5vh; max-height: 83.5vh; max-width: 100%;">
+              </ul>
+            </div> 
+            <div class="card-body" id="display_map" style="height: 83vh; display: none;">
+              <div id="map" ></div>
+            </div>
+          <!-- /.card -->
+
+        </section>
+        <!-- right col -->
+      </div>
+      <!-- /.row (main row) -->
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="form_title">Facilities With Inactive VPN</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+         <!-- Horizontal Form -->
+          <div class="col-md-12">
+           
+            <!-- /.card -->
+           
+            <div class="card">
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="inactive_facilities" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>Facility Name</th>
+                  </tr>
+                  </thead>
+                  <tbody id="table_body">
+                  </tbody>
+                </table>
               </div>
               <!-- /.card-body -->
             </div>
             <!-- /.card -->
-
-          </section>
-          <!-- /.Left col -->
-          <!-- right col (We are only adding the ID to make the widgets sortable)-->
-          <section class="col-lg-5 connectedSortable">
-
-             <!-- TO DO List -->
-             <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">
-                  <i class="ion ion-clipboard mr-1"></i>
-                  VPN Status
-                </h3>
-
-                <div class="card-tools">
-                  <ul class="pagination pagination-sm" id="vpn_pages_btn_set">
-                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage-1)">&laquo;</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(1)">1</a></li>
-                    <li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage+1)">&raquo;</a></li>
-                  </ul>
-                </div>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <ul class="todo-list" data-widget="todo-list" id="vpn_list">
-                  
-                  <!-- <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                    <div  class="icheck-primary d-inline ml-2">
-                      <input type="text" value="" name="todo2" id="todoCheck2" checked>
-                      <label class="checkbox-green"  for="todoCheck2"></label>
-                    </div>
-                    <span class="text">Karonga</span>
-                    <small class="badge badge-info"><i class="far fa-clock"></i> 4 hours</small>
-                  </li>
-                 
-                  <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                    <div  class="icheck-primary d-inline ml-2">
-                      <input type="checkbox" value="" name="todo4" id="todoCheck4">
-                      <label class="checkbox-red"  for="todoCheck4"></label>
-                    </div>
-                    <span class="text">Mzimba North</span>
-                    <small class="badge badge-info"><i class="far fa-clock"></i> 3 days</small>
-                  </li> -->
-                </ul>
-              </div>
-            
-            <!-- /.card -->
-
-          </section>
-          <!-- right col -->
-        </div>
-        <!-- /.row (main row) -->
-      </div><!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
+          </div>
+          <!--/.col (left) -->
+       
+      
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
   </div>
-  <!-- /.content-wrapper -->
+  <!-- /.modal -->
+
+
   <app-footer></app-footer>
 
   <!-- Control Sidebar -->
@@ -224,46 +256,63 @@
   <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
-<script src="components/bars.js"></script>
+<script src="/config/config.js">
+</script><script src="/components/bars.js"></script>
 
 <!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
+<script src="/plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
-<script src="plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="/plugins/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
   $.widget.bridge('uibutton', $.ui.button)
 </script>
 <!-- Bootstrap 4 -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="../plugins/jszip/jszip.min.js"></script>
+<script src="../plugins/pdfmake/pdfmake.min.js"></script>
+<script src="../plugins/pdfmake/vfs_fonts.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 <!-- ChartJS -->
-<script src="plugins/chart.js/Chart.js"></script>
+<script src="/plugins/chart.js/Chart.js"></script>
 <!-- Sparkline -->
-<script src="plugins/sparklines/sparkline.js"></script>
+<script src="/plugins/sparklines/sparkline.js"></script>
 <!-- JQVMap -->
-<script src="plugins/jqvmap/jquery.vmap.min.js"></script>
-<script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<script src="/plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
 <!-- jQuery Knob Chart -->
-<script src="plugins/jquery-knob/jquery.knob.min.js"></script>
+<script src="/plugins/jquery-knob/jquery.knob.min.js"></script>
 <!-- daterangepicker -->
-<script src="plugins/moment/moment.min.js"></script>
-<script src="plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/plugins/moment/moment.min.js"></script>
+<script src="/plugins/daterangepicker/daterangepicker.js"></script>
 <!-- Tempusdominus Bootstrap 4 -->
-<script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 <!-- Summernote -->
-<script src="plugins/summernote/summernote-bs4.min.js"></script>
+<script src="/plugins/summernote/summernote-bs4.min.js"></script>
 <!-- overlayScrollbars -->
-<script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <!-- AdminLTE App -->
-<script src="dist/js/adminlte.js"></script>
+<script src="/dist/js/adminlte.js"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
+<script src="/dist/js/demo.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<!-- <script src="dist/js/pages/dashboard.js"></script> -->
-<script src="dist/js/backend.js"></script>
+<!-- <script src="/dist/js/pages/dashboard.js"></script> -->
+<script src="/dist/js/backend.js"></script>
+
+<!-- bs-custom-file-input -->
+<script src="/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<script src="/dist/js/pages/maps.js"></script>
 
 <script>
-  submitFormData(base_url+'encounters/create_site')
 
   var chart_setting = {
     cur_dataset: undefined,
@@ -279,16 +328,7 @@
     currentPage: 1
   };
 
-  function process_vpn_data(data){
-    vpn_setting.pageNum = Math.ceil(data.vpn.length / paginationLimit);
-    if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
-    vpn_setting.data = data.vpn;
-    var vpn = data.vpn.filter((el) => el.vpn_status == "inactive")
-    $("#inactive_vpn_count").text(vpn.length)
-    setpage_vpn(vpn_setting.currentPage);
-  }
-
-  function random_rgba() {
+  function random_rgba(program_name) {
     var o = Math.round, r = Math.random, s = 255;
     var R = 256, G = 256, B = 256;
     while(R+G+B > 600){
@@ -297,16 +337,47 @@
       B = o(r()*s)
     }
     var opacity = r().toFixed(1)
+    if(program_name == "HIV PROGRAM")
+      return "rgba( 47, 79, 79, 0.7)"
+    if(program_name == "OPD Program")
+      return "rgba(72, 61, 139, 0.7)"
+    if(program_name == "ANC PROGRAM")
+      return "rgba(255, 20, 147, 0.7)"
+    if(program_name == "CxCa program")
+      return "rgba(0, 191, 255, 0.7)"
+    else
     if (opacity < 0.5) opacity += 0.5
     return 'rgba(' + R + ',' + G + ',' + B + ',' + opacity + ')';
   }
 
+  function bargraph_switcher(){
+    if(sessionStorage.getItem('bargraph_status') !== null)
+      if(sessionStorage.getItem('bargraph_status') == 'false')
+      status = 'true'
+      else
+      status = 'false'
+    else
+      status = 'true'
+
+    sessionStorage.setItem('bargraph_status',status);
+  }
   function process_encounter_data(data){
+    bargraph_switcher()
     datasets = []
     // $("#encounters_count").text(data.facilities.length === undefined? 0: data.facilities.length)
-    var total_encounters = 0;
-    data.facilities.forEach(x => {n = parseInt(x.total_encounters); total_encounters += isNaN(n) ? 0 : n;})
-    $("#encounters_count").text(total_encounters);
+    if(sessionStorage.getItem('bargraph_status') == 'false'){
+      var total_encounters = 0;
+      data.facilities.forEach(x => {n = parseInt(x.total_encounters); total_encounters += isNaN(n) ? 0 : n;})
+      $("#encounters_count").text(total_encounters);
+      $("#bargraph_title").text("Encounters")
+      $("#bargraph_card").text("Total Encounters")
+    }else{
+      var total_patients = 0;
+      data.facilities.forEach(x => {n = parseInt(x.total_patients); total_patients += isNaN(n) ? 0 : n;})
+      $("#encounters_count").text(total_patients);
+      $("#bargraph_title").text("Patients")
+      $("#bargraph_card").text("Total Patients")
+    }
 
     const unique_programs = [...new Set(data.facilities.map(item => item.program_name))];
     const unique_labels = [...new Set(data.facilities.map(item => item.facility_name))];
@@ -317,21 +388,24 @@
       for(facility_name in unique_labels){
           var encounter_value = data.facilities.filter((el) => el.program_name == program && el.facility_name == unique_labels[facility_name] )
           if(encounter_value.length > 0)
-            encounter_data[i].push(parseInt(encounter_value[0].total_encounters))
+            if(sessionStorage.getItem('bargraph_status') == 'false')
+              encounter_data[i].push(parseInt(encounter_value[0].total_encounters))
+            else
+              encounter_data[i].push(parseInt(encounter_value[0].total_patients))
           else
           encounter_data[i].push(0)
       }
       
       graphic= {
           label               : program,
-          backgroundColor     : random_rgba(),
-          borderColor         : random_rgba(),
+          backgroundColor     : random_rgba(program),
+          borderColor         : random_rgba(program),
           pointRadius          : false,
           pointColor          : '#3b8bba',
           pointStrokeColor    : 'rgba(60,141,188,1)',
           pointHighlightFill  : '#fff',
           pointHighlightStroke: 'rgba(60,141,188,1)',
-          data                : []
+          data                : [],
         }
         datasets.push(graphic)
     }
@@ -341,7 +415,7 @@
     chart_setting.cur_label = unique_labels;
     chart_setting.pageNum = Math.ceil(unique_labels.length / paginationLimit);
     if(chart_setting.currentPage > chart_setting.pageNum) chart_setting.currentPage = 1;
-
+    console.log(datasets)
     setpage_chart(chart_setting.currentPage);
     graphs();
   }
@@ -369,30 +443,16 @@
   function min(a, b) {
     return a>b ? b : a;
   }
-
-  function setpage_vpn(num) {
-    vpn_setting.currentPage = num;
-    if(vpn_setting.currentPage == 0) vpn_setting.currentPage = vpn_setting.pageNum;
-    if(vpn_setting.currentPage > vpn_setting.pageNum) vpn_setting.currentPage = 1;
-
-    var from = vpn_setting.currentPage-3 > 1 ? vpn_setting.currentPage-3 : 1;
-    var to = vpn_setting.currentPage+3 < vpn_setting.pageNum ?
-             vpn_setting.currentPage+3 : vpn_setting.pageNum;
-    // console.log(from, to)
-    var html_str = '<li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage-1)">&laquo;</a></li>'
-    for(let i = from; i <= to; i++) {
-      html_str += '<li class="page-item"><a class="page-link"' + 
-                  ' onclick="setpage_vpn(' + i + ')">' + i + '</a></li>';
-    }
-    html_str += '<li class="page-item"><a class="page-link" onclick="setpage_vpn(vpn_setting.currentPage+1)" id="next_btn_vpn">&raquo;</a></li>'
-    $("#vpn_pages_btn_set").html(html_str);
-
+  var vpn_data = [];
+  function process_vpn_data(data) {
     var li = ""
-    // console.log(vpn_setting.data)
-    for(let item = (vpn_setting.currentPage-1) * 5; item < min(vpn_setting.currentPage * 5, vpn_setting.data.length); item++){
-      // console.log(data.vpn[item].vpn_status)
+    data = data.vpn
+    vpn_data = data.filter((el) => el.vpn_status == "inactive")
+    $("#inactive_vpn_count").text(vpn_data.length)
+    for(item in data ){
+      console.log(data[item].vpn_status)
       // console.log(data.vpn[item].facility_name)
-      if(vpn_setting.data[item].vpn_status == 'active')
+      if(data[item].vpn_status == 'active')
           color = "checkbox-green"
       else
         color = "checkbox-red"
@@ -406,12 +466,36 @@
                 <input type="text" value="" name="todo2" id="todoCheck2" checked>
                 <label class="${color}"  for="todoCheck2"></label>
               </div>
-              <span class="text">${vpn_setting.data[item].facility_name}</span>
+              <span class="text">${data[item].facility_name}</span>
             </li>`
     }
     $("#vpn_list").html(li)
+    
   }
 
+  function view_inactive_facilities(){
+    $("#inactive_facilities").dataTable().fnDestroy();
+    $(function() {
+      $('#inactive_facilities').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+      });
+
+      data = vpn_data.map((value) =>{
+          return [value['facility_name']]
+        })
+
+        var datatable = $("#inactive_facilities").dataTable().api();
+        datatable.clear();
+        datatable.rows.add(data);
+        datatable.draw();
+    });
+  }
   function graphs() {
     /* ChartJS
      * -------
@@ -428,7 +512,7 @@
       }
 
       if(cur != 1) {
-        $('#chart_set').append('<canvas id="barChart' + cur + '" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;" hidden></canvas>')
+        $('#chart_set').append('<canvas id="barChart' + cur + '" style="min-height:59vh; height:59vh; max-height:59vh; max-width: 100%;" hidden></canvas>')
       }
       //-------------
       //- BAR CHART -
@@ -441,50 +525,142 @@
         datasetFill             : false
       }
 
-      new Chart(barChartCanvas, {
+      // new Chart(barChartCanvas, {
+      //   type: 'bar',
+      //   data: areaChartData,
+      //   options: barChartOptions
+      // })
+
+      var UserVsMyApps = new Chart(barChartCanvas, {
         type: 'bar',
         data: areaChartData,
-        options: barChartOptions
-      })
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+                display: true,
+                labels: {
+                  fontSize: 14
+                }
+ 
+            },
+            "hover": {
+              "animationDuration": 0
+            },
+             "animation": {
+                "duration": 1,
+              "onComplete": function() {
+                var chartInstance = this.chart,
+                  ctx = chartInstance.ctx;
+ 
+                ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+ 
+                this.data.datasets.forEach(function(dataset, i) {
+                  var meta = chartInstance.controller.getDatasetMeta(i);
+                  meta.data.forEach(function(bar, index) {
+                    var data = dataset.data[index];
+                    ctx.fillText(data, bar._model.x, bar._model.y - 5);
+                  });
+                });
+              }
+            },
+            title: {
+                display: false,
+                text: 'Daily EMR Encounters',
+            },
+            scales: {
+              xAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                  fontSize: 15,  
+                }
+              }],
+              yAxes: [{
+                display: true
+              }]
+            }
+        }
+    });
+
     }
   }
-
+  function total_users_data(data){
+    $("#user_count").text(data['users'].length)
+    }
+  function total_facilities_data(data){$("#facilities_count").text(data.facilities.length)}
+ 
   function refresh() {
     getData(base_url+'encounters/list/','process_encounter_data')
     getData(base_url+'vpn/list/','process_vpn_data')
-    $.ajax({
-      type: "GET",
-      url: base_url + "/user/",
-      success: function(data) {
-        $("#user_count").text(data.length)
-      },
-      error: function(jqXHR, status, error) {
-        window.location = "/pages/login.html"
-      }
-    });
-    $.ajax({
-      type: "GET",
-      url: base_url + "/facilities/list/",
-      success: function(data) {
-        $("#facilities_count").text(data.facilities.length)
-      },
-      error: function(jqXHR, status, error) {
-        window.location = "/pages/login.html"
-      }
-    });
+    getData(base_url+'users/','total_users_data')
+    getData(base_url+'facilities/list/','total_facilities_data')
+    
+    $('.inner_vpn').html("")
   }
-
+  
   $(function () {
-    refresh();
-    setInterval(function() {
-      $("#next_btn").click();
-      $("#next_btn_vpn").click();
-    }, 10000);
+   
 
-    setInterval(function() {
-      refresh();
-    }, 60000);
+    $('body').attr("class","layout-fixed control-sidebar-slide-open sidebar-collapse")
+    refresh();
+    function autoScrollDown(){
+      const outer_vpn = $("#outer_vpn")
+      const display_map = $("#display_map")
+      console.log(outer_vpn['0'].style.display)
+      if (display_map['0'].style.display === 'none') {
+        outer_vpn['0'].style.display = 'none';
+        display_map['0'].style.display = 'block';
+        $('#right_side_title').text('Map of Malawi')
+      } else {
+        outer_vpn['0'].style.display = 'block';
+        display_map['0'].style.display = 'none';
+         $('#right_side_title').text('VPN Status')
+      }
+
+    $(".inner_vpn").css({top:-$(".outer_vpn").outerHeight()}) // jump back
+                  .animate({top:0},50000,"linear", autoScrollDown); // and animate
+    }
+    // fix hight of outer_vpn:
+    $('.outer_vpn').css({maxHeight: $('.inner_vpn').height()});
+    // duplicate content of inner_vpn:
+    $('.inner_vpn').html($('.inner_vpn').html() + $('.inner_vpn').html());
+    
+    autoScrollDown();
+
+    //$('#outer_vpn').attr('style','height: 63vh;')
+    if(sessionStorage.getItem("auto_dashboard") == '1'){
+      setInterval(function() {
+        //$('#display_map').attr('style','height: 63vh;')
+        // $('#vpn_list').animate({scrollTop: 8}, 4000);
+        $("#next_btn").click();
+      }, 20000);
+
+      setInterval(function() {
+        window.location.href = "/index2.html"
+        refresh();
+      }, 200000);
+    }
+
+    
   });
+
+
+  function cacheWebsiteFiles() {
+  var urlsToCache = [
+    '/dist/css/adminlte.min.css',
+    '/index.html',
+    // Add other files and directories to cache
+  ];
+
+  caches.open('my-site-cache')
+    .then(function(cache) {
+      return cache.addAll(urlsToCache);
+    });
+
+}
+cacheWebsiteFiles() 
 </script>
 </body>
 </html>

@@ -60,7 +60,7 @@
   // Checkboxes
 
   $container.append(
-    '<h5>Customize AdminLTE</h5><hr class="mb-2"/>'
+    '<h5>Customize EMR Monitor</h5><hr class="mb-2"/>'
   )
 
   var $dark_mode_checkbox = $('<input />', {
@@ -75,8 +75,27 @@
       $('body').removeClass('dark-mode')
     }
   })
+
+  var $auto_dashboard_checkbox = $('<input />', {
+    type: 'checkbox',
+    value: 1,
+    checked: $('body').hasClass('dark-mode'),
+    class: 'mr-1'
+  }).on('click', function () {
+    if ($(this).is(':checked')) {
+      sessionStorage.setItem("auto_dashboard","1")
+      location.reload();
+    } else {
+      sessionStorage.setItem("auto_dashboard","0")
+      location.reload();
+    }
+  })
   var $dark_mode_container = $('<div />', { class: 'mb-4' }).append($dark_mode_checkbox).append('<span>Dark Mode</span>')
+  var $auto_dashboard_container = $('<div />', { class: 'mb-4' }).append($auto_dashboard_checkbox).append('<span>Auto Change Dashboard</span>')
   $container.append($dark_mode_container)
+  $container.append($auto_dashboard_container)
+
+  sessionStorage.getItem("auto_dashboard") == '1'? $auto_dashboard_checkbox.prop('checked', true) : $auto_dashboard_checkbox.prop('checked', false)
 
   $container.append('<h6>Header Options</h6>')
   var $header_fixed_checkbox = $('<input />', {
